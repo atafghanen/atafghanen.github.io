@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AT Evening Elegance – Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="admin.css"></head>
+<body><header><a href="index.html">← <span>Website</span></a><h1>AT Evening Elegance <em>Editor</em></h1><button id="saveBtn">Änderungen speichern</button></header>
+<main>
+<section class="card"><h2>Social Media, Kontakt & Logo</h2><div class="form-grid"><label>Instagram<input id="instagram"></label><label>TikTok<input id="tiktok"></label><label>E-Mail<input id="email"></label><label>WhatsApp Nummer<input id="whatsapp" placeholder="491701234567"></label><div class="brand-editor"><label>Logo ändern<input id="logoFile" type="file" accept="image/*,.gif"><small>Du kannst dein rundes Logo hier jederzeit ersetzen.</small></label><img id="logoPreview" class="logo-preview" src="assets/logo.gif" alt="Logo"></div></div></section>
+<section class="card"><div class="section-top"><div><h2>Produkte</h2><p>Jedes Produkt kann geändert, das Bild ersetzt oder das Produkt vollständig gelöscht werden.</p></div><button class="gold" id="addProduct">+ Produkt</button></div><div id="products"></div></section>
+<section class="card"><div class="section-top"><div><h2>Galerie</h2><p>Beliebig viele Bilder hinzufügen, ersetzen oder löschen.</p></div><button class="gold" id="addGallery">+ Bild</button></div><div id="gallery"></div></section>
+<section class="card warning"><h2>Wichtig</h2><p>Dieser Editor speichert die Änderungen aktuell im <strong>Browser (localStorage)</strong>. Für einen echten Shop mit mehreren Geräten, Login, Stripe/PayPal, Bestellverwaltung und Cloud-Bildern sollte später ein Backend/CMS angeschlossen werden.</p></section>
+</main><script src="admin.js"></script></body></html>

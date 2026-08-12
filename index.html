@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="AT Evening Elegance – Afghanische Abendmode, Maßanfertigung und Kollektionen.">
+  <title>AT Evening Elegance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site">
+  <div class="announcement" data-i18n="announcement">Weltweiter Versand · Maßanfertigung nach deinen Maßen</div>
+
+  <header class="header">
+    <a class="brand" href="#home" aria-label="AT Evening Elegance">
+      <img src="assets/logo.gif?v=9" class="logo-spin" alt="AT Evening Elegance Logo">
+    </a>
+    <nav class="nav" id="mainNav">
+      <a href="#home" data-i18n="nav.home">Startseite</a>
+      <a href="#collection" data-i18n="nav.collection">Kollektion</a>
+      <a href="#tailoring" data-i18n="nav.tailoring">Maßanfertigung</a>
+      <a href="#story" data-i18n="nav.story">Über uns</a>
+      <a href="#gallery" data-i18n="nav.gallery">Galerie</a>
+      <a href="#contact" data-i18n="nav.contact">Kontakt</a>
+    </nav>
+    <div class="header-actions">
+      <select id="languageSelect" class="language" aria-label="Language">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+        <option value="ps">پښتو</option>
+        <option value="fa">دری</option>
+      </select>
+      <button class="icon-btn" id="cartButton" aria-label="Cart">🛍 <span id="cartCount">0</span></button>
+      <button class="menu-btn" id="menuButton" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <p class="eyebrow" data-i18n="hero.eyebrow">AFGHAN FASHION · SINCE 2022</p>
+        <h1 data-i18n="hero.title">Timeless beauty.<br><span>Made for you.</span></h1>
+        <p class="hero-text" data-i18n="hero.text">Afghanische Eleganz, neu interpretiert – mit Liebe zum Detail, eigener Schneiderei und weltweiter Lieferung.</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="#collection" data-i18n="hero.cta">Kollektion entdecken</a>
+          <a class="btn btn-ghost" href="#tailoring" data-i18n="hero.custom">Maßanfertigung</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="gold-orbit"></div>
+        <div class="hero-logo-wrap">
+          <img src="assets/logo.gif?v=10" class="hero-logo" id="heroLogo" alt="AT Evening Elegance Logo">
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee" aria-hidden="true">
+      <div>AT EVENING ELEGANCE · AFGHAN COUTURE · TIMELESS BEAUTY · AT EVENING ELEGANCE · AFGHAN COUTURE ·</div>
+    </section>
+
+    <section id="collection" class="section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" data-i18n="collection.eyebrow">THE COLLECTION</p>
+          <h2 data-i18n="collection.title">Eleganz, die bleibt.</h2>
+        </div>
+        <p class="section-intro" data-i18n="collection.intro">Entdecke ausgewählte afghanische Kleider. Verfügbar aus unserem Lager oder individuell nach deinen Maßen gefertigt.</p>
+      </div>
+      <div class="filters" id="categoryFilters"></div>
+      <div class="products-grid" id="productGrid"></div>
+    </section>
+
+    <section id="tailoring" class="split-section">
+      <div class="split-image tailoring-image">
+        <div class="image-overlay"></div>
+        <div class="split-label">MADE<br>FOR YOU</div>
+      </div>
+      <div class="split-content">
+        <p class="eyebrow" data-i18n="tailoring.eyebrow">PERSONAL TAILORING</p>
+        <h2 data-i18n="tailoring.title">Dein Kleid.<br>Deine Maße.<br>Dein Auftritt.</h2>
+        <p data-i18n="tailoring.text">Du möchtest etwas ganz Besonderes? Wir fertigen ausgewählte Designs individuell nach deinen Maßen an. Gemeinsam besprechen wir Schnitt, Stoff, Farben und Details.</p>
+        <ul class="feature-list">
+          <li data-i18n="tailoring.item1">Individuelle Maße</li>
+          <li data-i18n="tailoring.item2">Ausgewählte Stoffe</li>
+          <li data-i18n="tailoring.item3">Handveredelte Details</li>
+          <li data-i18n="tailoring.item4">Weltweite Lieferung</li>
+        </ul>
+        <button class="btn btn-gold" id="tailoringButton" data-i18n="tailoring.cta">Anfrage senden</button>
+      </div>
+    </section>
+
+    <section id="story" class="section story-section">
+      <div class="story-number">2022</div>
+      <div class="story-content">
+        <p class="eyebrow" data-i18n="story.eyebrow">OUR STORY</p>
+        <h2 data-i18n="story.title">Tradition trifft moderne Eleganz.</h2>
+        <p data-i18n="story.text1">Seit 2022 widmen wir uns der Herstellung und Lieferung hochwertiger afghanischer Kleidung. Mit eigenen Schneidereien in Afghanistan verbinden wir traditionelle Handwerkskunst mit einem modernen Anspruch.</p>
+        <p data-i18n="story.text2">Dabei möchten wir schöne Mode zugänglich halten und gleichzeitig Arbeitsplätze schaffen und Familien vor Ort unterstützen.</p>
+        <div class="story-stats">
+          <div><strong>2022</strong><span data-i18n="stats.since">Seitdem aktiv</span></div>
+          <div><strong>∞</strong><span data-i18n="stats.designs">Design-Möglichkeiten</span></div>
+          <div><strong>WORLD</strong><span data-i18n="stats.shipping">Weltweiter Versand</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="section gallery-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" data-i18n="gallery.eyebrow">AT MOMENTS</p>
+          <h2 data-i18n="gallery.title">Details. Stoffe. Handwerk.</h2>
+        </div>
+        <p class="section-intro" data-i18n="gallery.intro">Unsere Galerie kann jederzeit um neue Bilder erweitert werden.</p>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+
+    <section class="cta-section">
+      <div>
+        <p class="eyebrow" data-i18n="cta.eyebrow">READY FOR YOUR LOOK?</p>
+        <h2 data-i18n="cta.title">Ein Kleid, das zu dir gehört.</h2>
+      </div>
+      <button class="btn btn-gold" id="ctaButton" data-i18n="cta.button">Bestellanfrage starten</button>
+    </section>
+  </main>
+
+  <footer id="contact" class="footer">
+    <div class="footer-brand">
+      <img src="assets/logo.gif?v=9" alt="" class="footer-logo">
+      <h3>AT Evening Elegance</h3>
+      <p data-i18n="footer.tagline">Timeless beauty, made for you.</p>
+    </div>
+    <div class="footer-links">
+      <h4 data-i18n="footer.explore">Entdecken</h4>
+      <a href="#collection" data-i18n="nav.collection">Kollektion</a>
+      <a href="#tailoring" data-i18n="nav.tailoring">Maßanfertigung</a>
+      <a href="#gallery" data-i18n="nav.gallery">Galerie</a>
+    </div>
+    <div class="footer-links">
+      <h4 data-i18n="footer.contact">Kontakt</h4>
+      <a href="mailto:info@ateveningelegance.com">info@ateveningelegance.com</a>
+      <span>Worldwide Shipping</span>
+    </div>
+    <div class="footer-social">
+      <h4>Social</h4>
+      <div class="social-row">
+        <a id="instagramLink" class="social" href="#" target="_blank" rel="noopener">Instagram</a>
+        <a id="tiktokLink" class="social" href="#" target="_blank" rel="noopener">TikTok</a>
+      </div>
+      <a class="admin-link" href="admin.html" data-i18n="footer.editor">Website Editor →</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> AT Evening Elegance</span>
+      <span data-i18n="footer.rights">All rights reserved.</span>
+    </div>
+  </footer>
+</div>
+
+<div class="modal" id="productModal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel product-modal">
+    <button class="close-modal" data-close>×</button>
+    <div id="productModalContent"></div>
+  </div>
+</div>
+
+<div class="modal" id="cartModal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <button class="close-modal" data-close>×</button>
+    <p class="eyebrow" data-i18n="cart.eyebrow">YOUR SELECTION</p>
+    <h2 data-i18n="cart.title">Warenkorb</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total"><span data-i18n="cart.total">Gesamt</span><strong id="cartTotal">€0</strong></div>
+    <button class="btn btn-gold full" id="orderButton" data-i18n="cart.order">Bestellanfrage senden</button>
+  </div>
+</div>
+
+<div class="modal" id="requestModal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <button class="close-modal" data-close>×</button>
+    <p class="eyebrow" data-i18n="request.eyebrow">PERSONAL REQUEST</p>
+    <h2 data-i18n="request.title">Bestellanfrage</h2>
+    <p class="modal-note" data-i18n="request.note">Fülle das Formular aus. Es öffnet sich anschließend eine vorbereitete E-Mail mit deiner Anfrage.</p>
+    <form id="requestForm" class="request-form">
+      <input name="name" required data-placeholder="request.name" placeholder="Name">
+      <input name="email" type="email" required data-placeholder="request.email" placeholder="E-Mail">
+      <input name="size" data-placeholder="request.size" placeholder="Größe / Maße">
+      <textarea name="message" rows="5" data-placeholder="request.message" placeholder="Nachricht"></textarea>
+      <button class="btn btn-gold full" type="submit" data-i18n="request.submit">Anfrage vorbereiten</button>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
