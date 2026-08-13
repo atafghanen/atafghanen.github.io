@@ -3,18 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-
   <title>AT Evening Elegance – Admin</title>
 
   <link rel="stylesheet" href="admin.css">
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-box">
     <h1>AT Evening Elegance</h1>
@@ -31,17 +28,13 @@
         <input id="loginPassword" type="password" required>
       </label>
 
-      <button type="submit" class="gold">
-        Anmelden
-      </button>
+      <button type="submit" class="gold">Anmelden</button>
 
       <p id="loginError" class="error"></p>
     </form>
   </div>
 </div>
 
-
-<!-- ADMIN -->
 <div id="adminApp" hidden>
 
 <header>
@@ -52,17 +45,12 @@
     <em>Admin</em>
   </h1>
 
-  <button id="logoutBtn">
-    Abmelden
-  </button>
+  <button id="logoutBtn">Abmelden</button>
 </header>
-
 
 <main>
 
-<!-- EINSTELLUNGEN -->
 <section class="card">
-
   <h2>Website</h2>
 
   <div class="form-grid">
@@ -97,124 +85,75 @@
   <button id="saveSettings" class="gold">
     Website speichern
   </button>
-
 </section>
 
-
-<!-- KATEGORIEN -->
 <section class="card">
-
   <div class="section-top">
-
     <div>
       <h2>Kategorien</h2>
-
-      <p>
-        Hier kannst du später selbst neue Kategorien hinzufügen.
-      </p>
+      <p>Eigene Kategorien für deine Produkte.</p>
     </div>
 
     <button id="addCategory" class="gold">
       + Kategorie
     </button>
-
   </div>
 
   <div id="categories"></div>
-
 </section>
 
-
-<!-- PRODUKTE -->
 <section class="card">
-
   <div class="section-top">
-
     <div>
       <h2>Produkte</h2>
-
-      <p>
-        Produkte hinzufügen, bearbeiten oder löschen.
-      </p>
+      <p>Produkte hinzufügen, bearbeiten oder löschen.</p>
     </div>
 
     <button id="addProduct" class="gold">
       + Produkt
     </button>
-
   </div>
 
   <div id="products"></div>
-
 </section>
 
-
-<!-- GALERIE -->
 <section class="card">
-
   <div class="section-top">
-
     <div>
       <h2>Galerie</h2>
-
-      <p>
-        Bilder direkt von deinem Handy oder Computer hochladen.
-      </p>
+      <p>Bilder direkt hochladen und verwalten.</p>
     </div>
 
     <button id="addGallery" class="gold">
       + Bild
     </button>
-
   </div>
 
   <div id="gallery"></div>
-
 </section>
 
-
-<!-- VIDEOS -->
 <section class="card">
-
   <div class="section-top">
-
     <div>
       <h2>Videos</h2>
-
-      <p>
-        Videos für deine Website hochladen.
-      </p>
+      <p>Videos für deine Website verwalten.</p>
     </div>
 
     <button id="addVideo" class="gold">
       + Video
     </button>
-
   </div>
 
   <div id="videos"></div>
-
 </section>
 
-
-<!-- BESTELLUNGEN -->
 <section class="card">
-
   <h2>Bestellungen</h2>
-
-  <p>
-    Hier werden später deine Kundenbestellungen
-    mit Name und Telefonnummer angezeigt.
-  </p>
-
   <div id="orders"></div>
-
 </section>
 
 </main>
-
 </div>
-
 
 <script>
 
@@ -222,12 +161,12 @@ const SUPABASE_URL =
   "https://gaxpagykgrcgxebnsyai.supabase.co";
 
 /*
-  HIER DEINEN PUBLISHABLE KEY EINSETZEN.
-
-  Nicht den Secret Key verwenden.
+  HIER DEINEN PUBLISHABLE KEY EINFÜGEN.
+  NUR den sb_publishable_... Key verwenden.
 */
+
 const SUPABASE_PUBLISHABLE_KEY =
-  "HIER_DEIN_PUBLISHABLE_KEY_EINSETZEN";
+  "sb_publishable_Cgg8Dun5Sua_VpXj39ahHA_piGaeN8f";
 
 
 const supabaseClient =
@@ -237,40 +176,46 @@ const supabaseClient =
   );
 
 
-const loginScreen = document.querySelector("#loginScreen");
-const adminApp = document.querySelector("#adminApp");
-const loginForm = document.querySelector("#loginForm");
-const loginError = document.querySelector("#loginError");
+const loginScreen =
+  document.querySelector("#loginScreen");
+
+const adminApp =
+  document.querySelector("#adminApp");
+
+const loginForm =
+  document.querySelector("#loginForm");
+
+const loginError =
+  document.querySelector("#loginError");
 
 
-async function checkLogin(){
+async function checkLogin() {
 
   const { data, error } =
     await supabaseClient.auth.getSession();
 
-  if(error){
+  if (error) {
     console.error(error);
     return;
   }
 
-  if(data.session){
+  if (data.session) {
 
     loginScreen.hidden = true;
     adminApp.hidden = false;
 
     loadAdmin();
 
-  }else{
+  } else {
 
     loginScreen.hidden = false;
     adminApp.hidden = true;
 
   }
-
 }
 
 
-loginForm.addEventListener("submit", async function(e){
+loginForm.addEventListener("submit", async function(e) {
 
   e.preventDefault();
 
@@ -285,12 +230,12 @@ loginForm.addEventListener("submit", async function(e){
 
   const { error } =
     await supabaseClient.auth.signInWithPassword({
-      email,
-      password
+      email: email,
+      password: password
     });
 
 
-  if(error){
+  if (error) {
 
     loginError.textContent =
       "E-Mail oder Passwort ist falsch.";
@@ -304,8 +249,9 @@ loginForm.addEventListener("submit", async function(e){
 });
 
 
-document.querySelector("#logoutBtn")
-  .addEventListener("click", async function(){
+document
+  .querySelector("#logoutBtn")
+  .addEventListener("click", async function() {
 
     await supabaseClient.auth.signOut();
 
@@ -314,13 +260,9 @@ document.querySelector("#logoutBtn")
   });
 
 
-async function loadAdmin(){
+async function loadAdmin() {
 
-  console.log("Admin angemeldet.");
-
-  /*
-    Der eigentliche Editor kommt im nächsten Schritt.
-  */
+  console.log("Admin erfolgreich angemeldet.");
 
 }
 
