@@ -35,6 +35,7 @@
   </div>
 </div>
 
+
 <div id="adminApp" hidden>
 
 <header>
@@ -45,12 +46,14 @@
     <em>Admin</em>
   </h1>
 
-  <button id="logoutBtn">Abmelden</button>
+  <button id="logoutBtn" type="button">Abmelden</button>
 </header>
+
 
 <main>
 
 <section class="card">
+
   <h2>Website</h2>
 
   <div class="form-grid">
@@ -72,104 +75,185 @@
 
     <label>
       WhatsApp Nummer
-      <input id="whatsapp" placeholder="491701234567">
+      <input
+        id="whatsapp"
+        placeholder="491701234567"
+      >
     </label>
 
     <label>
-      Logo
-      <input id="logoFile" type="file" accept="image/*,.gif">
+      Logo ändern
+      <input
+        id="logoFile"
+        type="file"
+        accept="image/*,.gif"
+      >
     </label>
 
   </div>
 
-  <button id="saveSettings" class="gold">
+  <button
+    id="saveSettings"
+    type="button"
+    class="gold"
+  >
     Website speichern
   </button>
+
 </section>
 
+
 <section class="card">
+
   <div class="section-top">
+
     <div>
       <h2>Kategorien</h2>
-      <p>Eigene Kategorien für deine Produkte.</p>
+
+      <p>
+        Hier kannst du deine Kategorien
+        hinzufügen, ändern und löschen.
+      </p>
     </div>
 
-    <button id="addCategory" class="gold">
+    <button
+      id="addCategory"
+      type="button"
+      class="gold"
+    >
       + Kategorie
     </button>
+
   </div>
 
   <div id="categories"></div>
+
 </section>
 
+
 <section class="card">
+
   <div class="section-top">
+
     <div>
       <h2>Produkte</h2>
-      <p>Produkte hinzufügen, bearbeiten oder löschen.</p>
+
+      <p>
+        Produkte direkt auf der Website
+        verwalten.
+      </p>
     </div>
 
-    <button id="addProduct" class="gold">
+    <button
+      id="addProduct"
+      type="button"
+      class="gold"
+    >
       + Produkt
     </button>
+
   </div>
 
   <div id="products"></div>
+
 </section>
 
+
 <section class="card">
+
   <div class="section-top">
+
     <div>
       <h2>Galerie</h2>
-      <p>Bilder direkt hochladen und verwalten.</p>
+
+      <p>
+        Bilder direkt vom Computer oder
+        Handy hochladen.
+      </p>
     </div>
 
-    <button id="addGallery" class="gold">
+    <button
+      id="addGallery"
+      type="button"
+      class="gold"
+    >
       + Bild
     </button>
+
   </div>
 
   <div id="gallery"></div>
+
 </section>
 
+
 <section class="card">
+
   <div class="section-top">
+
     <div>
       <h2>Videos</h2>
-      <p>Videos für deine Website verwalten.</p>
+
+      <p>
+        Videoverwaltung.
+      </p>
     </div>
 
-    <button id="addVideo" class="gold">
+    <button
+      id="addVideo"
+      type="button"
+      class="gold"
+    >
       + Video
     </button>
+
   </div>
 
-  <div id="videos"></div>
+  <div id="videos">
+    <p>
+      Videoverwaltung wird später aktiviert.
+    </p>
+  </div>
+
 </section>
 
+
 <section class="card">
+
   <h2>Bestellungen</h2>
-  <div id="orders"></div>
+
+  <div id="orders">
+    <p>
+      Bestellungen werden später aktiviert.
+    </p>
+  </div>
+
 </section>
 
 </main>
+
 </div>
+
 
 <script>
 
 const SUPABASE_URL =
   "https://gaxpagykgrcgxebnsyai.supabase.co";
 
-/*
-  HIER DEINEN PUBLISHABLE KEY EINFÜGEN.
-  NUR den sb_publishable_... Key verwenden.
-*/
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_Cgg8Dun5Sua_VpXj39ahHA_piGaeN8f";
 
 
-const supabaseClient =
+window.SUPABASE_URL =
+  SUPABASE_URL;
+
+
+window.SUPABASE_PUBLISHABLE_KEY =
+  SUPABASE_PUBLISHABLE_KEY;
+
+
+window.supabaseClient =
   window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
@@ -179,11 +263,14 @@ const supabaseClient =
 const loginScreen =
   document.querySelector("#loginScreen");
 
+
 const adminApp =
   document.querySelector("#adminApp");
 
+
 const loginForm =
   document.querySelector("#loginForm");
+
 
 const loginError =
   document.querySelector("#loginError");
@@ -191,85 +278,159 @@ const loginError =
 
 async function checkLogin() {
 
-  const { data, error } =
-    await supabaseClient.auth.getSession();
+  const {
+    data,
+    error
+  } =
+    await window.supabaseClient.auth.getSession();
+
 
   if (error) {
+
     console.error(error);
+
+    loginError.textContent =
+      "Supabase-Fehler: " +
+      error.message;
+
     return;
   }
+
 
   if (data.session) {
 
     loginScreen.hidden = true;
+
     adminApp.hidden = false;
 
-    loadAdmin();
+    if (typeof window.loadAdmin === "function") {
+      window.loadAdmin();
+    }
 
   } else {
 
     loginScreen.hidden = false;
+
     adminApp.hidden = true;
 
   }
+
 }
 
 
-loginForm.addEventListener("submit", async function(e) {
+loginForm.addEventListener(
+  "submit",
+  async function(e) {
 
-  e.preventDefault();
+    e.preventDefault();
 
-  loginError.textContent = "";
-
-  const email =
-    document.querySelector("#loginEmail").value.trim();
-
-  const password =
-    document.querySelector("#loginPassword").value;
+    loginError.textContent = "";
 
 
-  const { error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    const email =
+      document
+        .querySelector("#loginEmail")
+        .value
+        .trim();
 
 
-  if (error) {
+    const password =
+      document
+        .querySelector("#loginPassword")
+        .value;
 
-    loginError.textContent =
-      "E-Mail oder Passwort ist falsch.";
 
-    return;
+    const {
+      error
+    } =
+      await window.supabaseClient.auth.signInWithPassword({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+    if (error) {
+
+      console.error(error);
+
+      loginError.textContent =
+        "E-Mail oder Passwort ist falsch.";
+
+      return;
+    }
+
+
+    await checkLogin();
+
   }
-
-
-  checkLogin();
-
-});
+);
 
 
 document
   .querySelector("#logoutBtn")
-  .addEventListener("click", async function() {
+  .addEventListener(
+    "click",
+    async function() {
 
-    await supabaseClient.auth.signOut();
+      await window.supabaseClient.auth.signOut();
 
-    checkLogin();
+      await checkLogin();
 
-  });
+    }
+  );
 
 
-async function loadAdmin() {
+window.supabaseClient.auth.onAuthStateChange(
+  function(event, session) {
 
-  console.log("Admin erfolgreich angemeldet.");
+    if (session) {
 
-}
+      loginScreen.hidden = true;
 
+      adminApp.hidden = false;
+
+      setTimeout(
+        function() {
+
+          if (
+            typeof window.loadAdmin === "function"
+          ) {
+
+            window.loadAdmin();
+
+          }
+
+        },
+        0
+      );
+
+    } else {
+
+      loginScreen.hidden = false;
+
+      adminApp.hidden = true;
+
+    }
+
+  }
+);
+
+
+</script>
+
+
+<script src="admin.js"></script>
+
+
+<script>
 
 checkLogin();
 
 </script>
+
 
 </body>
 </html>
