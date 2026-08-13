@@ -1,21 +1,167 @@
 /* =========================================================
    AT EVENING ELEGANCE
-   ADMIN.JS
+   KOMPLETTER ADMIN.JS
    ========================================================= */
 
-/*
-  Der Supabase-Client wird vom admin.html bereitgestellt.
-  Dadurch müssen URL und Key hier NICHT erneut eingetragen werden.
-*/
+const SUPABASE_URL =
+  window.SUPABASE_URL ||
+  "https://gaxpagykgrcgxebnsyai.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  window.SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_Cgg8Dun5Sua_VpXj39ahHA_piGaeN8f";
 
 const supabaseClient =
   window.supabaseClient ||
-  window.supabase?.createClient?.(
-    window.SUPABASE_URL,
-    window.SUPABASE_PUBLISHABLE_KEY
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
   );
 
-const $ = (selector) => document.querySelector(selector);
+const $ = (selector) =>
+  document.querySelector(selector);
+
+
+/* =========================================================
+   AKTUELLE WEBSITE-DATEN
+   Diese Daten entsprechen den Bildern,
+   die momentan auf deiner Website zu sehen sind.
+   ========================================================= */
+
+const CURRENT_PRODUCTS = [
+
+  {
+    name_de: "Goldene Afghan Couture",
+    name_en: "Golden Afghan Couture",
+    name_ps: "زرینه افغان کالي",
+    name_fa: "لباس افغانی طلایی",
+    category: "Abendkleider",
+    price: 249,
+    old_price: 299,
+    image_url:
+      "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=900&q=85"
+  },
+
+  {
+    name_de: "Midnight Embroidery",
+    name_en: "Midnight Embroidery",
+    name_ps: "د شپې ګنډل",
+    name_fa: "گلدوزی شبانه",
+    category: "Bestickung",
+    price: 289,
+    old_price: null,
+    image_url:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85"
+  },
+
+  {
+    name_de: "Royal Burgundy",
+    name_en: "Royal Burgundy",
+    name_ps: "شاهي برګنډي",
+    name_fa: "برگندی سلطنتی",
+    category: "Festkleider",
+    price: 319,
+    old_price: 359,
+    image_url:
+      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=85"
+  },
+
+  {
+    name_de: "Desert Pearl",
+    name_en: "Desert Pearl",
+    name_ps: "د صحرا مرغلره",
+    name_fa: "مروارید صحرا",
+    category: "Festkleider",
+    price: 279,
+    old_price: null,
+    image_url:
+      "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=900&q=85"
+  },
+
+  {
+    name_de: "Noir Silk",
+    name_en: "Noir Silk",
+    name_ps: "تور ورېښم",
+    name_fa: "ابریشم مشکی",
+    category: "Abendkleider",
+    price: 229,
+    old_price: 269,
+    image_url:
+      "https://images.unsplash.com/photo-1506629905607-d9d6f1b98f34?auto=format&fit=crop&w=900&q=85"
+  },
+
+  {
+    name_de: "Heritage Gold",
+    name_en: "Heritage Gold",
+    name_ps: "د میراث سره زر",
+    name_fa: "طلای میراث",
+    category: "Tradition",
+    price: 349,
+    old_price: null,
+    image_url:
+      "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=85"
+  }
+
+];
+
+
+const CURRENT_GALLERY = [
+
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=85",
+
+  "https://images.unsplash.com/photo-1496217590455-aa63a8350eea?auto=format&fit=crop&w=1000&q=85",
+
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85",
+
+  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=85",
+
+  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=85",
+
+  "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=1000&q=85"
+
+];
+
+
+const CURRENT_CATEGORIES = [
+
+  {
+    slug: "abendkleider",
+    name_de: "Abendkleider",
+    name_en: "Evening Dresses",
+    name_ps: "د ماښام کالي",
+    name_fa: "لباس‌های شب"
+  },
+
+  {
+    slug: "bestickung",
+    name_de: "Bestickung",
+    name_en: "Embroidery",
+    name_ps: "ګنډنه",
+    name_fa: "گلدوزی"
+  },
+
+  {
+    slug: "festkleider",
+    name_de: "Festkleider",
+    name_en: "Celebration Dresses",
+    name_ps: "د محفل کالي",
+    name_fa: "لباس‌های مجلسی"
+  },
+
+  {
+    slug: "tradition",
+    name_de: "Tradition",
+    name_en: "Traditional",
+    name_ps: "دودیز",
+    name_fa: "سنتی"
+  }
+
+];
+
+
+/* =========================================================
+   VARIABLEN
+   ========================================================= */
 
 let products = [];
 let categories = [];
@@ -28,57 +174,85 @@ let settings = null;
    ========================================================= */
 
 function esc(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (m) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[m]));
+
+  return String(value ?? "")
+    .replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+
 }
 
-function showError(message) {
+
+function value(selector) {
+
+  const element = $(selector);
+
+  return element
+    ? element.value.trim()
+    : "";
+
+}
+
+
+function setValue(selector, text) {
+
+  const element = $(selector);
+
+  if (element) {
+    element.value = text || "";
+  }
+
+}
+
+
+function error(message) {
+
   console.error(message);
-  alert(message);
-}
 
-function hasElement(selector) {
-  return !!document.querySelector(selector);
+  alert(message);
+
 }
 
 
 /* =========================================================
-   ADMIN LADEN
+   START
    ========================================================= */
 
 async function loadAdmin() {
 
-  if (!supabaseClient) {
-    showError(
-      "Supabase konnte nicht geladen werden. " +
-      "Bitte admin.html prüfen."
-    );
-    return;
-  }
-
   try {
 
     await loadSettings();
+
     await loadCategories();
+
+    await ensureCurrentProducts();
+
+    await ensureCurrentGallery();
+
     await loadProducts();
+
     await loadGallery();
 
     renderAll();
 
-  } catch (error) {
-
-    console.error(error);
-
-    showError(
-      "Die Daten konnten nicht geladen werden.\n\n" +
-      (error.message || error)
-    );
   }
+
+  catch (e) {
+
+    console.error(e);
+
+    error(
+      "Der Admin-Bereich konnte nicht geladen werden.\n\n" +
+      e.message
+    );
+
+  }
+
 }
 
 
@@ -88,89 +262,98 @@ async function loadAdmin() {
 
 async function loadSettings() {
 
-  const { data, error } = await supabaseClient
-    .from("site_settings")
-    .select("*")
-    .eq("id", 1)
-    .maybeSingle();
+  const result =
+    await supabaseClient
+      .from("site_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
 
-  if (error) throw error;
 
-  settings = data || {};
+  if (result.error) {
+    throw result.error;
+  }
+
+
+  settings =
+    result.data || {};
+
 
   setValue(
     "#instagram",
-    settings.instagram || ""
+    settings.instagram
   );
 
   setValue(
     "#tiktok",
-    settings.tiktok || ""
+    settings.tiktok
   );
 
   setValue(
     "#email",
-    settings.email || "info@ateveningelegance.com"
+    settings.email ||
+    "info@ateveningelegance.com"
   );
 
   setValue(
     "#whatsapp",
-    settings.whatsapp || ""
+    settings.whatsapp
   );
-}
 
-
-function setValue(selector, value) {
-
-  const element = $(selector);
-
-  if (element) {
-    element.value = value;
-  }
 }
 
 
 async function saveSettings() {
 
   const update = {
-    instagram: getValue("#instagram"),
-    tiktok: getValue("#tiktok"),
-    email: getValue("#email"),
-    whatsapp: getValue("#whatsapp"),
-    updated_at: new Date().toISOString()
+
+    instagram:
+      value("#instagram"),
+
+    tiktok:
+      value("#tiktok"),
+
+    email:
+      value("#email"),
+
+    whatsapp:
+      value("#whatsapp"),
+
+    updated_at:
+      new Date().toISOString()
+
   };
 
-  const { error } = await supabaseClient
-    .from("site_settings")
-    .update(update)
-    .eq("id", 1);
 
-  if (error) {
+  const result =
+    await supabaseClient
+      .from("site_settings")
+      .upsert(
+        {
+          id: 1,
+          ...update
+        },
+        {
+          onConflict: "id"
+        }
+      );
 
-    showError(
-      "Website-Einstellungen konnten nicht gespeichert werden.\n\n" +
-      error.message
+
+  if (result.error) {
+
+    error(
+      "Einstellungen konnten nicht gespeichert werden.\n\n" +
+      result.error.message
     );
 
     return;
   }
 
-  settings = {
-    ...settings,
-    ...update
-  };
 
-  alert("Website-Einstellungen gespeichert.");
-}
+  alert(
+    "Einstellungen gespeichert."
+  );
 
-
-function getValue(selector) {
-
-  const element = $(selector);
-
-  return element
-    ? element.value.trim()
-    : "";
 }
 
 
@@ -180,16 +363,83 @@ function getValue(selector) {
 
 async function loadCategories() {
 
-  const { data, error } = await supabaseClient
-    .from("categories")
-    .select("*")
-    .order("sort_order", {
-      ascending: true
-    });
+  const result =
+    await supabaseClient
+      .from("categories")
+      .select("*")
+      .order(
+        "sort_order",
+        {
+          ascending: true
+        }
+      );
 
-  if (error) throw error;
 
-  categories = data || [];
+  if (result.error) {
+    throw result.error;
+  }
+
+
+  categories =
+    result.data || [];
+
+}
+
+
+async function ensureCurrentCategories() {
+
+  for (
+    let i = 0;
+    i < CURRENT_CATEGORIES.length;
+    i++
+  ) {
+
+    const category =
+      CURRENT_CATEGORIES[i];
+
+
+    const existing =
+      await supabaseClient
+        .from("categories")
+        .select("id")
+        .eq(
+          "slug",
+          category.slug
+        )
+        .maybeSingle();
+
+
+    if (
+      existing.error
+    ) {
+      throw existing.error;
+    }
+
+
+    if (!existing.data) {
+
+      const result =
+        await supabaseClient
+          .from("categories")
+          .insert({
+
+            ...category,
+
+            sort_order: i,
+
+            active: true
+
+          });
+
+
+      if (result.error) {
+        throw result.error;
+      }
+
+    }
+
+  }
+
 }
 
 
@@ -198,170 +448,116 @@ function renderCategories() {
   const container =
     $("#categories");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
+
 
   container.innerHTML =
-    categories.map((category) => `
+    categories.map(
+      (category) => `
 
-      <div
-        class="category-editor"
-        style="
-          padding:20px;
-          margin-bottom:15px;
-          border:1px solid #ddd;
-          border-radius:10px;
-        "
-      >
+        <div
+          class="category-editor"
+          style="
+            padding:20px;
+            margin-bottom:15px;
+            border:1px solid #ddd;
+            border-radius:10px;
+          "
+        >
 
-        <label>
-          Deutsch
-          <input
-            data-category-de="${category.id}"
-            value="${esc(category.name_de)}"
-          >
-        </label>
+          <label>
+            Deutsch
 
-        <label>
-          English
-          <input
-            data-category-en="${category.id}"
-            value="${esc(category.name_en)}"
-          >
-        </label>
+            <input
+              data-cat-de="${category.id}"
+              value="${esc(category.name_de)}"
+            >
+          </label>
 
-        <label>
-          Pashto
-          <input
-            data-category-ps="${category.id}"
-            value="${esc(category.name_ps)}"
-          >
-        </label>
+          <label>
+            English
 
-        <label>
-          Dari
-          <input
-            data-category-fa="${category.id}"
-            value="${esc(category.name_fa)}"
-          >
-        </label>
+            <input
+              data-cat-en="${category.id}"
+              value="${esc(category.name_en)}"
+            >
+          </label>
 
-        <div style="margin-top:10px">
+          <label>
+            Pashto
+
+            <input
+              data-cat-ps="${category.id}"
+              value="${esc(category.name_ps)}"
+            >
+          </label>
+
+          <label>
+            Dari
+
+            <input
+              data-cat-fa="${category.id}"
+              value="${esc(category.name_fa)}"
+            >
+          </label>
 
           <button
             type="button"
             class="gold"
-            data-save-category="${category.id}"
+            data-save-cat="${category.id}"
           >
-            Kategorie speichern
+            Speichern
           </button>
 
           <button
             type="button"
             class="delete"
-            data-delete-category="${category.id}"
+            data-delete-cat="${category.id}"
           >
-            Kategorie löschen
+            Löschen
           </button>
 
         </div>
 
-      </div>
-
-    `).join("");
-
-
-  document
-    .querySelectorAll("[data-save-category]")
-    .forEach((button) => {
-
-      button.onclick = () => {
-
-        saveCategory(
-          button.dataset.saveCategory
-        );
-
-      };
-
-    });
+      `
+    ).join("");
 
 
   document
-    .querySelectorAll("[data-delete-category]")
-    .forEach((button) => {
+    .querySelectorAll(
+      "[data-save-cat]"
+    )
+    .forEach(
+      (button) => {
 
-      button.onclick = () => {
+        button.onclick =
+          () =>
+            saveCategory(
+              button.dataset.saveCat
+            );
 
-        deleteCategory(
-          button.dataset.deleteCategory
-        );
-
-      };
-
-    });
-}
-
-
-async function saveCategory(id) {
-
-  const category =
-    categories.find(
-      (item) => String(item.id) === String(id)
+      }
     );
 
-  if (!category) return;
 
+  document
+    .querySelectorAll(
+      "[data-delete-cat]"
+    )
+    .forEach(
+      (button) => {
 
-  const update = {
+        button.onclick =
+          () =>
+            deleteCategory(
+              button.dataset.deleteCat
+            );
 
-    name_de:
-      getValue(
-        `[data-category-de="${id}"]`
-      ),
-
-    name_en:
-      getValue(
-        `[data-category-en="${id}"]`
-      ),
-
-    name_ps:
-      getValue(
-        `[data-category-ps="${id}"]`
-      ),
-
-    name_fa:
-      getValue(
-        `[data-category-fa="${id}"]`
-      ),
-
-    updated_at:
-      new Date().toISOString()
-
-  };
-
-
-  const { error } =
-    await supabaseClient
-      .from("categories")
-      .update(update)
-      .eq("id", id);
-
-
-  if (error) {
-
-    showError(
-      "Kategorie konnte nicht gespeichert werden.\n\n" +
-      error.message
+      }
     );
 
-    return;
-  }
-
-
-  await loadCategories();
-
-  renderCategories();
-
-  alert("Kategorie gespeichert.");
 }
 
 
@@ -369,50 +565,54 @@ async function addCategory() {
 
   const name =
     prompt(
-      "Name der neuen Kategorie:"
+      "Wie soll die Kategorie heißen?"
     );
 
-  if (!name || !name.trim()) {
+
+  if (
+    !name ||
+    !name.trim()
+  ) {
     return;
   }
 
 
-  const cleanName =
+  const clean =
     name.trim();
 
 
-  let slug =
-    cleanName
+  const slug =
+    clean
       .toLowerCase()
       .replace(/ä/g, "ae")
       .replace(/ö/g, "oe")
       .replace(/ü/g, "ue")
       .replace(/ß/g, "ss")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
+      .replace(
+        /[^a-z0-9]+/g,
+        "-"
+      )
+      .replace(
+        /^-+|-+$/g,
+        ""
+      ) ||
+      `category-${Date.now()}`;
 
 
-  if (!slug) {
-    slug =
-      "category-" +
-      Date.now();
-  }
-
-
-  const { error } =
+  const result =
     await supabaseClient
       .from("categories")
       .insert({
 
-        slug: slug,
+        slug,
 
-        name_de: cleanName,
+        name_de: clean,
 
-        name_en: cleanName,
+        name_en: clean,
 
-        name_ps: cleanName,
+        name_ps: clean,
 
-        name_fa: cleanName,
+        name_fa: clean,
 
         sort_order:
           categories.length,
@@ -422,11 +622,11 @@ async function addCategory() {
       });
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
+    error(
       "Kategorie konnte nicht erstellt werden.\n\n" +
-      error.message
+      result.error.message
     );
 
     return;
@@ -437,9 +637,61 @@ async function addCategory() {
 
   renderCategories();
 
-  alert(
-    "Kategorie wurde hinzugefügt."
-  );
+}
+
+
+async function saveCategory(id) {
+
+  const result =
+    await supabaseClient
+      .from("categories")
+      .update({
+
+        name_de:
+          value(
+            `[data-cat-de="${id}"]`
+          ),
+
+        name_en:
+          value(
+            `[data-cat-en="${id}"]`
+          ),
+
+        name_ps:
+          value(
+            `[data-cat-ps="${id}"]`
+          ),
+
+        name_fa:
+          value(
+            `[data-cat-fa="${id}"]`
+          ),
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (result.error) {
+
+    error(
+      "Kategorie konnte nicht gespeichert werden.\n\n" +
+      result.error.message
+    );
+
+    return;
+  }
+
+
+  await loadCategories();
+
+  renderCategories();
+
 }
 
 
@@ -447,24 +699,29 @@ async function deleteCategory(id) {
 
   const category =
     categories.find(
-      (item) => String(item.id) === String(id)
+      (c) =>
+        String(c.id) ===
+        String(id)
     );
 
-  if (!category) return;
+
+  if (!category) {
+    return;
+  }
 
 
   const used =
     products.some(
-      (product) =>
-        product.category === category.slug
+      (p) =>
+        p.category ===
+        category.slug
     );
 
 
   if (used) {
 
     alert(
-      "Diese Kategorie wird noch von einem Produkt verwendet.\n\n" +
-      "Ordne die Produkte zuerst einer anderen Kategorie zu."
+      "Diese Kategorie wird noch von einem Produkt verwendet."
     );
 
     return;
@@ -473,25 +730,28 @@ async function deleteCategory(id) {
 
   if (
     !confirm(
-      `Kategorie "${category.name_de}" wirklich löschen?`
+      "Kategorie wirklich löschen?"
     )
   ) {
     return;
   }
 
 
-  const { error } =
+  const result =
     await supabaseClient
       .from("categories")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
+    error(
       "Kategorie konnte nicht gelöscht werden.\n\n" +
-      error.message
+      result.error.message
     );
 
     return;
@@ -501,51 +761,125 @@ async function deleteCategory(id) {
   await loadCategories();
 
   renderCategories();
+
 }
 
 
 /* =========================================================
-   PRODUKTE
+   PRODUKTE AUS DER AKTUELLEN WEBSITE ÜBERNEHMEN
    ========================================================= */
 
-async function loadProducts() {
+async function ensureCurrentProducts() {
 
-  const { data, error } =
+  const existing =
     await supabaseClient
       .from("products")
-      .select("*")
-      .order("sort_order", {
-        ascending: true
-      });
+      .select("id");
 
 
-  if (error) throw error;
+  if (existing.error) {
+    throw existing.error;
+  }
 
-  products = data || [];
+
+  /*
+    Wenn bereits Produkte in Supabase
+    vorhanden sind, werden keine doppelten
+    Produkte angelegt.
+  */
+
+  if (
+    existing.data &&
+    existing.data.length > 0
+  ) {
+
+    return;
+
+  }
+
+
+  await ensureCurrentCategories();
+
+
+  for (
+    let i = 0;
+    i < CURRENT_PRODUCTS.length;
+    i++
+  ) {
+
+    const product =
+      CURRENT_PRODUCTS[i];
+
+
+    const result =
+      await supabaseClient
+        .from("products")
+        .insert({
+
+          ...product,
+
+          sort_order: i
+
+        });
+
+
+    if (result.error) {
+      throw result.error;
+    }
+
+  }
+
 }
 
 
-function categoryOptions(selected) {
+async function loadProducts() {
+
+  const result =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .order(
+        "sort_order",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (result.error) {
+    throw result.error;
+  }
+
+
+  products =
+    result.data || [];
+
+}
+
+
+function categoryOptions(
+  selected
+) {
 
   return categories
-    .map((category) => {
+    .map(
+      (category) => `
 
-      const selectedValue =
-        category.slug === selected
-          ? "selected"
-          : "";
-
-      return `
         <option
           value="${esc(category.slug)}"
-          ${selectedValue}
+          ${
+            category.slug === selected
+              ? "selected"
+              : ""
+          }
         >
           ${esc(category.name_de)}
         </option>
-      `;
 
-    })
+      `
+    )
     .join("");
+
 }
 
 
@@ -554,289 +888,286 @@ function renderProducts() {
   const container =
     $("#products");
 
-  if (!container) return;
-
-
-  if (!products.length) {
-
-    container.innerHTML = `
-      <p>
-        Noch keine Produkte vorhanden.
-      </p>
-    `;
-
+  if (!container) {
     return;
   }
 
 
   container.innerHTML =
-    products.map((product) => `
+    products.map(
+      (product) => `
 
-      <div
-        class="product-editor"
-        style="
-          padding:20px;
-          margin-bottom:20px;
-          border:1px solid #ddd;
-          border-radius:10px;
-        "
-      >
-
-        <img
-          src="${esc(
-            product.image_url ||
-            "assets/logo.gif"
-          )}"
-          alt=""
+        <div
+          class="product-editor"
           style="
-            width:160px;
-            height:210px;
-            object-fit:cover;
-            border-radius:8px;
-            display:block;
-            margin-bottom:15px;
+            padding:20px;
+            margin-bottom:20px;
+            border:1px solid #ddd;
+            border-radius:10px;
           "
         >
 
-
-        <label>
-          Deutsch
-          <input
-            data-product-de="${product.id}"
-            value="${esc(product.name_de)}"
-          >
-        </label>
-
-
-        <label>
-          English
-          <input
-            data-product-en="${product.id}"
-            value="${esc(product.name_en)}"
-          >
-        </label>
-
-
-        <label>
-          Pashto
-          <input
-            data-product-ps="${product.id}"
-            value="${esc(product.name_ps)}"
-          >
-        </label>
-
-
-        <label>
-          Dari
-          <input
-            data-product-fa="${product.id}"
-            value="${esc(product.name_fa)}"
-          >
-        </label>
-
-
-        <label>
-          Kategorie
-
-          <select
-            data-product-category="${product.id}"
-          >
-
-            ${categoryOptions(
-              product.category
-            )}
-
-          </select>
-
-        </label>
-
-
-        <label>
-          Preis €
-
-          <input
-            type="number"
-            step="0.01"
-            data-product-price="${product.id}"
-            value="${esc(product.price)}"
-          >
-
-        </label>
-
-
-        <label>
-          Alter Preis €
-
-          <input
-            type="number"
-            step="0.01"
-            data-product-old-price="${product.id}"
-            value="${esc(
-              product.old_price ?? ""
+          <img
+            src="${esc(
+              product.image_url ||
+              "assets/logo.gif"
             )}"
+            alt=""
+            style="
+              width:180px;
+              height:230px;
+              object-fit:cover;
+              border-radius:8px;
+              display:block;
+              margin-bottom:15px;
+            "
           >
 
-        </label>
+
+          <label>
+            Deutsch
+
+            <input
+              data-product-de="${product.id}"
+              value="${esc(product.name_de)}"
+            >
+          </label>
 
 
-        <label>
-          Neues Produktbild
+          <label>
+            English
 
-          <input
-            type="file"
-            accept="image/*"
-            data-product-file="${product.id}"
+            <input
+              data-product-en="${product.id}"
+              value="${esc(product.name_en)}"
+            >
+          </label>
+
+
+          <label>
+            Pashto
+
+            <input
+              data-product-ps="${product.id}"
+              value="${esc(product.name_ps)}"
+            >
+          </label>
+
+
+          <label>
+            Dari
+
+            <input
+              data-product-fa="${product.id}"
+              value="${esc(product.name_fa)}"
+            >
+          </label>
+
+
+          <label>
+            Kategorie
+
+            <select
+              data-product-category="${product.id}"
+            >
+              ${categoryOptions(
+                product.category
+              )}
+            </select>
+
+          </label>
+
+
+          <label>
+            Preis €
+
+            <input
+              type="number"
+              step="0.01"
+              data-product-price="${product.id}"
+              value="${esc(product.price)}"
+            >
+
+          </label>
+
+
+          <label>
+            Alter Preis €
+
+            <input
+              type="number"
+              step="0.01"
+              data-product-old="${product.id}"
+              value="${esc(
+                product.old_price ?? ""
+              )}"
+            >
+
+          </label>
+
+
+          <label>
+            Bild ändern
+
+            <input
+              type="file"
+              accept="image/*"
+              data-product-file="${product.id}"
+            >
+
+          </label>
+
+
+          <div
+            style="
+              margin-top:15px;
+            "
           >
 
-        </label>
+            <button
+              type="button"
+              class="gold"
+              data-save-product="${product.id}"
+            >
+              Produkt speichern
+            </button>
 
 
-        <div style="margin-top:15px">
+            <button
+              type="button"
+              class="delete"
+              data-delete-product="${product.id}"
+            >
+              Produkt löschen
+            </button>
 
-          <button
-            type="button"
-            class="gold"
-            data-save-product="${product.id}"
-          >
-            Produkt speichern
-          </button>
-
-
-          <button
-            type="button"
-            class="delete"
-            data-delete-product="${product.id}"
-          >
-            Produkt löschen
-          </button>
+          </div>
 
         </div>
 
-      </div>
-
-    `).join("");
-
-
-  document
-    .querySelectorAll("[data-save-product]")
-    .forEach((button) => {
-
-      button.onclick = () => {
-
-        saveProduct(
-          button.dataset.saveProduct
-        );
-
-      };
-
-    });
+      `
+    ).join("");
 
 
   document
-    .querySelectorAll("[data-delete-product]")
-    .forEach((button) => {
+    .querySelectorAll(
+      "[data-save-product]"
+    )
+    .forEach(
+      (button) => {
 
-      button.onclick = () => {
+        button.onclick =
+          () =>
+            saveProduct(
+              button.dataset.saveProduct
+            );
 
-        deleteProduct(
-          button.dataset.deleteProduct
-        );
-
-      };
-
-    });
+      }
+    );
 
 
   document
-    .querySelectorAll("[data-product-file]")
-    .forEach((input) => {
+    .querySelectorAll(
+      "[data-delete-product]"
+    )
+    .forEach(
+      (button) => {
 
-      input.onchange = () => {
+        button.onclick =
+          () =>
+            deleteProduct(
+              button.dataset.deleteProduct
+            );
 
-        const file =
-          input.files &&
-          input.files[0];
+      }
+    );
 
-        uploadProductImage(
-          input.dataset.productFile,
-          file
-        );
 
-      };
+  document
+    .querySelectorAll(
+      "[data-product-file]"
+    )
+    .forEach(
+      (input) => {
 
-    });
+        input.onchange =
+          () =>
+            uploadProductImage(
+              input.dataset.productFile,
+              input.files[0]
+            );
+
+      }
+    );
+
 }
 
 
 async function saveProduct(id) {
 
-  const priceValue =
-    getValue(
-      `[data-product-price="${id}"]`
-    );
-
-
-  const oldPriceValue =
-    getValue(
-      `[data-product-old-price="${id}"]`
-    );
-
-
-  const update = {
-
-    name_de:
-      getValue(
-        `[data-product-de="${id}"]`
-      ),
-
-    name_en:
-      getValue(
-        `[data-product-en="${id}"]`
-      ),
-
-    name_ps:
-      getValue(
-        `[data-product-ps="${id}"]`
-      ),
-
-    name_fa:
-      getValue(
-        `[data-product-fa="${id}"]`
-      ),
-
-    category:
-      getValue(
-        `[data-product-category="${id}"]`
-      ),
-
-    price:
-      priceValue === ""
-        ? 0
-        : Number(priceValue),
-
-    old_price:
-      oldPriceValue === ""
-        ? null
-        : Number(oldPriceValue),
-
-    updated_at:
-      new Date().toISOString()
-
-  };
-
-
-  const { error } =
+  const result =
     await supabaseClient
       .from("products")
-      .update(update)
-      .eq("id", id);
+      .update({
+
+        name_de:
+          value(
+            `[data-product-de="${id}"]`
+          ),
+
+        name_en:
+          value(
+            `[data-product-en="${id}"]`
+          ),
+
+        name_ps:
+          value(
+            `[data-product-ps="${id}"]`
+          ),
+
+        name_fa:
+          value(
+            `[data-product-fa="${id}"]`
+          ),
+
+        category:
+          value(
+            `[data-product-category="${id}"]`
+          ),
+
+        price:
+          Number(
+            value(
+              `[data-product-price="${id}"]`
+            ) || 0
+          ),
+
+        old_price:
+          value(
+            `[data-product-old="${id}"]`
+          ) === ""
+            ? null
+            : Number(
+                value(
+                  `[data-product-old="${id}"]`
+                )
+              ),
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        id
+      );
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
+    error(
       "Produkt konnte nicht gespeichert werden.\n\n" +
-      error.message
+      result.error.message
     );
 
     return;
@@ -850,18 +1181,20 @@ async function saveProduct(id) {
   alert(
     "Produkt gespeichert."
   );
+
 }
 
 
 async function addProduct() {
 
-  if (!categories.length) {
+  if (
+    categories.length === 0
+  ) {
 
-    alert(
-      "Bitte zuerst eine Kategorie erstellen."
-    );
+    await ensureCurrentCategories();
 
-    return;
+    await loadCategories();
+
   }
 
 
@@ -869,7 +1202,7 @@ async function addProduct() {
     categories[0];
 
 
-  const { error } =
+  const result =
     await supabaseClient
       .from("products")
       .insert({
@@ -904,11 +1237,11 @@ async function addProduct() {
       });
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
+    error(
       "Produkt konnte nicht hinzugefügt werden.\n\n" +
-      error.message
+      result.error.message
     );
 
     return;
@@ -921,12 +1254,15 @@ async function addProduct() {
 
 
   window.scrollTo({
+
     top:
       document.body.scrollHeight,
 
     behavior:
       "smooth"
+
   });
+
 }
 
 
@@ -934,35 +1270,41 @@ async function deleteProduct(id) {
 
   const product =
     products.find(
-      (item) =>
-        String(item.id) === String(id)
+      (p) =>
+        String(p.id) ===
+        String(id)
     );
 
 
-  if (!product) return;
+  if (!product) {
+    return;
+  }
 
 
   if (
     !confirm(
-      `Produkt "${product.name_de}" wirklich löschen?`
+      `"${product.name_de}" wirklich löschen?`
     )
   ) {
     return;
   }
 
 
-  const { error } =
+  const result =
     await supabaseClient
       .from("products")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
+    error(
       "Produkt konnte nicht gelöscht werden.\n\n" +
-      error.message
+      result.error.message
     );
 
     return;
@@ -972,11 +1314,12 @@ async function deleteProduct(id) {
   await loadProducts();
 
   renderProducts();
+
 }
 
 
 /* =========================================================
-   STORAGE / BILDER
+   STORAGE
    ========================================================= */
 
 async function uploadFile(
@@ -995,17 +1338,16 @@ async function uploadFile(
         .split(".")
         .pop() ||
       "jpg"
-    )
-    .toLowerCase();
+    ).toLowerCase();
 
 
   const filename =
     `${folder}/${Date.now()}-${Math.random()
       .toString(36)
-      .slice(2)}.${extension}`;
+      .substring(2)}.${extension}`;
 
 
-  const { error } =
+  const result =
     await supabaseClient
       .storage
       .from("site-images")
@@ -1022,12 +1364,12 @@ async function uploadFile(
       );
 
 
-  if (error) {
-    throw error;
+  if (result.error) {
+    throw result.error;
   }
 
 
-  const publicData =
+  const publicUrl =
     supabaseClient
       .storage
       .from("site-images")
@@ -1036,11 +1378,16 @@ async function uploadFile(
       );
 
 
-  return publicData
+  return publicUrl
     .data
     .publicUrl;
+
 }
 
+
+/* =========================================================
+   PRODUKTBILD ÄNDERN
+   ========================================================= */
 
 async function uploadProductImage(
   id,
@@ -1061,7 +1408,7 @@ async function uploadProductImage(
       );
 
 
-    const { error } =
+    const result =
       await supabaseClient
         .from("products")
         .update({
@@ -1073,11 +1420,14 @@ async function uploadProductImage(
             new Date().toISOString()
 
         })
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
-    if (error) {
-      throw error;
+    if (result.error) {
+      throw result.error;
     }
 
 
@@ -1090,16 +1440,17 @@ async function uploadProductImage(
       "Produktbild wurde geändert."
     );
 
-
-  } catch (error) {
-
-    console.error(error);
-
-    showError(
-      "Bild konnte nicht hochgeladen werden.\n\n" +
-      error.message
-    );
   }
+
+  catch (e) {
+
+    error(
+      "Produktbild konnte nicht hochgeladen werden.\n\n" +
+      e.message
+    );
+
+  }
+
 }
 
 
@@ -1107,20 +1458,80 @@ async function uploadProductImage(
    GALERIE
    ========================================================= */
 
+async function ensureCurrentGallery() {
+
+  const existing =
+    await supabaseClient
+      .from("gallery")
+      .select("id");
+
+
+  if (existing.error) {
+    throw existing.error;
+  }
+
+
+  if (
+    existing.data &&
+    existing.data.length > 0
+  ) {
+
+    return;
+
+  }
+
+
+  for (
+    let i = 0;
+    i < CURRENT_GALLERY.length;
+    i++
+  ) {
+
+    const result =
+      await supabaseClient
+        .from("gallery")
+        .insert({
+
+          image_url:
+            CURRENT_GALLERY[i],
+
+          sort_order:
+            i
+
+        });
+
+
+    if (result.error) {
+      throw result.error;
+    }
+
+  }
+
+}
+
+
 async function loadGallery() {
 
-  const { data, error } =
+  const result =
     await supabaseClient
       .from("gallery")
       .select("*")
-      .order("sort_order", {
-        ascending: true
-      });
+      .order(
+        "sort_order",
+        {
+          ascending: true
+        }
+      );
 
 
-  if (error) throw error;
+  if (result.error) {
+    throw result.error;
+  }
 
-  gallery = data || [];
+
+  gallery =
+    result.data || [];
+
 }
 
 
@@ -1129,198 +1540,191 @@ function renderGallery() {
   const container =
     $("#gallery");
 
-  if (!container) return;
-
-
-  if (!gallery.length) {
-
-    container.innerHTML = `
-      <p>
-        Noch keine Galerie-Bilder vorhanden.
-      </p>
-    `;
-
+  if (!container) {
     return;
   }
 
 
+  if (
+    gallery.length === 0
+  ) {
+
+    container.innerHTML = `
+      <p>
+        Noch keine Bilder vorhanden.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
   container.innerHTML =
-    gallery.map((item) => `
+    gallery.map(
+      (item, index) => `
 
-      <div
-        class="gallery-editor"
-        style="
-          padding:15px;
-          margin-bottom:15px;
-          border-bottom:1px solid #ddd;
-        "
-      >
-
-        <img
-          src="${esc(item.image_url)}"
-          alt=""
+        <div
+          class="gallery-editor"
           style="
-            width:200px;
-            height:150px;
-            object-fit:cover;
-            border-radius:8px;
-            display:block;
-            margin-bottom:10px;
+            padding:20px;
+            margin-bottom:20px;
+            border:1px solid #ddd;
+            border-radius:10px;
           "
         >
 
+          <img
+            src="${esc(item.image_url)}"
+            alt=""
+            style="
+              width:240px;
+              height:180px;
+              object-fit:cover;
+              border-radius:8px;
+              display:block;
+              margin-bottom:15px;
+            "
+          >
 
-        <input
-          type="file"
-          accept="image/*"
-          data-gallery-file="${item.id}"
-        >
+          <p>
+            Galerie-Bild ${index + 1}
+          </p>
 
 
-        <button
-          type="button"
-          class="delete"
-          data-delete-gallery="${item.id}"
-        >
-          Bild löschen
-        </button>
+          <input
+            type="file"
+            accept="image/*"
+            data-gallery-file="${item.id}"
+          >
 
-      </div>
 
-    `).join("");
+          <button
+            type="button"
+            class="delete"
+            data-delete-gallery="${item.id}"
+          >
+            Bild löschen
+          </button>
+
+        </div>
+
+      `
+    ).join("");
 
 
   document
-    .querySelectorAll("[data-gallery-file]")
-    .forEach((input) => {
+    .querySelectorAll(
+      "[data-gallery-file]"
+    )
+    .forEach(
+      (input) => {
 
-      input.onchange = () => {
+        input.onchange =
+          () =>
+            uploadGalleryImage(
+              input.dataset.galleryFile,
+              input.files[0]
+            );
 
-        uploadGalleryImage(
-          input.dataset.galleryFile,
-          input.files &&
-          input.files[0]
-        );
-
-      };
-
-    });
+      }
+    );
 
 
   document
-    .querySelectorAll("[data-delete-gallery]")
-    .forEach((button) => {
+    .querySelectorAll(
+      "[data-delete-gallery]"
+    )
+    .forEach(
+      (button) => {
 
-      button.onclick = () => {
+        button.onclick =
+          () =>
+            deleteGallery(
+              button.dataset.deleteGallery
+            );
 
-        deleteGallery(
-          button.dataset.deleteGallery
-        );
+      }
+    );
 
-      };
-
-    });
-}
-
-
-function chooseFile(
-  accept
-) {
-
-  return new Promise(
-    (resolve) => {
-
-      const input =
-        document.createElement(
-          "input"
-        );
-
-      input.type =
-        "file";
-
-      input.accept =
-        accept;
-
-      input.onchange =
-        () => {
-
-          resolve(
-            input.files &&
-            input.files[0]
-              ? input.files[0]
-              : null
-          );
-
-        };
-
-
-      input.click();
-
-    }
-  );
 }
 
 
 async function addGallery() {
 
-  try {
-
-    const file =
-      await chooseFile(
-        "image/*"
-      );
-
-
-    if (!file) {
-      return;
-    }
-
-
-    const url =
-      await uploadFile(
-        file,
-        "gallery"
-      );
-
-
-    if (!url) {
-      return;
-    }
-
-
-    const { error } =
-      await supabaseClient
-        .from("gallery")
-        .insert({
-
-          image_url:
-            url,
-
-          sort_order:
-            gallery.length
-
-        });
-
-
-    if (error) {
-      throw error;
-    }
-
-
-    await loadGallery();
-
-    renderGallery();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showError(
-      "Galeriebild konnte nicht hinzugefügt werden.\n\n" +
-      error.message
+  const input =
+    document.createElement(
+      "input"
     );
-  }
+
+
+  input.type =
+    "file";
+
+  input.accept =
+    "image/*";
+
+
+  input.onchange =
+    async () => {
+
+      const file =
+        input.files[0];
+
+
+      if (!file) {
+        return;
+      }
+
+
+      try {
+
+        const url =
+          await uploadFile(
+            file,
+            "gallery"
+          );
+
+
+        const result =
+          await supabaseClient
+            .from("gallery")
+            .insert({
+
+              image_url:
+                url,
+
+              sort_order:
+                gallery.length
+
+            });
+
+
+        if (result.error) {
+          throw result.error;
+        }
+
+
+        await loadGallery();
+
+        renderGallery();
+
+      }
+
+      catch (e) {
+
+        error(
+          "Bild konnte nicht hinzugefügt werden.\n\n" +
+          e.message
+        );
+
+      }
+
+    };
+
+
+  input.click();
+
 }
 
 
@@ -1343,7 +1747,7 @@ async function uploadGalleryImage(
       );
 
 
-    const { error } =
+    const result =
       await supabaseClient
         .from("gallery")
         .update({
@@ -1352,11 +1756,14 @@ async function uploadGalleryImage(
             url
 
         })
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
-    if (error) {
-      throw error;
+    if (result.error) {
+      throw result.error;
     }
 
 
@@ -1369,22 +1776,21 @@ async function uploadGalleryImage(
       "Galeriebild wurde geändert."
     );
 
-
-  } catch (error) {
-
-    console.error(error);
-
-    showError(
-      "Galeriebild konnte nicht geändert werden.\n\n" +
-      error.message
-    );
   }
+
+  catch (e) {
+
+    error(
+      "Galeriebild konnte nicht geändert werden.\n\n" +
+      e.message
+    );
+
+  }
+
 }
 
 
-async function deleteGallery(
-  id
-) {
+async function deleteGallery(id) {
 
   if (
     !confirm(
@@ -1395,18 +1801,21 @@ async function deleteGallery(
   }
 
 
-  const { error } =
+  const result =
     await supabaseClient
       .from("gallery")
       .delete()
-      .eq("id", id);
+      .eq(
+        "id",
+        id
+      );
 
 
-  if (error) {
+  if (result.error) {
 
-    showError(
-      "Galeriebild konnte nicht gelöscht werden.\n\n" +
-      error.message
+    error(
+      "Bild konnte nicht gelöscht werden.\n\n" +
+      result.error.message
     );
 
     return;
@@ -1416,6 +1825,88 @@ async function deleteGallery(
   await loadGallery();
 
   renderGallery();
+
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+async function uploadLogo() {
+
+  const input =
+    $("#logoFile");
+
+  if (
+    !input ||
+    !input.files ||
+    !input.files[0]
+  ) {
+    return;
+  }
+
+
+  try {
+
+    const url =
+      await uploadFile(
+        input.files[0],
+        "logo"
+      );
+
+
+    const result =
+      await supabaseClient
+        .from("site_settings")
+        .upsert(
+          {
+            id: 1,
+            logo_url: url,
+            updated_at:
+              new Date().toISOString()
+          },
+          {
+            onConflict: "id"
+          }
+        );
+
+
+    if (result.error) {
+      throw result.error;
+    }
+
+
+    alert(
+      "Logo wurde geändert."
+    );
+
+  }
+
+  catch (e) {
+
+    error(
+      "Logo konnte nicht hochgeladen werden.\n\n" +
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function renderAll() {
+
+  renderCategories();
+
+  renderProducts();
+
+  renderGallery();
+
 }
 
 
@@ -1425,14 +1916,10 @@ async function deleteGallery(
 
 function setupButtons() {
 
-  /*
-    Beide möglichen IDs werden unterstützt,
-    damit es mit deinem bisherigen HTML funktioniert.
-  */
-
   const saveButton =
     $("#saveSettings") ||
     $("#saveBtn");
+
 
   if (saveButton) {
 
@@ -1445,6 +1932,7 @@ function setupButtons() {
   const categoryButton =
     $("#addCategory");
 
+
   if (categoryButton) {
 
     categoryButton.onclick =
@@ -1455,6 +1943,7 @@ function setupButtons() {
 
   const productButton =
     $("#addProduct");
+
 
   if (productButton) {
 
@@ -1467,6 +1956,7 @@ function setupButtons() {
   const galleryButton =
     $("#addGallery");
 
+
   if (galleryButton) {
 
     galleryButton.onclick =
@@ -1474,73 +1964,27 @@ function setupButtons() {
 
   }
 
+
+  const logoInput =
+    $("#logoFile");
+
+
+  if (logoInput) {
+
+    logoInput.onchange =
+      uploadLogo;
+
+  }
+
 }
 
 
 /* =========================================================
-   AUTH
+   GLOBAL
    ========================================================= */
 
-async function startAdminAfterLogin() {
-
-  if (!supabaseClient) {
-    return;
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .auth
-      .getSession();
-
-
-  if (error) {
-
-    console.error(error);
-
-    return;
-  }
-
-
-  if (data.session) {
-
-    await loadAdmin();
-
-  }
-
-}
-
-
-/*
-  Falls dein admin.html den Login bereits übernimmt,
-  reagiert dieser Listener automatisch auf Login/Logout.
-*/
-
-if (
-  supabaseClient &&
-  supabaseClient.auth
-) {
-
-  supabaseClient.auth
-    .onAuthStateChange(
-      (event, session) => {
-
-        if (session) {
-
-          setTimeout(
-            () => loadAdmin(),
-            0
-          );
-
-        }
-
-      }
-    );
-
-}
+window.loadAdmin =
+  loadAdmin;
 
 
 /* =========================================================
@@ -1549,4 +1993,32 @@ if (
 
 setupButtons();
 
-startAdminAfterLogin();
+
+(async function start() {
+
+  try {
+
+    const session =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if (
+      session.data &&
+      session.data.session
+    ) {
+
+      await loadAdmin();
+
+    }
+
+  }
+
+  catch (e) {
+
+    console.error(e);
+
+  }
+
+})();
