@@ -1,221 +1,776 @@
-const DEFAULT_DATA={
-  settings:{
-    instagram:"https://instagram.com/",
-    tiktok:"https://tiktok.com/",
-    email:"info@ateveningelegance.com",
-    whatsapp:"491700000000",
-    logo:"assets/logo.gif"
-  },
-  products:[],
-  gallery:[]
-};
+const SUPABASE_URL = "https://gaxpagykgrcgxebnsyai.supabase.co";
 
-let data=JSON.parse(localStorage.getItem("atEEData")||"null")||DEFAULT_DATA;
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-const $=s=>document.querySelector(s);
+const $ = (selector) => document.querySelector(selector);
 
-function esc(s){
-  return String(s??"").replace(/[&<>"']/g,m=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+let products = [];
+let categories = [];
+let gallery = [];
+let settings = null;
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   }[m]));
 }
 
-function save(show=true){
-  localStorage.setItem("atEEData",JSON.stringify(data));
-  if(show) alert("Gespeichert. Öffne die Website neu, um die Änderungen zu sehen.");
+function showError(message) {
+  console.error(message);
+  alert(message);
 }
 
-function fileToDataURL(file){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(reader.result);
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
+/* =========================
+   ADMIN LADEN
+========================= */
+
+async function loadAdmin() {
+  try {
+    await loadSettings();
+    await loadCategories();
+    await loadProducts();
+    await loadGallery();
+
+    renderAll();
+
+  } catch (error) {
+    console.error(error);
+    showError("Die Daten konnten nicht geladen werden.");
+  }
 }
 
-function render(){
-  $("#instagram").value=data.settings.instagram||"";
-  $("#tiktok").value=data.settings.tiktok||"";
-  $("#email").value=data.settings.email||"";
-  $("#whatsapp").value=data.settings.whatsapp||"";
-  $("#logoPreview").src=data.settings.logo||"assets/logo.gif";
+/* =========================
+   EINSTELLUNGEN
+========================= */
 
-  $("#products").innerHTML=data.products.map((p,i)=>`
-    <div class="product-editor" data-product-row="${i}">
-      <img src="${esc(p.image)}" alt="">
-      <div class="langs">
-        <label>Deutsch
-          <input data-p="${i}" data-k="de" value="${esc(p.name?.de)}">
-        </label>
-        <label>English
-          <input data-p="${i}" data-k="en" value="${esc(p.name?.en)}">
-        </label>
-        <label>Pashto
-          <input data-p="${i}" data-k="ps" value="${esc(p.name?.ps)}">
-        </label>
-        <label>Dari
-          <input data-p="${i}" data-k="fa" value="${esc(p.name?.fa)}">
-        </label>
-      </div>
-      <label>Kategorie
-        <input data-p="${i}" data-field="category" value="${esc(p.category)}">
+async function loadSettings() {
+  const { data, error } = await supabaseClient
+    .from("site_settings")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  settings = data || {
+    id: 1,
+    instagram: "",
+    tiktok: "",
+    email: "info@ateveningelegance.com",
+    whatsapp: "",
+    logo_url: "assets/logo.gif"
+  };
+
+  $("#instagram").value = settings.instagram || "";
+  $("#tiktok").value = settings.tiktok || "";
+  $("#email").value = settings.email || "";
+  $("#whatsapp").value = settings.whatsapp || "";
+}
+
+async function saveSettings() {
+  const update = {
+    instagram: $("#instagram").value.trim(),
+    tiktok: $("#tiktok").value.trim(),
+    email: $("#email").value.trim(),
+    whatsapp: $("#whatsapp").value.trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabaseClient
+    .from("site_settings")
+    .update(update)
+    .eq("id", 1);
+
+  if (error) {
+    showError("Website-Einstellungen konnten nicht gespeichert werden.");
+    return;
+  }
+
+  settings = { ...settings, ...update };
+
+  alert("Website-Einstellungen gespeichert.");
+}
+
+/* =========================
+   KATEGORIEN
+========================= */
+
+async function loadCategories() {
+  const { data, error } = await supabaseClient
+    .from("categories")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  if (error) throw error;
+
+  categories = data || [];
+}
+
+function renderCategories() {
+  $("#categories").innerHTML = categories.map((cat) => `
+    <div class="category-editor" style="padding:15px;border-bottom:1px solid #ddd">
+
+      <label>
+        Deutsch
+        <input
+          data-category-de="${cat.id}"
+          value="${esc(cat.name_de)}"
+        >
       </label>
-      <label>Preis
-        <input type="number" data-p="${i}" data-field="price" value="${esc(p.price)}">
+
+      <label>
+        English
+        <input
+          data-category-en="${cat.id}"
+          value="${esc(cat.name_en)}"
+        >
       </label>
-      <label>Alter Preis
-        <input type="number" data-p="${i}" data-field="oldPrice" value="${esc(p.oldPrice??"")}">
+
+      <label>
+        Pashto
+        <input
+          data-category-ps="${cat.id}"
+          value="${esc(cat.name_ps)}"
+        >
       </label>
-      <label>Produktbild
-        <input data-p="${i}" data-field="image" value="${esc(p.image)}">
-        <input type="file" accept="image/*" data-pfile="${i}">
-        <small>Bild vom Gerät auswählen</small>
+
+      <label>
+        Dari
+        <input
+          data-category-fa="${cat.id}"
+          value="${esc(cat.name_fa)}"
+        >
       </label>
-      <div class="product-controls">
-        <button class="gold save-product" data-save-product="${i}">Ändern speichern</button>
-        <button class="delete delete-product" data-del="${i}">Produkt löschen</button>
-      </div>
+
+      <button
+        class="gold"
+        data-save-category="${cat.id}"
+      >
+        Kategorie speichern
+      </button>
+
+      <button
+        class="delete"
+        data-delete-category="${cat.id}"
+      >
+        Löschen
+      </button>
+
     </div>
   `).join("");
 
-  $("#gallery").innerHTML=data.gallery.map((src,i)=>`
-    <div class="gallery-editor" data-gallery-row="${i}">
-      <img src="${esc(src)}" alt="">
-      <div>
-        <input data-g="${i}" value="${esc(src)}">
-        <input type="file" accept="image/*" data-gfile="${i}">
-        <small>Bild ersetzen</small>
-      </div>
-      <button class="delete delete-gallery" data-gdel="${i}">Bild löschen</button>
-    </div>
-  `).join("");
-
-  // Product text / fields
-  document.querySelectorAll("[data-p][data-k]").forEach(el=>{
-    el.addEventListener("input",()=>{
-      const i=Number(el.dataset.p);
-      data.products[i].name=data.products[i].name||{};
-      data.products[i].name[el.dataset.k]=el.value;
-    });
+  document.querySelectorAll("[data-save-category]").forEach((button) => {
+    button.onclick = () => saveCategory(button.dataset.saveCategory);
   });
 
-  document.querySelectorAll("[data-p][data-field]").forEach(el=>{
-    el.addEventListener("input",()=>{
-      const i=Number(el.dataset.p);
-      const field=el.dataset.field;
-      if(field==="price"||field==="oldPrice"){
-        data.products[i][field]=el.value===""?null:Number(el.value);
-      }else{
-        data.products[i][field]=el.value;
-      }
-    });
-  });
-
-  // Product image upload
-  document.querySelectorAll("[data-pfile]").forEach(el=>{
-    el.addEventListener("change",async()=>{
-      const i=Number(el.dataset.pfile);
-      const file=el.files?.[0];
-      if(!file)return;
-      data.products[i].image=await fileToDataURL(file);
-      save(false);
-      render();
-    });
-  });
-
-  // Product deletion – uses the exact index and immediately saves.
-  document.querySelectorAll("[data-del]").forEach(el=>{
-    el.addEventListener("click",()=>{
-      const i=Number(el.dataset.del);
-      if(!Number.isInteger(i)||!data.products[i])return;
-      if(confirm("Dieses Produkt wirklich löschen?")){
-        data.products.splice(i,1);
-        save(false);
-        render();
-      }
-    });
-  });
-
-  // Product explicit save button
-  document.querySelectorAll("[data-save-product]").forEach(el=>{
-    el.addEventListener("click",()=>{
-      save(true);
-    });
-  });
-
-  // Gallery URL changes
-  document.querySelectorAll("[data-g]").forEach(el=>{
-    el.addEventListener("input",()=>{
-      data.gallery[Number(el.dataset.g)]=el.value;
-    });
-  });
-
-  // Gallery upload / replace
-  document.querySelectorAll("[data-gfile]").forEach(el=>{
-    el.addEventListener("change",async()=>{
-      const i=Number(el.dataset.gfile);
-      const file=el.files?.[0];
-      if(!file)return;
-      data.gallery[i]=await fileToDataURL(file);
-      save(false);
-      render();
-    });
-  });
-
-  // Gallery deletion
-  document.querySelectorAll("[data-gdel]").forEach(el=>{
-    el.addEventListener("click",()=>{
-      const i=Number(el.dataset.gdel);
-      if(!Number.isInteger(i)||data.gallery[i]===undefined)return;
-      if(confirm("Dieses Galerie-Bild wirklich löschen?")){
-        data.gallery.splice(i,1);
-        save(false);
-        render();
-      }
-    });
+  document.querySelectorAll("[data-delete-category]").forEach((button) => {
+    button.onclick = () => deleteCategory(button.dataset.deleteCategory);
   });
 }
 
-$("#instagram").addEventListener("input",e=>data.settings.instagram=e.target.value);
-$("#tiktok").addEventListener("input",e=>data.settings.tiktok=e.target.value);
-$("#email").addEventListener("input",e=>data.settings.email=e.target.value);
-$("#whatsapp").addEventListener("input",e=>data.settings.whatsapp=e.target.value);
+async function saveCategory(id) {
+  const category = categories.find((c) => c.id === id);
+  if (!category) return;
 
-$("#logoFile").addEventListener("change",async e=>{
-  const file=e.target.files?.[0];
-  if(!file)return;
-  data.settings.logo=await fileToDataURL(file);
-  $("#logoPreview").src=data.settings.logo;
-  save(false);
-});
+  const update = {
+    name_de: document.querySelector(`[data-category-de="${id}"]`).value.trim(),
+    name_en: document.querySelector(`[data-category-en="${id}"]`).value.trim(),
+    name_ps: document.querySelector(`[data-category-ps="${id}"]`).value.trim(),
+    name_fa: document.querySelector(`[data-category-fa="${id}"]`).value.trim(),
+    updated_at: new Date().toISOString()
+  };
 
-$("#saveBtn").addEventListener("click",()=>save(true));
+  const { error } = await supabaseClient
+    .from("categories")
+    .update(update)
+    .eq("id", id);
 
-$("#addProduct").addEventListener("click",()=>{
-  data.products.push({
-    id:"p"+Date.now()+Math.random().toString(36).slice(2,6),
-    name:{
-      de:"Neues Kleid",
-      en:"New Dress",
-      ps:"نوي کالي",
-      fa:"لباس جدید"
-    },
-    category:"Neue Kategorie",
-    price:0,
-    oldPrice:null,
-    image:"assets/logo.gif"
+  if (error) {
+    showError("Kategorie konnte nicht gespeichert werden.");
+    return;
+  }
+
+  Object.assign(category, update);
+
+  await loadProducts();
+  renderAll();
+
+  alert("Kategorie gespeichert.");
+}
+
+async function addCategory() {
+  const name = prompt("Wie soll die neue Kategorie heißen?");
+
+  if (!name || !name.trim()) return;
+
+  const cleanName = name.trim();
+
+  const slug = cleanName
+    .toLowerCase()
+    .replace(/[ä]/g, "ae")
+    .replace(/[ö]/g, "oe")
+    .replace(/[ü]/g, "ue")
+    .replace(/[ß]/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  const { error } = await supabaseClient
+    .from("categories")
+    .insert({
+      slug: slug || `category-${Date.now()}`,
+      name_de: cleanName,
+      name_en: cleanName,
+      name_ps: cleanName,
+      name_fa: cleanName,
+      sort_order: categories.length,
+      active: true
+    });
+
+  if (error) {
+    showError("Kategorie konnte nicht erstellt werden.");
+    return;
+  }
+
+  await loadCategories();
+  renderCategories();
+
+  alert("Kategorie hinzugefügt.");
+}
+
+async function deleteCategory(id) {
+  const category = categories.find((c) => c.id === id);
+  if (!category) return;
+
+  const used = products.some((p) => p.category === category.slug);
+
+  if (used) {
+    alert(
+      "Diese Kategorie wird noch von einem Produkt verwendet. " +
+      "Ordne die Produkte zuerst einer anderen Kategorie zu."
+    );
+    return;
+  }
+
+  if (!confirm(`Kategorie "${category.name_de}" wirklich löschen?`)) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    showError("Kategorie konnte nicht gelöscht werden.");
+    return;
+  }
+
+  await loadCategories();
+  renderCategories();
+}
+
+/* =========================
+   PRODUKTE
+========================= */
+
+async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  if (error) throw error;
+
+  products = data || [];
+}
+
+function categoryOptions(selected) {
+  return categories.map((cat) => {
+    const value = cat.slug;
+
+    return `
+      <option
+        value="${esc(value)}"
+        ${value === selected ? "selected" : ""}
+      >
+        ${esc(cat.name_de)}
+      </option>
+    `;
+  }).join("");
+}
+
+function renderProducts() {
+  $("#products").innerHTML = products.map((p) => `
+    <div
+      class="product-editor"
+      style="padding:20px;border-bottom:1px solid #ddd"
+    >
+
+      <img
+        src="${esc(p.image_url || "assets/logo.gif")}"
+        alt=""
+        style="width:140px;height:180px;object-fit:cover"
+      >
+
+      <label>
+        Deutsch
+        <input
+          data-product-de="${p.id}"
+          value="${esc(p.name_de)}"
+        >
+      </label>
+
+      <label>
+        English
+        <input
+          data-product-en="${p.id}"
+          value="${esc(p.name_en)}"
+        >
+      </label>
+
+      <label>
+        Pashto
+        <input
+          data-product-ps="${p.id}"
+          value="${esc(p.name_ps)}"
+        >
+      </label>
+
+      <label>
+        Dari
+        <input
+          data-product-fa="${p.id}"
+          value="${esc(p.name_fa)}"
+        >
+      </label>
+
+      <label>
+        Kategorie
+        <select data-product-category="${p.id}">
+          ${categoryOptions(p.category)}
+        </select>
+      </label>
+
+      <label>
+        Preis €
+        <input
+          type="number"
+          step="0.01"
+          data-product-price="${p.id}"
+          value="${esc(p.price)}"
+        >
+      </label>
+
+      <label>
+        Alter Preis €
+        <input
+          type="number"
+          step="0.01"
+          data-product-old-price="${p.id}"
+          value="${esc(p.old_price ?? "")}"
+        >
+      </label>
+
+      <label>
+        Produktbild
+        <input
+          type="file"
+          accept="image/*"
+          data-product-file="${p.id}"
+        >
+      </label>
+
+      <button
+        class="gold"
+        data-save-product="${p.id}"
+      >
+        Produkt speichern
+      </button>
+
+      <button
+        class="delete"
+        data-delete-product="${p.id}"
+      >
+        Produkt löschen
+      </button>
+
+    </div>
+  `).join("");
+
+  document.querySelectorAll("[data-save-product]").forEach((button) => {
+    button.onclick = () => saveProduct(button.dataset.saveProduct);
   });
-  save(false);
-  render();
-  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
-});
 
-$("#addGallery").addEventListener("click",()=>{
-  data.gallery.push("assets/logo.gif");
-  save(false);
-  render();
-  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
-});
+  document.querySelectorAll("[data-delete-product]").forEach((button) => {
+    button.onclick = () => deleteProduct(button.dataset.deleteProduct);
+  });
 
-render();
+  document.querySelectorAll("[data-product-file]").forEach((input) => {
+    input.onchange = () => uploadProductImage(
+      input.dataset.productFile,
+      input.files[0]
+    );
+  });
+}
+
+async function saveProduct(id) {
+  const update = {
+    name_de: document.querySelector(`[data-product-de="${id}"]`).value.trim(),
+    name_en: document.querySelector(`[data-product-en="${id}"]`).value.trim(),
+    name_ps: document.querySelector(`[data-product-ps="${id}"]`).value.trim(),
+    name_fa: document.querySelector(`[data-product-fa="${id}"]`).value.trim(),
+    category: document.querySelector(`[data-product-category="${id}"]`).value,
+    price: Number(document.querySelector(`[data-product-price="${id}"]`).value),
+    old_price: (() => {
+      const value =
+        document.querySelector(`[data-product-old-price="${id}"]`).value;
+
+      return value === "" ? null : Number(value);
+    })(),
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supabaseClient
+    .from("products")
+    .update(update)
+    .eq("id", id);
+
+  if (error) {
+    showError("Produkt konnte nicht gespeichert werden.");
+    return;
+  }
+
+  await loadProducts();
+  renderProducts();
+
+  alert("Produkt gespeichert.");
+}
+
+async function addProduct() {
+  const firstCategory = categories[0];
+
+  if (!firstCategory) {
+    alert("Bitte zuerst eine Kategorie erstellen.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("products")
+    .insert({
+      name_de: "Neues Kleid",
+      name_en: "New Dress",
+      name_ps: "نوي کالي",
+      name_fa: "لباس جدید",
+      category: firstCategory.slug,
+      price: 0,
+      old_price: null,
+      image_url: "assets/logo.gif",
+      sort_order: products.length
+    });
+
+  if (error) {
+    showError("Produkt konnte nicht hinzugefügt werden.");
+    return;
+  }
+
+  await loadProducts();
+  renderProducts();
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}
+
+async function deleteProduct(id) {
+  const product = products.find((p) => p.id === id);
+
+  if (!product) return;
+
+  if (!confirm(
+    `Produkt "${product.name_de}" wirklich löschen?`
+  )) {
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("products")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    showError("Produkt konnte nicht gelöscht werden.");
+    return;
+  }
+
+  await loadProducts();
+  renderProducts();
+}
+
+/* =========================
+   BILDER HOCHLADEN
+========================= */
+
+async function uploadFile(file, folder) {
+  if (!file) return null;
+
+  const extension =
+    file.name.split(".").pop().toLowerCase();
+
+  const filename =
+    `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+  const { error } = await supabaseClient
+    .storage
+    .from("site-images")
+    .upload(filename, file, {
+      cacheControl: "3600",
+      upsert: false
+    });
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
+  const { data } =
+    supabaseClient
+      .storage
+      .from("site-images")
+      .getPublicUrl(filename);
+
+  return data.publicUrl;
+}
+
+async function uploadProductImage(id, file) {
+  if (!file) return;
+
+  try {
+    const url = await uploadFile(file, "products");
+
+    const { error } = await supabaseClient
+      .from("products")
+      .update({
+        image_url: url,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", id);
+
+    if (error) throw error;
+
+    await loadProducts();
+    renderProducts();
+
+    alert("Produktbild hochgeladen.");
+  } catch (error) {
+    console.error(error);
+    showError(
+      "Bild konnte nicht hochgeladen werden. " +
+      "Bitte prüfe den Storage-Bucket und die Berechtigungen."
+    );
+  }
+}
+
+/* =========================
+   GALERIE
+========================= */
+
+async function loadGallery() {
+  const { data, error } = await supabaseClient
+    .from("gallery")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  if (error) throw error;
+
+  gallery = data || [];
+}
+
+function renderGallery() {
+  $("#gallery").innerHTML = gallery.map((item) => `
+    <div
+      class="gallery-editor"
+      style="padding:15px;border-bottom:1px solid #ddd"
+    >
+
+      <img
+        src="${esc(item.image_url)}"
+        alt=""
+        style="width:180px;height:140px;object-fit:cover"
+      >
+
+      <input
+        type="file"
+        accept="image/*"
+        data-gallery-file="${item.id}"
+      >
+
+      <button
+        class="delete"
+        data-delete-gallery="${item.id}"
+      >
+        Bild löschen
+      </button>
+
+    </div>
+  `).join("");
+
+  document.querySelectorAll("[data-gallery-file]").forEach((input) => {
+    input.onchange = () => uploadGalleryImage(
+      input.dataset.galleryFile,
+      input.files[0]
+    );
+  });
+
+  document.querySelectorAll("[data-delete-gallery]").forEach((button) => {
+    button.onclick = () => deleteGallery(
+      button.dataset.deleteGallery
+    );
+  });
+}
+
+async function addGallery() {
+  try {
+    const url = await uploadFile(
+      await chooseFile("image/*"),
+      "gallery"
+    );
+
+    if (!url) return;
+
+    const { error } = await supabaseClient
+      .from("gallery")
+      .insert({
+        image_url: url,
+        sort_order: gallery.length
+      });
+
+    if (error) throw error;
+
+    await loadGallery();
+    renderGallery();
+
+  } catch (error) {
+    console.error(error);
+    showError("Galeriebild konnte nicht hinzugefügt werden.");
+  }
+}
+
+function chooseFile(accept) {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+
+    input.type = "file";
+    input.accept = accept;
+
+    input.onchange = () => {
+      resolve(input.files[0] || null);
+    };
+
+    input.click();
+  });
+}
+
+async function uploadGalleryImage(id, file) {
+  if (!file) return;
+
+  try {
+    const url = await uploadFile(file, "gallery");
+
+    const { error } = await supabaseClient
+      .from("gallery")
+      .update({
+        image_url: url
+      })
+      .eq("id", id);
+
+    if (error) throw error;
+
+    await loadGallery();
+    renderGallery();
+
+    alert("Galeriebild geändert.");
+
+  } catch (error) {
+    console.error(error);
+    showError("Galeriebild konnte nicht geändert werden.");
+  }
+}
+
+async function deleteGallery(id) {
+  if (!confirm("Dieses Bild wirklich löschen?")) return;
+
+  const { error } = await supabaseClient
+    .from("gallery")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    showError("Galeriebild konnte nicht gelöscht werden.");
+    return;
+  }
+
+  await loadGallery();
+  renderGallery();
+}
+
+/* =========================
+   ALLES RENDERN
+========================= */
+
+function renderAll() {
+  renderCategories();
+  renderProducts();
+  renderGallery();
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+$("#saveSettings").addEventListener(
+  "click",
+  saveSettings
+);
+
+$("#addCategory").addEventListener(
+  "click",
+  addCategory
+);
+
+$("#addProduct").addEventListener(
+  "click",
+  addProduct
+);
+
+$("#addGallery").addEventListener(
+  "click",
+  addGallery
+);
+
+/*
+  Videos und Bestellungen kommen im nächsten Schritt.
+  Wir lassen die Bereiche momentan bewusst leer,
+  damit nichts an deiner bestehenden Datenbank kaputtgeht.
+*/
+
+const videoBox = $("#videos");
+
+if (videoBox) {
+  videoBox.innerHTML =
+    "<p>Videoverwaltung wird als nächster Schritt eingerichtet.</p>";
+}
+
+const ordersBox = $("#orders");
+
+if (ordersBox) {
+  ordersBox.innerHTML =
+    "<p>Bestellverwaltung wird als nächster Schritt eingerichtet.</p>";
+}
