@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="admin.css">
 
+  <!-- Supabase Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -20,12 +21,12 @@
     <form id="loginForm">
       <label>
         E-Mail
-        <input id="loginEmail" type="email" required>
+        <input id="loginEmail" type="email" autocomplete="username" required>
       </label>
 
       <label>
         Passwort
-        <input id="loginPassword" type="password" required>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
       </label>
 
       <button type="submit" class="gold">Anmelden</button>
@@ -236,201 +237,75 @@
 
 
 <script>
+const SUPABASE_URL = "https://gaxpagykgrcgxebnsyai.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Cgg8Dun5Sua_VpXj39ahHA_piGaeN8f";
 
-const SUPABASE_URL =
-  "https://gaxpagykgrcgxebnsyai.supabase.co";
+window.SUPABASE_URL = SUPABASE_URL;
+window.SUPABASE_PUBLISHABLE_KEY = SUPABASE_PUBLISHABLE_KEY;
 
+// Supabase Client Initialisierung
+window.supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_Cgg8Dun5Sua_VpXj39ahHA_piGaeN8f";
+const loginScreen = document.querySelector("#loginScreen");
+const adminApp = document.querySelector("#adminApp");
+const loginForm = document.querySelector("#loginForm");
+const loginError = document.querySelector("#loginError");
 
-
-window.SUPABASE_URL =
-  SUPABASE_URL;
-
-
-window.SUPABASE_PUBLISHABLE_KEY =
-  SUPABASE_PUBLISHABLE_KEY;
-
-
-window.supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-
-const loginScreen =
-  document.querySelector("#loginScreen");
-
-
-const adminApp =
-  document.querySelector("#adminApp");
-
-
-const loginForm =
-  document.querySelector("#loginForm");
-
-
-const loginError =
-  document.querySelector("#loginError");
-
-
-async function checkLogin() {
-
-  const {
-    data,
-    error
-  } =
-    await window.supabaseClient.auth.getSession();
-
-
-  if (error) {
-
-    console.error(error);
-
-    loginError.textContent =
-      "Supabase-Fehler: " +
-      error.message;
-
-    return;
-  }
-
-
-  if (data.session) {
-
+// Authentifizierungs-Status automatisch überwachen
+window.supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (session) {
     loginScreen.hidden = true;
-
     adminApp.hidden = false;
 
+    // Admin-Daten aus admin.js laden
     if (typeof window.loadAdmin === "function") {
       window.loadAdmin();
     }
-
   } else {
-
     loginScreen.hidden = false;
-
     adminApp.hidden = true;
-
   }
+});
 
-}
+// Login Formular Event Listener
+loginForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  loginError.textContent = "";
 
+  const submitBtn = loginForm.querySelector("button[type='submit']");
+  const email = document.querySelector("#loginEmail").value.trim();
+  const password = document.querySelector("#loginPassword").value;
 
-loginForm.addEventListener(
-  "submit",
-  async function(e) {
+  try {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Wird angemeldet...";
 
-    e.preventDefault();
-
-    loginError.textContent = "";
-
-
-    const email =
-      document
-        .querySelector("#loginEmail")
-        .value
-        .trim();
-
-
-    const password =
-      document
-        .querySelector("#loginPassword")
-        .value;
-
-
-    const {
-      error
-    } =
-      await window.supabaseClient.auth.signInWithPassword({
-
-        email: email,
-
-        password: password
-
-      });
-
+    const { error } = await window.supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
 
     if (error) {
-
       console.error(error);
-
-      loginError.textContent =
-        "E-Mail oder Passwort ist falsch.";
-
-      return;
+      loginError.textContent = "E-Mail oder Passwort ist falsch.";
     }
-
-
-    await checkLogin();
-
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Anmelden";
   }
-);
+});
 
-
-document
-  .querySelector("#logoutBtn")
-  .addEventListener(
-    "click",
-    async function() {
-
-      await window.supabaseClient.auth.signOut();
-
-      await checkLogin();
-
-    }
-  );
-
-
-window.supabaseClient.auth.onAuthStateChange(
-  function(event, session) {
-
-    if (session) {
-
-      loginScreen.hidden = true;
-
-      adminApp.hidden = false;
-
-      setTimeout(
-        function() {
-
-          if (
-            typeof window.loadAdmin === "function"
-          ) {
-
-            window.loadAdmin();
-
-          }
-
-        },
-        0
-      );
-
-    } else {
-
-      loginScreen.hidden = false;
-
-      adminApp.hidden = true;
-
-    }
-
-  }
-);
-
-
+// Logout Button Event Listener
+document.querySelector("#logoutBtn").addEventListener("click", async function () {
+  await window.supabaseClient.auth.signOut();
+});
 </script>
 
-
+<!-- Einbinden des Admin-Logik-Skripts -->
 <script src="admin.js"></script>
-
-
-<script>
-
-checkLogin();
-
-</script>
-
 
 </body>
 </html>
