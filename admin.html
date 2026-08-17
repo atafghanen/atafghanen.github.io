@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AT Evening Elegance – Admin</title>
 
-  <link rel="stylesheet" href="admin.css?v=12.1">
+  <link rel="stylesheet" href="admin.css?v=13">
 
   <!-- Supabase Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -60,6 +60,39 @@
     </form>
   </div>
 </div>
+
+<dialog id="categoryDialog" class="admin-dialog">
+  <form id="categoryForm" method="dialog">
+    <div class="dialog-head">
+      <div>
+        <p class="dialog-kicker">NEUE KATEGORIE</p>
+        <h2>Kategorie hinzufügen</h2>
+      </div>
+      <button id="closeCategoryDialog" class="dialog-close" type="button" aria-label="Fenster schließen">×</button>
+    </div>
+
+    <p>Der deutsche Name wird als Filter auf der normalen Webseite angezeigt. Die weiteren Sprachen kannst du direkt mit anlegen.</p>
+
+    <div class="category-form-grid">
+      <label>Deutsch<input id="categoryNameDe" required placeholder="z. B. Abendkleider"></label>
+      <label>Englisch<input id="categoryNameEn" placeholder="z. B. Evening Dresses"></label>
+      <label>Pashto<input id="categoryNamePs" placeholder="Optional"></label>
+      <label>Dari<input id="categoryNameFa" placeholder="Optional"></label>
+    </div>
+
+    <div class="category-example">
+      <span>Vorschau auf der Webseite</span>
+      <button id="categoryPreview" type="button" disabled>Neue Kategorie</button>
+      <small>Fotos oder Videos lädst du anschließend beim Produkt oder unter „Galerie“ hoch.</small>
+    </div>
+
+    <p id="categoryFormError" class="error" aria-live="polite"></p>
+    <div class="dialog-actions">
+      <button id="cancelCategory" type="button">Abbrechen</button>
+      <button class="gold" type="submit">Kategorie erstellen</button>
+    </div>
+  </form>
+</dialog>
 
 
 <div id="adminApp" hidden>
@@ -373,7 +406,8 @@ document.querySelector("#logoutBtn").addEventListener("click", async function ()
 </script>
 
 <!-- Einbinden des Admin-Logik-Skripts -->
-<script src="admin.js"></script>
+<script src="admin.js?v=13"></script>
 
 </body>
 </html>
+
