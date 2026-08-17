@@ -83,7 +83,11 @@
     <div class="category-example">
       <span>Vorschau auf der Webseite</span>
       <button id="categoryPreview" type="button" disabled>Neue Kategorie</button>
-      <small>Fotos oder Videos lädst du anschließend beim Produkt oder unter „Galerie“ hoch.</small>
+      <div class="video-example" aria-label="Beispiel für ein Produktvideo">
+        <strong>▶</strong>
+        <div><b>Video-Beispiel</b><small>Beim Produkt kannst du hier ein Kleidervideo hochladen. Es erscheint anschließend in den Produktdetails.</small></div>
+      </div>
+      <small>Eigene Fotos oder Videos lädst du anschließend beim Produkt oder unter „Galerie“ hoch.</small>
     </div>
 
     <p id="categoryFormError" class="error" aria-live="polite"></p>
@@ -406,7 +410,7 @@ document.querySelector("#logoutBtn").addEventListener("click", async function ()
 </script>
 
 <!-- Einbinden des Admin-Logik-Skripts -->
-<script src="admin.js?v=13"></script>
+<script src="admin.js?v=13.1"></script>
 
 </body>
 </html>
