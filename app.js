@@ -36,6 +36,8 @@ let lang = localStorage.getItem("atEELang") || "de";
 let cart = JSON.parse(localStorage.getItem("atEECart") || "[]");
 let currentCategory = "all";
 let productMedia = [];
+let shopCategories = [];
+let realtimeRefreshTimer = null;
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -54,6 +56,8 @@ function t(key) {
 }
 
 function categoryLabel(cat) {
+  const saved = shopCategories.find(category => category.slug === cat);
+  if (saved) return saved[`name_${lang}`] || saved.name_de || cat;
   const map = {
     "Abendkleider": { de: "Abendkleider", en: "Evening Dresses", ps: "د ماښام کالي", fa: "لباس‌های شب" },
     "Bestickung": { de: "Bestickung", en: "Embroidery", ps: "ګنډنه", fa: "گلدوزی" },
@@ -93,7 +97,11 @@ async function loadDataFromSupabase() {
       data.settings = { ...data.settings, ...settingsData };
     }
 
-    // 2. Products
+    // 2. Categories and products
+    const { data: categoryData, error: categoryError } = await supabaseClient.from("categories").select("*").eq("active", true).order("sort_order");
+    if (categoryError) throw categoryError;
+    shopCategories = categoryData || [];
+
     const { data: productsData } = await supabaseClient.from("products").select("*").order("sort_order");
     if (productsData && productsData.length > 0) {
       data.products = productsData.map(p => ({
@@ -150,7 +158,9 @@ function applyLang() {
 }
 
 function renderFilters() {
-  const cats = ["all", ...new Set(data.products.map(p => p.category))];
+  const savedCategories = shopCategories.map(category => category.slug);
+  const productCategories = data.products.map(product => product.category);
+  const cats = ["all", ...new Set([...savedCategories, ...productCategories])];
   const filtersEl = $("#categoryFilters");
   if (!filtersEl) return;
 
@@ -429,6 +439,22 @@ function setup() {
 
   updateCartCount();
   loadDataFromSupabase();
+
+  if (supabaseClient) {
+    supabaseClient.channel("shop-live-updates")
+      .on("postgres_changes", { event:"*", schema:"public", table:"site_settings" }, scheduleShopRefresh)
+      .on("postgres_changes", { event:"*", schema:"public", table:"categories" }, scheduleShopRefresh)
+      .on("postgres_changes", { event:"*", schema:"public", table:"products" }, scheduleShopRefresh)
+      .on("postgres_changes", { event:"*", schema:"public", table:"product_media" }, scheduleShopRefresh)
+      .on("postgres_changes", { event:"*", schema:"public", table:"gallery" }, scheduleShopRefresh)
+      .subscribe();
+  }
+}
+
+function scheduleShopRefresh() {
+  clearTimeout(realtimeRefreshTimer);
+  realtimeRefreshTimer = setTimeout(loadDataFromSupabase, 250);
 }
 
 setup();
+
