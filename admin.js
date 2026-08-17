@@ -86,7 +86,14 @@ function renderProducts() {
   $("#products").innerHTML = state.products.map(p => {
     const media = state.media.filter(m => m.product_id === p.id);
     return `<article class="product-editor" data-id="${p.id}">
-      <div class="product-preview"><img src="${esc(p.image_url)}" alt=""><label>Hauptbild<input type="file" accept="image/*" data-product-main></label></div>
+      <div class="product-preview">
+        <img src="${esc(p.image_url)}" alt="">
+        <label>Hauptbild<input type="file" accept="image/*" data-product-main></label>
+        <div class="tryon-admin-status ${p.tryon_image_url ? "ready" : ""}">
+          ${p.tryon_image_url ? `<img src="${esc(p.tryon_image_url)}" alt=""><span>Anprobe-Bild bereit</span>` : "<span>Noch kein Anprobe-Bild</span>"}
+        </div>
+        <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button>
+      </div>
       <div class="product-fields">
         <div class="input-grid"><input data-k="name_de" value="${esc(p.name_de)}" placeholder="Name Deutsch"><input data-k="name_en" value="${esc(p.name_en)}" placeholder="Name Englisch"><input data-k="name_ps" value="${esc(p.name_ps)}" placeholder="Name Pashto"><input data-k="name_fa" value="${esc(p.name_fa)}" placeholder="Name Dari"></div>
         <div class="input-grid"><textarea data-k="description_de" placeholder="Beschreibung Deutsch">${esc(p.description_de)}</textarea><textarea data-k="description_en" placeholder="Beschreibung Englisch">${esc(p.description_en)}</textarea><textarea data-k="description_ps" placeholder="Beschreibung Pashto">${esc(p.description_ps)}</textarea><textarea data-k="description_fa" placeholder="Beschreibung Dari">${esc(p.description_fa)}</textarea></div>
@@ -115,6 +122,50 @@ async function upload(file, folder) {
   const { error } = await db.storage.from("site-images").upload(path, file, { contentType:file.type, upsert:false });
   if (error) throw error;
   return db.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+}
+
+async function createTryOnImage(source, productId) {
+  notice("Hintergrund wird automatisch entfernt – bitte kurz warten …");
+  const module = await import("https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.6/+esm");
+  const removeBackground = module.removeBackground || module.default;
+  if (typeof removeBackground !== "function") throw new Error("Die automatische Freistellung konnte nicht geladen werden.");
+
+  const transparentBlob = await removeBackground(source, {
+    model: "isnet_quint8",
+    output: { format: "image/png", quality: 0.92 },
+    progress: (key, current, total) => {
+      if (total > 0) notice(`Anprobe-Bild wird vorbereitet … ${Math.round((current / total) * 100)} %`);
+    }
+  });
+  const tryOnFile = new File([transparentBlob], `tryon-${productId}.png`, { type: "image/png" });
+  return upload(tryOnFile, "tryon");
+}
+
+async function processMainProductImage(file, productId) {
+  const originalUrl = await upload(file, "products");
+  const tryOnUrl = await createTryOnImage(file, productId);
+  const { error } = await db.from("products").update({
+    image_url: originalUrl,
+    tryon_image_url: tryOnUrl,
+    updated_at: new Date().toISOString()
+  }).eq("id", productId);
+  if (error) throw error;
+  await loadAdmin();
+  notice("Bild gespeichert und automatisch für die virtuelle Anprobe freigestellt.");
+}
+
+async function rebuildTryOnImage(productId, imageUrl) {
+  const response = await fetch(imageUrl);
+  if (!response.ok) throw new Error("Das vorhandene Produktbild konnte nicht geladen werden.");
+  const blob = await response.blob();
+  const tryOnUrl = await createTryOnImage(blob, productId);
+  const { error } = await db.from("products").update({
+    tryon_image_url: tryOnUrl,
+    updated_at: new Date().toISOString()
+  }).eq("id", productId);
+  if (error) throw error;
+  await loadAdmin();
+  notice("Anprobe-Bild wurde automatisch erstellt.");
 }
 
 function openCategoryDialog() {
@@ -171,6 +222,15 @@ document.addEventListener("click", async event => {
     if (button.id === "saveSettings") return saveSettings();
     if (button.id === "addCategory") return openCategoryDialog();
     if (button.id === "addProduct") return addProduct();
+    if (button.hasAttribute("data-create-tryon")) {
+      const productRow = button.closest(".product-editor");
+      const productData = state.products.find(p => p.id === productRow?.dataset.id);
+      if (!productData) throw new Error("Produkt nicht gefunden.");
+      button.disabled = true;
+      try { await rebuildTryOnImage(productData.id, productData.image_url); }
+      finally { button.disabled = false; }
+      return;
+    }
     const row = button.closest("[data-id]"); const id = row?.dataset.id;
     if (button.hasAttribute("data-save-category")) { const payload={updated_at:new Date().toISOString()}; row.querySelectorAll("[data-k]").forEach(i=>payload[i.dataset.k]=i.value.trim()); await verifiedMutation(db.from("categories").update(payload).eq("id",id),"Kategorie gespeichert und auf der Webseite aktualisiert."); await loadAdmin(); }
     if (button.hasAttribute("data-delete-category") && confirm("Kategorie wirklich löschen?")) { const {error}=await db.from("categories").delete().eq("id",id); if(error)throw error; loadAdmin(); }
@@ -187,7 +247,11 @@ document.addEventListener("change", async event => {
     if (event.target.id === "galleryUpload") return addGallery([...event.target.files]);
     if (event.target.id === "logoFile" && event.target.files[0]) { const url=await upload(event.target.files[0],"brand"); const {error}=await db.from("site_settings").update({logo_url:url}).eq("id",1); if(error)throw error; await loadAdmin(); notice("Logo ersetzt."); }
     const product = event.target.closest(".product-editor");
-    if (product && event.target.matches("[data-product-main]") && event.target.files[0]) { const url=await upload(event.target.files[0],"products"); const {error}=await db.from("products").update({image_url:url}).eq("id",product.dataset.id); if(error)throw error; await loadAdmin(); notice("Hauptbild ersetzt."); }
+    if (product && event.target.matches("[data-product-main]") && event.target.files[0]) {
+      event.target.disabled = true;
+      try { await processMainProductImage(event.target.files[0], product.dataset.id); }
+      finally { event.target.disabled = false; }
+    }
     if (product && event.target.matches("[data-product-media]")) { for(const file of event.target.files){ const url=await upload(file,"products"); const {error}=await db.from("product_media").insert({product_id:product.dataset.id,media_type:file.type.startsWith("video/")?"video":"image",url,alt_text:file.name,sort_order:state.media.filter(m=>m.product_id===product.dataset.id).length}); if(error)throw error; } await loadAdmin(); notice("Produktmedien hochgeladen."); }
   } catch (error) { notice(error.message,true); }
 });
