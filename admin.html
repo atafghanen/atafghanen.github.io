@@ -31,7 +31,32 @@
 
       <button type="submit" class="gold">Anmelden</button>
 
+      <button id="forgotPasswordBtn" type="button">Passwort vergessen?</button>
+
       <p id="loginError" class="error"></p>
+    </form>
+  </div>
+</div>
+
+
+<div id="recoveryScreen" class="login-screen" hidden>
+  <div class="login-box">
+    <h1>Neues Passwort</h1>
+    <p>Lege ein neues Passwort für deinen Admin-Bereich fest.</p>
+
+    <form id="recoveryForm">
+      <label>
+        Neues Passwort
+        <input id="newPassword" type="password" autocomplete="new-password" minlength="10" required>
+      </label>
+
+      <label>
+        Passwort wiederholen
+        <input id="confirmPassword" type="password" autocomplete="new-password" minlength="10" required>
+      </label>
+
+      <button type="submit" class="gold">Passwort speichern</button>
+      <p id="recoveryError" class="error" aria-live="polite"></p>
     </form>
   </div>
 </div>
@@ -223,9 +248,23 @@ const loginScreen = document.querySelector("#loginScreen");
 const adminApp = document.querySelector("#adminApp");
 const loginForm = document.querySelector("#loginForm");
 const loginError = document.querySelector("#loginError");
+const forgotPasswordBtn = document.querySelector("#forgotPasswordBtn");
+const recoveryScreen = document.querySelector("#recoveryScreen");
+const recoveryForm = document.querySelector("#recoveryForm");
+const recoveryError = document.querySelector("#recoveryError");
+const ADMIN_URL = "https://attentacion3-spec.github.io/AT-Evening-Elegance/admin.html";
 
 // Authentifizierungs-Status automatisch überwachen
 window.supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") {
+    loginScreen.hidden = true;
+    adminApp.hidden = true;
+    recoveryScreen.hidden = false;
+    return;
+  }
+
+  recoveryScreen.hidden = true;
+
   if (session) {
     loginScreen.hidden = true;
     adminApp.hidden = false;
@@ -237,6 +276,65 @@ window.supabaseClient.auth.onAuthStateChange((event, session) => {
   } else {
     loginScreen.hidden = false;
     adminApp.hidden = true;
+  }
+});
+
+forgotPasswordBtn.addEventListener("click", async function () {
+  const emailInput = document.querySelector("#loginEmail");
+  const email = emailInput.value.trim() || "attentacion3@gmail.com";
+  loginError.textContent = "";
+
+  try {
+    forgotPasswordBtn.disabled = true;
+    forgotPasswordBtn.textContent = "E-Mail wird gesendet …";
+
+    const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: ADMIN_URL,
+    });
+
+    if (error) throw error;
+    emailInput.value = email;
+    loginError.textContent = "Der Link zum Zurücksetzen wurde per E-Mail gesendet. Bitte auch im Spam-Ordner nachsehen.";
+  } catch (error) {
+    console.error(error);
+    loginError.textContent = "Die E-Mail konnte nicht gesendet werden. Bitte versuche es später erneut.";
+  } finally {
+    forgotPasswordBtn.disabled = false;
+    forgotPasswordBtn.textContent = "Passwort vergessen?";
+  }
+});
+
+recoveryForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  recoveryError.textContent = "";
+
+  const password = document.querySelector("#newPassword").value;
+  const confirmation = document.querySelector("#confirmPassword").value;
+  const submitBtn = recoveryForm.querySelector("button[type='submit']");
+
+  if (password !== confirmation) {
+    recoveryError.textContent = "Die Passwörter stimmen nicht überein.";
+    return;
+  }
+
+  try {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Wird gespeichert …";
+
+    const { error } = await window.supabaseClient.auth.updateUser({ password });
+    if (error) throw error;
+
+    await window.supabaseClient.auth.signOut();
+    recoveryScreen.hidden = true;
+    loginScreen.hidden = false;
+    loginError.textContent = "Dein Passwort wurde geändert. Du kannst dich jetzt anmelden.";
+    recoveryForm.reset();
+  } catch (error) {
+    console.error(error);
+    recoveryError.textContent = "Das Passwort konnte nicht gespeichert werden. Öffne den Link aus der E-Mail bitte erneut.";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Passwort speichern";
   }
 });
 
@@ -279,4 +377,3 @@ document.querySelector("#logoutBtn").addEventListener("click", async function ()
 
 </body>
 </html>
-
