@@ -98,3 +98,15 @@ a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}.
 .media-thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto}.media-thumbs button{width:62px;height:70px;flex:0 0 auto;border:1px solid var(--line);background:#311924;color:var(--rose);cursor:pointer}.media-thumbs img{width:100%;height:100%;object-fit:cover}
 .request-form input,.request-form textarea{background:rgba(255,247,242,.08);border-color:rgba(243,182,200,.3);border-radius:10px}
 @media(max-width:720px){.product-actions{position:sticky;bottom:0}.btn,.small-btn{min-height:48px}.cart-row{grid-template-columns:58px 1fr auto}.gallery-item video{min-height:135px}}
+
+/* Mobile header: brand left, shopping bag at the far right. */
+@media(max-width:720px){
+  .header{display:grid;grid-template-columns:auto 1fr;padding-inline:14px;direction:ltr}
+  .brand{grid-column:1;margin:0}
+  .header-actions{grid-column:2;margin-left:auto;gap:8px;direction:ltr}
+  .language{order:1;min-width:66px;max-width:82px;padding:8px 6px}
+  .menu-btn{order:2;width:40px;height:44px}
+  .icon-btn{order:3;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:2px}
+  [dir=rtl] .nav{direction:rtl;text-align:right}
+}
+
