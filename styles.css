@@ -170,3 +170,6 @@ img,video{max-width:100%}
 .tryon-empty{display:grid;padding:30px;background:linear-gradient(145deg,#f6e5d6,#e6c6bc);color:#76223b}
 .tryon-empty img,.tryon-empty>div{display:none}
 @media(max-width:760px){.tryon-layout{grid-template-columns:1fr}.tryon-example-card{aspect-ratio:16/10}.tryon-stage{max-height:62vh}}
+
+/* V19: uploaded customer photo must replace the empty state. */
+.tryon-empty[hidden],.tryon-person[hidden],.tryon-garment[hidden]{display:none!important}
