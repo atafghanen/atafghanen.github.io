@@ -311,7 +311,86 @@ function openProduct(id) {
 }
 
 let tryOnObjectUrl = "";
+let poseLandmarkerPromise = null;
 let tryOnState = { x: 0, y: 0, scale: 1, rotation: 0, dragging: false, startX: 0, startY: 0 };
+
+async function getPoseLandmarker() {
+  if (!poseLandmarkerPromise) {
+    poseLandmarkerPromise = (async () => {
+      const vision = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2/+esm");
+      const fileset = await vision.FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2/wasm"
+      );
+      return vision.PoseLandmarker.createFromOptions(fileset, {
+        baseOptions: {
+          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+          delegate: "CPU"
+        },
+        runningMode: "IMAGE",
+        numPoses: 1,
+        minPoseDetectionConfidence: 0.45,
+        minPosePresenceConfidence: 0.45
+      });
+    })();
+  }
+  return poseLandmarkerPromise;
+}
+
+async function autoFitTryOn() {
+  const person = $("#tryOnPerson");
+  const garment = $("#tryOnGarment");
+  const stage = $(".tryon-stage");
+  const status = $("#tryOnAutoStatus");
+  if (!person?.src || person.hidden || !garment || !stage) return;
+
+  try {
+    status.textContent = "Körper wird automatisch erkannt …";
+    const detector = await getPoseLandmarker();
+    const result = detector.detect(person);
+    const points = result.landmarks?.[0];
+    if (!points) throw new Error("pose-not-found");
+
+    const needed = [11,12,23,24,27,28].map(i => points[i]);
+    if (needed.some(p => !p || (p.visibility ?? 1) < 0.35)) throw new Error("pose-not-clear");
+
+    const stageW = stage.clientWidth;
+    const stageH = stage.clientHeight;
+    const imageScale = Math.min(stageW / person.naturalWidth, stageH / person.naturalHeight);
+    const renderW = person.naturalWidth * imageScale;
+    const renderH = person.naturalHeight * imageScale;
+    const offsetX = (stageW - renderW) / 2;
+    const offsetY = (stageH - renderH) / 2;
+    const point = p => ({ x: offsetX + p.x * renderW, y: offsetY + p.y * renderH });
+
+    const leftShoulder = point(points[11]), rightShoulder = point(points[12]);
+    const leftHip = point(points[23]), rightHip = point(points[24]);
+    const leftAnkle = point(points[27]), rightAnkle = point(points[28]);
+    const topY = (leftShoulder.y + rightShoulder.y) / 2 - renderH * 0.025;
+    const bottomY = (leftAnkle.y + rightAnkle.y) / 2;
+    const hipX = (leftHip.x + rightHip.x) / 2;
+    const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
+    const targetX = (hipX + shoulderX) / 2;
+    const targetY = (topY + bottomY) / 2;
+    const targetHeight = Math.max(120, bottomY - topY);
+
+    if (!garment.complete) await new Promise((resolve,reject) => {
+      garment.addEventListener("load", resolve, { once:true });
+      garment.addEventListener("error", reject, { once:true });
+    });
+    const baseHeight = Math.max(1, garment.offsetHeight);
+    tryOnState.x = targetX - stageW / 2;
+    tryOnState.y = targetY - stageH / 2;
+    tryOnState.scale = Math.max(0.35, Math.min(2.2, targetHeight / baseHeight));
+    tryOnState.rotation = 0;
+    $("#tryOnScale").value = String(tryOnState.scale);
+    $("#tryOnVertical").value = String(Math.max(-160, Math.min(160, tryOnState.y)));
+    updateTryOnTransform();
+    status.textContent = "Automatisch angepasst. Du kannst das Kleid bei Bedarf noch verschieben.";
+  } catch (error) {
+    console.warn("Automatische Körpererkennung nicht möglich", error);
+    status.textContent = "Körper nicht eindeutig erkannt. Bitte nutze ein Ganzkörperfoto von vorne oder passe das Kleid manuell an.";
+  }
+}
 
 function tryOnText(key) {
   const labels = {
@@ -363,12 +442,14 @@ function setupTryOn() {
     empty.hidden = true;
     garment.hidden = false;
     resetTryOn();
+    person.onload = () => autoFitTryOn();
   };
   $("#tryOnScale").oninput = event => { tryOnState.scale = Number(event.target.value); updateTryOnTransform(); };
   $("#tryOnVertical").oninput = event => { tryOnState.y = Number(event.target.value); updateTryOnTransform(); };
   $("#tryOnRotateLeft").onclick = () => { tryOnState.rotation -= 5; updateTryOnTransform(); };
   $("#tryOnRotateRight").onclick = () => { tryOnState.rotation += 5; updateTryOnTransform(); };
   $("#tryOnReset").onclick = resetTryOn;
+  $("#tryOnAutoFit").onclick = autoFitTryOn;
 
   garment.addEventListener("pointerdown", event => {
     tryOnState.dragging = true;
