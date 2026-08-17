@@ -252,6 +252,7 @@ function closeModal(el) {
   if (modal) {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
+    if (modal.id === "tryOnModal") clearTryOnPhoto();
   }
 }
 
@@ -411,6 +412,28 @@ function resetTryOn() {
   $("#tryOnScale").value = "1";
   $("#tryOnVertical").value = "0";
   updateTryOnTransform();
+}
+
+function clearTryOnPhoto() {
+  if (tryOnObjectUrl) {
+    URL.revokeObjectURL(tryOnObjectUrl);
+    tryOnObjectUrl = "";
+  }
+  const input = $("#tryOnPhoto");
+  const person = $("#tryOnPerson");
+  const garment = $("#tryOnGarment");
+  const empty = $("#tryOnEmpty");
+  if (input) input.value = "";
+  if (person) {
+    person.removeAttribute("src");
+    person.hidden = true;
+    person.onload = null;
+  }
+  if (garment) garment.hidden = true;
+  if (empty) empty.hidden = false;
+  const status = $("#tryOnAutoStatus");
+  if (status) status.textContent = "Nach dem Hochladen wird das Kleid automatisch angepasst.";
+  resetTryOn();
 }
 
 function openTryOn(product) {
