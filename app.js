@@ -109,7 +109,8 @@ async function loadDataFromSupabase() {
         name: { de: p.name_de, en: p.name_en, ps: p.name_ps, fa: p.name_fa },
         description: { de: p.description_de, en: p.description_en, ps: p.description_ps, fa: p.description_fa },
         oldPrice: p.old_price,
-        image: p.image_url
+        image: p.image_url,
+        tryOnImage: p.tryon_image_url || ""
       }));
     }
 
@@ -280,6 +281,7 @@ function openProduct(id) {
           <button class="size-btn" data-custom>${uiText("custom")}</button>
         </div>
         <button class="btn btn-gold full" id="modalAdd">${t("add")}</button>
+        <button class="btn btn-ghost full tryon-open" id="modalTryOn">${tryOnText("open")}</button>
       </div>
     </div>
   `;
@@ -300,8 +302,89 @@ function openProduct(id) {
     addToCart(id);
     closeModal($("#productModalContent"));
   };
+  $("#modalTryOn").onclick = () => {
+    closeModal($("#productModalContent"));
+    openTryOn(p);
+  };
 
   openModal("#productModal");
+}
+
+let tryOnObjectUrl = "";
+let tryOnState = { x: 0, y: 0, scale: 1, rotation: 0, dragging: false, startX: 0, startY: 0 };
+
+function tryOnText(key) {
+  const labels = {
+    open: { de:"Virtuell anprobieren", en:"Virtual try-on", ps:"مجازی یې وازمویئ", fa:"پرو مجازی" },
+    upload: { de:"Ganzkörperfoto auswählen", en:"Choose a full-body photo", ps:"د ټول بدن انځور وټاکئ", fa:"عکس تمام‌قد را انتخاب کنید" },
+    hint: { de:"Das Foto bleibt auf deinem Gerät. Ziehe das Kleid mit dem Finger an die richtige Stelle.", en:"Your photo stays on your device. Drag the dress into position.", ps:"ستاسو انځور ستاسو په وسیله کې پاتې کېږي.", fa:"عکس شما روی دستگاه خودتان باقی می‌ماند." }
+  };
+  return labels[key]?.[lang] || labels[key]?.de || key;
+}
+
+function updateTryOnTransform() {
+  const garment = $("#tryOnGarment");
+  if (garment) garment.style.transform = `translate(${tryOnState.x}px,${tryOnState.y}px) translate(-50%,-50%) scale(${tryOnState.scale}) rotate(${tryOnState.rotation}deg)`;
+}
+
+function resetTryOn() {
+  tryOnState = { x:0, y:0, scale:1, rotation:0, dragging:false, startX:0, startY:0 };
+  $("#tryOnScale").value = "1";
+  $("#tryOnVertical").value = "0";
+  updateTryOnTransform();
+}
+
+function openTryOn(product) {
+  $("#tryOnTitle").textContent = name(product);
+  $("#tryOnUploadLabel").textContent = tryOnText("upload");
+  $("#tryOnHint").textContent = tryOnText("hint");
+  const garment = $("#tryOnGarment");
+  garment.src = product.tryOnImage || product.image;
+  garment.classList.toggle("uncut", !product.tryOnImage);
+  $("#tryOnFallback").hidden = Boolean(product.tryOnImage);
+  resetTryOn();
+  openModal("#tryOnModal");
+}
+
+function setupTryOn() {
+  const input = $("#tryOnPhoto");
+  const person = $("#tryOnPerson");
+  const empty = $("#tryOnEmpty");
+  const garment = $("#tryOnGarment");
+  if (!input || !garment) return;
+
+  input.onchange = () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    if (tryOnObjectUrl) URL.revokeObjectURL(tryOnObjectUrl);
+    tryOnObjectUrl = URL.createObjectURL(file);
+    person.src = tryOnObjectUrl;
+    person.hidden = false;
+    empty.hidden = true;
+    garment.hidden = false;
+    resetTryOn();
+  };
+  $("#tryOnScale").oninput = event => { tryOnState.scale = Number(event.target.value); updateTryOnTransform(); };
+  $("#tryOnVertical").oninput = event => { tryOnState.y = Number(event.target.value); updateTryOnTransform(); };
+  $("#tryOnRotateLeft").onclick = () => { tryOnState.rotation -= 5; updateTryOnTransform(); };
+  $("#tryOnRotateRight").onclick = () => { tryOnState.rotation += 5; updateTryOnTransform(); };
+  $("#tryOnReset").onclick = resetTryOn;
+
+  garment.addEventListener("pointerdown", event => {
+    tryOnState.dragging = true;
+    tryOnState.startX = event.clientX - tryOnState.x;
+    tryOnState.startY = event.clientY - tryOnState.y;
+    garment.setPointerCapture(event.pointerId);
+  });
+  garment.addEventListener("pointermove", event => {
+    if (!tryOnState.dragging) return;
+    tryOnState.x = event.clientX - tryOnState.startX;
+    tryOnState.y = event.clientY - tryOnState.startY;
+    $("#tryOnVertical").value = String(Math.max(-160, Math.min(160, tryOnState.y)));
+    updateTryOnTransform();
+  });
+  garment.addEventListener("pointerup", () => { tryOnState.dragging = false; });
+  garment.addEventListener("pointercancel", () => { tryOnState.dragging = false; });
 }
 
 function addToCart(id) {
@@ -438,6 +521,7 @@ function setup() {
   }
 
   updateCartCount();
+  setupTryOn();
   loadDataFromSupabase();
 
   if (supabaseClient) {
