@@ -233,7 +233,7 @@ function renderGallery() {
     <div class="gallery-item">
       ${item.media_type === "video"
         ? `<video controls playsinline preload="metadata" ${item.poster_url ? `poster="${esc(item.poster_url)}"` : ""}><source src="${esc(src)}"></video>`
-        : `<img loading="lazy" src="${esc(src)}" alt="${esc(item.title || `AT Evening Elegance ${i + 1}`)}">`}
+        : `<img loading="lazy" src="${esc(src)}" alt="${esc(item.title || `AT Afghanen ${i + 1}`)}">`}
     </div>
   `}).join("");
 }
@@ -366,7 +366,7 @@ async function sendOrderToWhatsApp(form) {
     email: String(fd.get("email") || "").trim(), address: String(fd.get("address") || "").trim(),
     notes: String(fd.get("message") || "").trim()
   };
-  const msg = `AT Evening Elegance – Bestellung\n\nKundin/Kunde: ${customer.name}\nTelefon: ${customer.phone}\nE-Mail: ${customer.email}\nAdresse: ${customer.address}\n\nWARENKORB\n${lines}\n\nGesamt: €${total.toFixed(2)}\n\nNotiz: ${customer.notes || "–"}`;
+  const msg = `AT Afghanen – Bestellung\n\nKundin/Kunde: ${customer.name}\nTelefon: ${customer.phone}\nE-Mail: ${customer.email}\nAdresse: ${customer.address}\n\nWARENKORB\n${lines}\n\nGesamt: €${total.toFixed(2)}\n\nNotiz: ${customer.notes || "–"}`;
 
   const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "");
   if (!number) {
