@@ -400,7 +400,7 @@ function tryOnText(key) {
     hint: { de:"Links siehst du das Produkt. Rechts lädst du dein eigenes Ganzkörperfoto hoch.", en:"The product is shown on the left. Upload your own full-body photo on the right.", ps:"محصول په کیڼ اړخ کې وګورئ او خپل د ټول بدن انځور په ښي اړخ کې پورته کړئ.", fa:"محصول را در سمت چپ ببینید و عکس تمام‌قد خود را در سمت راست بارگذاری کنید." },
     privacy: { de:"🔒 Dein Foto wird nirgendwo gespeichert oder hochgeladen. Es bleibt nur auf deinem Handy bzw. Gerät und wird beim Schließen über das × sofort aus der Anprobe gelöscht.", en:"🔒 Your photo is never saved or uploaded. It stays only on your phone or device and is deleted from the preview immediately when you close it with ×.", ps:"🔒 ستاسو انځور هېڅ ځای نه ساتل کېږي او نه پورته کېږي. یوازې ستاسو په موبایل یا وسیله کې پاتې کېږي او د × په تړلو سره سمدستي له مخکتنې حذف کېږي.", fa:"🔒 عکس شما در هیچ‌جا ذخیره یا بارگذاری نمی‌شود. فقط روی موبایل یا دستگاه شما می‌ماند و با بستن پنجره از طریق × فوراً از پیش‌نمایش حذف می‌شود." },
     example: { de:"Beispiel", en:"Example", ps:"بېلګه", fa:"نمونه" },
-    exampleHint: { de:"So sieht das ausgewählte Produkt aus.", en:"This is the selected product.", ps:"ټاکل شوی محصول داسې ښکاري.", fa:"محصول انتخاب‌شده به این شکل است." },
+    exampleHint: { de:"So sollte das Ganzkörperfoto der Person aussehen: von vorne, vollständig und gut beleuchtet.", en:"The person's full-body photo should look like this: front-facing, complete and well lit.", ps:"د شخص د ټول بدن انځور باید داسې وي: له مخ څخه، بشپړ او ښه روښانه.", fa:"عکس تمام‌قد شخص باید به این شکل باشد: از روبه‌رو، کامل و با نور مناسب." },
     upload: { de:"Ganzkörperfoto auswählen", en:"Choose a full-body photo", ps:"د ټول بدن انځور وټاکئ", fa:"عکس تمام‌قد را انتخاب کنید" },
     fallback: { de:"Für dieses ältere Produkt wurde noch kein freigestelltes Anprobe-Bild erzeugt. Im Admin-Bereich kannst du es automatisch erstellen.", en:"A cut-out try-on image has not yet been created for this older product. You can create it automatically in the admin area.", ps:"د دې پخواني محصول لپاره لا شفاف انځور نه دی جوړ شوی. په اډمین برخه کې یې په اوتومات ډول جوړولی شئ.", fa:"برای این محصول قدیمی هنوز تصویر بدون پس‌زمینه ساخته نشده است. می‌توانید آن را در بخش مدیریت به‌صورت خودکار ایجاد کنید." },
     empty: { de:"Hier erscheint dein Ganzkörperfoto.", en:"Your full-body photo will appear here.", ps:"ستاسو د ټول بدن انځور به دلته ښکاره شي.", fa:"عکس تمام‌قد شما اینجا نمایش داده می‌شود." },
@@ -469,8 +469,7 @@ function openTryOn(product) {
   $("#tryOnAutoFit").textContent = tryOnText("auto");
   $("#tryOnReset").textContent = tryOnText("reset");
   $("#tryOnAutoStatus").textContent = tryOnText("waiting");
-  $("#tryOnExampleImage").src = product.image;
-  $("#tryOnExampleImage").alt = name(product);
+  $("#tryOnExampleImage").alt = tryOnText("exampleHint");
   const garment = $("#tryOnGarment");
   garment.src = product.tryOnImage || product.image;
   garment.classList.toggle("uncut", !product.tryOnImage);
@@ -491,12 +490,12 @@ function setupTryOn() {
     if (!file) return;
     if (tryOnObjectUrl) URL.revokeObjectURL(tryOnObjectUrl);
     tryOnObjectUrl = URL.createObjectURL(file);
+    person.onload = () => autoFitTryOn();
     person.src = tryOnObjectUrl;
     person.hidden = false;
     empty.hidden = true;
     garment.hidden = false;
     resetTryOn();
-    person.onload = () => autoFitTryOn();
   };
   $("#tryOnScale").oninput = event => { tryOnState.scale = Number(event.target.value); updateTryOnTransform(); };
   $("#tryOnVertical").oninput = event => { tryOnState.y = Number(event.target.value); updateTryOnTransform(); };
