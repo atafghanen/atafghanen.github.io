@@ -11,6 +11,20 @@ function notice(message, bad = false) {
   notice.timer = setTimeout(() => el.textContent = "", 4500);
 }
 
+function slugify(value) {
+  return String(value || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `kategorie-${Date.now()}`;
+}
+
+async function verifiedMutation(query, successMessage) {
+  const { data, error } = await query.select().single();
+  if (error) throw error;
+  if (!data) throw new Error("Die Änderung wurde nicht bestätigt. Bitte erneut anmelden.");
+  notice(successMessage);
+  return data;
+}
+
 async function requireAdmin() {
   const { data: { user } } = await db.auth.getUser();
   if (!user) return false;
@@ -53,9 +67,10 @@ async function saveSettings() {
   const content = {};
   ["hero_text","tailoring_text","story_text_1","story_text_2"].forEach(id => content[id] = $(`#${id}`).value.trim());
   const payload = { id:1, instagram:$("#instagram").value.trim(), tiktok:$("#tiktok").value.trim(), email:$("#email").value.trim(), whatsapp:$("#whatsapp").value.replace(/\D/g,""), content, updated_at:new Date().toISOString() };
-  const { error } = await db.from("site_settings").upsert(payload);
-  if (error) return notice(error.message, true);
-  state.settings = { ...state.settings, ...payload }; notice("Website-Inhalte gespeichert.");
+  try {
+    const saved = await verifiedMutation(db.from("site_settings").upsert(payload), "Website gespeichert – die normale Seite wird automatisch aktualisiert.");
+    state.settings = { ...state.settings, ...saved };
+  } catch (error) { notice(error.message, true); }
 }
 
 function renderCategories() {
@@ -102,7 +117,47 @@ async function upload(file, folder) {
   return db.storage.from("site-images").getPublicUrl(path).data.publicUrl;
 }
 
-async function addCategory() { const { error } = await db.from("categories").insert({ slug:`category-${Date.now()}`, name_de:"Neue Kategorie", name_en:"New category", name_ps:"", name_fa:"", sort_order:state.categories.length }); if (error) notice(error.message,true); else loadAdmin(); }
+function openCategoryDialog() {
+  const dialog = $("#categoryDialog");
+  $("#categoryForm").reset();
+  $("#categoryPreview").textContent = "Neue Kategorie";
+  $("#categoryFormError").textContent = "";
+  dialog.showModal();
+  $("#categoryNameDe").focus();
+}
+
+function closeCategoryDialog() { $("#categoryDialog").close(); }
+
+$("#categoryNameDe").addEventListener("input", event => {
+  $("#categoryPreview").textContent = event.target.value.trim() || "Neue Kategorie";
+});
+$("#closeCategoryDialog").addEventListener("click", closeCategoryDialog);
+$("#cancelCategory").addEventListener("click", closeCategoryDialog);
+$("#categoryDialog").addEventListener("click", event => {
+  if (event.target === event.currentTarget) closeCategoryDialog();
+});
+$("#categoryForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const submit = event.currentTarget.querySelector('[type="submit"]');
+  const nameDe = $("#categoryNameDe").value.trim();
+  const payload = {
+    slug: `${slugify(nameDe)}-${Date.now().toString().slice(-5)}`,
+    name_de: nameDe,
+    name_en: $("#categoryNameEn").value.trim() || nameDe,
+    name_ps: $("#categoryNamePs").value.trim(),
+    name_fa: $("#categoryNameFa").value.trim(),
+    sort_order: state.categories.length,
+    active: true
+  };
+  try {
+    submit.disabled = true;
+    submit.textContent = "Wird erstellt …";
+    await verifiedMutation(db.from("categories").insert(payload), "Kategorie gespeichert und auf der Webseite veröffentlicht.");
+    closeCategoryDialog();
+    await loadAdmin();
+  } catch (error) { $("#categoryFormError").textContent = error.message; }
+  finally { submit.disabled = false; submit.textContent = "Kategorie erstellen"; }
+});
 async function addProduct() { const { error } = await db.from("products").insert({ name_de:"Neues Produkt", name_en:"New product", category:state.categories[0]?.slug || "new", price:0, image_url:"https://placehold.co/800x1000/f3b6c8/76223b?text=AT+Elegance", sort_order:state.products.length }); if (error) notice(error.message,true); else loadAdmin(); }
 
 async function addGallery(files) {
@@ -114,12 +169,12 @@ document.addEventListener("click", async event => {
   const button = event.target.closest("button"); if (!button) return;
   try {
     if (button.id === "saveSettings") return saveSettings();
-    if (button.id === "addCategory") return addCategory();
+    if (button.id === "addCategory") return openCategoryDialog();
     if (button.id === "addProduct") return addProduct();
     const row = button.closest("[data-id]"); const id = row?.dataset.id;
-    if (button.hasAttribute("data-save-category")) { const payload={}; row.querySelectorAll("[data-k]").forEach(i=>payload[i.dataset.k]=i.value.trim()); const {error}=await db.from("categories").update(payload).eq("id",id); if(error)throw error; notice("Kategorie gespeichert."); }
+    if (button.hasAttribute("data-save-category")) { const payload={updated_at:new Date().toISOString()}; row.querySelectorAll("[data-k]").forEach(i=>payload[i.dataset.k]=i.value.trim()); await verifiedMutation(db.from("categories").update(payload).eq("id",id),"Kategorie gespeichert und auf der Webseite aktualisiert."); await loadAdmin(); }
     if (button.hasAttribute("data-delete-category") && confirm("Kategorie wirklich löschen?")) { const {error}=await db.from("categories").delete().eq("id",id); if(error)throw error; loadAdmin(); }
-    if (button.hasAttribute("data-save-product")) { const payload={}; row.querySelectorAll("[data-k]").forEach(i=>payload[i.dataset.k]=i.type==="checkbox"?i.checked:(i.type==="number"?(i.value===""?null:Number(i.value)):i.value.trim())); const {error}=await db.from("products").update(payload).eq("id",id); if(error)throw error; notice("Produkt gespeichert."); }
+    if (button.hasAttribute("data-save-product")) { const payload={updated_at:new Date().toISOString()}; row.querySelectorAll("[data-k]").forEach(i=>payload[i.dataset.k]=i.type==="checkbox"?i.checked:(i.type==="number"?(i.value===""?null:Number(i.value)):i.value.trim())); await verifiedMutation(db.from("products").update(payload).eq("id",id),"Produkt gespeichert und auf der Webseite aktualisiert."); await loadAdmin(); }
     if (button.hasAttribute("data-delete-product") && confirm("Produkt und alle zusätzlichen Medien löschen?")) { const {error}=await db.from("products").delete().eq("id",id); if(error)throw error; loadAdmin(); }
     if (button.dataset.deleteProductMedia && confirm("Medium löschen?")) { const {error}=await db.from("product_media").delete().eq("id",button.dataset.deleteProductMedia); if(error)throw error; loadAdmin(); }
     if (button.hasAttribute("data-save-gallery")) { const title=row.querySelector('[data-k="title"]').value.trim(); const {error}=await db.from("gallery").update({title}).eq("id",id); if(error)throw error; notice("Galerieeintrag gespeichert."); }
@@ -138,3 +193,4 @@ document.addEventListener("change", async event => {
 });
 
 window.loadAdmin = loadAdmin;
+
