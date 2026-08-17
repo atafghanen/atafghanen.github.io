@@ -45,7 +45,7 @@
       <div class="hero-content">
         <p class="eyebrow" data-i18n="hero.eyebrow">AFGHAN FASHION · SINCE 2022</p>
         <h1 data-i18n="hero.title">Timeless beauty.<br><span>Made for you.</span></h1>
-        <p class="hero-text" data-i18n="hero.text">Afghanische Eleganz, neu interpretiert – mit Liebe zum Detail, eigener Schneiderei und weltweiter Lieferung.</p>
+        <p class="hero-text" data-i18n="hero.text" data-content="hero_text">Afghanische Eleganz, neu interpretiert – mit Liebe zum Detail, eigener Schneiderei und weltweiter Lieferung.</p>
         <div class="hero-actions">
           <a class="btn btn-gold" href="#collection" data-i18n="hero.cta">Kollektion entdecken</a>
           <a class="btn btn-ghost" href="#tailoring" data-i18n="hero.custom">Maßanfertigung</a>
@@ -83,7 +83,7 @@
       <div class="split-content">
         <p class="eyebrow" data-i18n="tailoring.eyebrow">PERSONAL TAILORING</p>
         <h2 data-i18n="tailoring.title">Dein Kleid.<br>Deine Maße.<br>Dein Auftritt.</h2>
-        <p data-i18n="tailoring.text">Du möchtest etwas ganz Besonderes? Wir fertigen ausgewählte Designs individuell nach deinen Maßen an. Gemeinsam besprechen wir Schnitt, Stoff, Farben und Details.</p>
+        <p data-i18n="tailoring.text" data-content="tailoring_text">Du möchtest etwas ganz Besonderes? Wir fertigen ausgewählte Designs individuell nach deinen Maßen an. Gemeinsam besprechen wir Schnitt, Stoff, Farben und Details.</p>
         <ul class="feature-list">
           <li data-i18n="tailoring.item1">Individuelle Maße</li>
           <li data-i18n="tailoring.item2">Ausgewählte Stoffe</li>
@@ -99,8 +99,8 @@
       <div class="story-content">
         <p class="eyebrow" data-i18n="story.eyebrow">OUR STORY</p>
         <h2 data-i18n="story.title">Tradition trifft moderne Eleganz.</h2>
-        <p data-i18n="story.text1">Seit 2022 widmen wir uns der Herstellung und Lieferung hochwertiger afghanischer Kleidung. Mit eigenen Schneidereien in Afghanistan verbinden wir traditionelle Handwerkskunst mit einem modernen Anspruch.</p>
-        <p data-i18n="story.text2">Dabei möchten wir schöne Mode zugänglich halten und gleichzeitig Arbeitsplätze schaffen und Familien vor Ort unterstützen.</p>
+        <p data-i18n="story.text1" data-content="story_text_1">Seit 2022 widmen wir uns der Herstellung und Lieferung hochwertiger afghanischer Kleidung. Mit eigenen Schneidereien in Afghanistan verbinden wir traditionelle Handwerkskunst mit einem modernen Anspruch.</p>
+        <p data-i18n="story.text2" data-content="story_text_2">Dabei möchten wir schöne Mode zugänglich halten und gleichzeitig Arbeitsplätze schaffen und Familien vor Ort unterstützen.</p>
         <div class="story-stats">
           <div><strong>2022</strong><span data-i18n="stats.since">Seitdem aktiv</span></div>
           <div><strong>∞</strong><span data-i18n="stats.designs">Design-Möglichkeiten</span></div>
@@ -143,7 +143,7 @@
     </div>
     <div class="footer-links">
       <h4 data-i18n="footer.contact">Kontakt</h4>
-      <a href="mailto:info@ateveningelegance.com">info@ateveningelegance.com</a>
+      <a id="contactEmail" href="mailto:info@ateveningelegance.com">info@ateveningelegance.com</a>
       <span>Worldwide Shipping</span>
     </div>
     <div class="footer-social">
@@ -187,13 +187,14 @@
     <button class="close-modal" data-close>×</button>
     <p class="eyebrow" data-i18n="request.eyebrow">PERSONAL REQUEST</p>
     <h2 data-i18n="request.title">Bestellanfrage</h2>
-    <p class="modal-note" data-i18n="request.note">Fülle das Formular aus. Es öffnet sich anschließend eine vorbereitete E-Mail mit deiner Anfrage.</p>
+    <p class="modal-note">Fülle deine Daten aus. Danach öffnet sich WhatsApp mit der vollständigen Bestellung.</p>
     <form id="requestForm" class="request-form">
       <input name="name" required data-placeholder="request.name" placeholder="Name">
       <input name="email" type="email" required data-placeholder="request.email" placeholder="E-Mail">
-      <input name="size" data-placeholder="request.size" placeholder="Größe / Maße">
-      <textarea name="message" rows="5" data-placeholder="request.message" placeholder="Nachricht"></textarea>
-      <button class="btn btn-gold full" type="submit" data-i18n="request.submit">Anfrage vorbereiten</button>
+      <input name="phone" type="tel" required placeholder="Telefonnummer">
+      <textarea name="address" rows="3" required placeholder="Lieferadresse"></textarea>
+      <textarea name="message" rows="4" data-placeholder="request.message" placeholder="Größe, Maße oder weitere Hinweise"></textarea>
+      <button class="btn btn-gold full" type="submit">Über WhatsApp bestellen</button>
     </form>
   </div>
 </div>

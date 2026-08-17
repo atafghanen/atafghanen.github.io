@@ -35,6 +35,7 @@ let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DAT
 let lang = localStorage.getItem("atEELang") || "de";
 let cart = JSON.parse(localStorage.getItem("atEECart") || "[]");
 let currentCategory = "all";
+let productMedia = [];
 
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
@@ -93,15 +94,24 @@ async function loadDataFromSupabase() {
     }
 
     // 2. Products
-    const { data: productsData } = await supabaseClient.from("products").select("*");
+    const { data: productsData } = await supabaseClient.from("products").select("*").order("sort_order");
     if (productsData && productsData.length > 0) {
-      data.products = productsData;
+      data.products = productsData.map(p => ({
+        ...p,
+        name: { de: p.name_de, en: p.name_en, ps: p.name_ps, fa: p.name_fa },
+        description: { de: p.description_de, en: p.description_en, ps: p.description_ps, fa: p.description_fa },
+        oldPrice: p.old_price,
+        image: p.image_url
+      }));
     }
 
+    const { data: mediaData } = await supabaseClient.from("product_media").select("*").order("sort_order");
+    productMedia = mediaData || [];
+
     // 3. Gallery
-    const { data: galleryData } = await supabaseClient.from("gallery").select("*");
+    const { data: galleryData } = await supabaseClient.from("gallery").select("*").order("sort_order");
     if (galleryData && galleryData.length > 0) {
-      data.gallery = galleryData.map(item => item.url || item.image_url || item);
+      data.gallery = galleryData;
     }
   } catch (err) {
     console.warn("Laden von Supabase fehlgeschlagen, verwende lokale/Standard-Daten.", err);
@@ -111,11 +121,17 @@ async function loadDataFromSupabase() {
 }
 
 function applyBranding() {
-  const logo = data.settings.logo || "assets/logo.gif";
+  const logo = data.settings.logo_url || data.settings.logo || "assets/logo.gif";
   $$(".logo-spin, .footer-logo, .hero-logo").forEach(img => { img.src = logo; });
 
   if (data.settings.instagram) $("#instagramLink").href = data.settings.instagram;
   if (data.settings.tiktok) $("#tiktokLink").href = data.settings.tiktok;
+  if (data.settings.email) $("#contactEmail").textContent = data.settings.email;
+  const content = data.settings.content || {};
+  $$('[data-content]').forEach(el => {
+    const value = content[el.dataset.content];
+    if (value) el.textContent = value;
+  });
 }
 
 function applyLang() {
@@ -201,11 +217,15 @@ function renderGallery() {
   const galleryEl = $("#galleryGrid");
   if (!galleryEl) return;
 
-  galleryEl.innerHTML = data.gallery.map((src, i) => `
+  galleryEl.innerHTML = data.gallery.map((item, i) => {
+    const src = typeof item === "string" ? item : item.image_url;
+    return `
     <div class="gallery-item">
-      <img loading="lazy" src="${esc(src)}" alt="AT Evening Elegance ${i + 1}">
+      ${item.media_type === "video"
+        ? `<video controls playsinline preload="metadata" ${item.poster_url ? `poster="${esc(item.poster_url)}"` : ""}><source src="${esc(src)}"></video>`
+        : `<img loading="lazy" src="${esc(src)}" alt="${esc(item.title || `AT Evening Elegance ${i + 1}`)}">`}
     </div>
-  `).join("");
+  `}).join("");
 }
 
 function openModal(id) {
@@ -231,9 +251,12 @@ function openProduct(id) {
   const p = data.products.find(x => x.id === id);
   if (!p) return;
 
+  const media = [{ media_type: "image", url: p.image }, ...productMedia.filter(m => m.product_id === id)];
+  const description = p.description?.[lang] || p.description?.de || uiText("detail");
   $("#productModalContent").innerHTML = `
     <div class="product-detail">
-      <img src="${esc(p.image)}" alt="${esc(name(p))}">
+      <div><div class="product-main-media">${media[0].media_type === "video" ? `<video controls playsinline src="${esc(media[0].url)}"></video>` : `<img src="${esc(media[0].url)}" alt="${esc(name(p))}">`}</div>
+      ${media.length > 1 ? `<div class="media-thumbs">${media.map((m, i) => `<button data-media="${i}">${m.media_type === "video" ? "▶" : `<img src="${esc(m.url)}" alt="">`}</button>`).join("")}</div>` : ""}</div>
       <div>
         <p class="eyebrow">${esc(categoryLabel(p.category))}</p>
         <h2>${esc(name(p))}</h2>
@@ -241,7 +264,7 @@ function openProduct(id) {
           <strong>€${Number(p.price).toFixed(0)}</strong>
           ${p.oldPrice ? `<span class="old-price">€${Number(p.oldPrice).toFixed(0)}</span>` : ""}
         </div>
-        <p>${uiText("detail")}</p>
+        <p>${esc(description)}</p>
         <div class="size-row">
           ${["XS", "S", "M", "L", "XL"].map(s => `<button class="size-btn">${s}</button>`).join("")}
           <button class="size-btn" data-custom>${uiText("custom")}</button>
@@ -250,6 +273,13 @@ function openProduct(id) {
       </div>
     </div>
   `;
+
+  $$('[data-media]').forEach(button => button.onclick = () => {
+    const m = media[Number(button.dataset.media)];
+    $(".product-main-media").innerHTML = m.media_type === "video"
+      ? `<video controls autoplay playsinline src="${esc(m.url)}"></video>`
+      : `<img src="${esc(m.url)}" alt="${esc(name(p))}">`;
+  });
 
   $$("#productModalContent .size-btn").forEach(b => b.onclick = () => {
     $$("#productModalContent .size-btn").forEach(x => x.classList.remove("selected"));
@@ -310,16 +340,23 @@ function openRequest() {
   openModal("#requestModal");
 }
 
-function sendOrderToWhatsApp() {
+async function sendOrderToWhatsApp(form) {
   const items = cart.map(id => data.products.find(p => p.id === id)).filter(Boolean);
   if (!items.length) {
     renderCart();
     return;
   }
 
-  const lines = items.map((p, i) => `${i + 1}. ${name(p)} – €${Number(p.price).toFixed(0)}`).join("\n");
+  const grouped = items.reduce((map, p) => map.set(p.id, { product: p, qty: (map.get(p.id)?.qty || 0) + 1 }), new Map());
+  const lines = [...grouped.values()].map(({ product: p, qty }) => `• ${name(p)} | ${qty} × €${Number(p.price).toFixed(2)} = €${(qty * Number(p.price)).toFixed(2)}`).join("\n");
   const total = items.reduce((s, p) => s + Number(p.price), 0);
-  const msg = `AT Evening Elegance – Bestellanfrage\n\n${lines}\n\nGesamt: €${total.toFixed(0)}\n\nIch möchte diese Bestellung gerne anfragen. Bitte bestätigen Sie Verfügbarkeit, Größe/Maße und Versand.`;
+  const fd = new FormData(form);
+  const customer = {
+    name: String(fd.get("name") || "").trim(), phone: String(fd.get("phone") || "").trim(),
+    email: String(fd.get("email") || "").trim(), address: String(fd.get("address") || "").trim(),
+    notes: String(fd.get("message") || "").trim()
+  };
+  const msg = `AT Evening Elegance – Bestellung\n\nKundin/Kunde: ${customer.name}\nTelefon: ${customer.phone}\nE-Mail: ${customer.email}\nAdresse: ${customer.address}\n\nWARENKORB\n${lines}\n\nGesamt: €${total.toFixed(2)}\n\nNotiz: ${customer.notes || "–"}`;
 
   const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "");
   if (!number) {
@@ -332,7 +369,12 @@ function sendOrderToWhatsApp() {
     return;
   }
 
-  window.open(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`, "_blank");
+  const orderItems = [...grouped.values()].map(({ product: p, qty }) => ({ product_id: p.id, name: name(p), quantity: qty, unit_price: Number(p.price) }));
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from("orders").insert({ customer_name: customer.name, phone: customer.phone, email: customer.email, address: customer.address, notes: customer.notes, items: orderItems, total });
+    if (error) console.warn("Bestellung konnte nicht protokolliert werden", error);
+  }
+  window.open(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
 }
 
 function setup() {
@@ -371,17 +413,17 @@ function setup() {
   if (ctaBtn) ctaBtn.onclick = openRequest;
 
   const orderBtn = $("#orderButton");
-  if (orderBtn) orderBtn.onclick = sendOrderToWhatsApp;
+  if (orderBtn) orderBtn.onclick = () => {
+    if (!cart.length) return;
+    closeModal(orderBtn);
+    openRequest();
+  };
 
   const requestForm = $("#requestForm");
   if (requestForm) {
-    requestForm.onsubmit = e => {
+    requestForm.onsubmit = async e => {
       e.preventDefault();
-      const fd = new FormData(e.target);
-      const items = cart.map(id => name(data.products.find(p => p.id === id))).filter(Boolean).join(", ");
-      const subject = encodeURIComponent(lang === "de" ? "Bestellanfrage – AT Evening Elegance" : "Order request – AT Evening Elegance");
-      const body = encodeURIComponent(`Name: ${fd.get("name")}\nEmail: ${fd.get("email")}\nSize: ${fd.get("size")}\nProducts: ${items}\n\n${fd.get("message")}`);
-      location.href = `mailto:${data.settings.email || "info@ateveningelegance.com"}?subject=${subject}&body=${body}`;
+      await sendOrderToWhatsApp(e.target);
     };
   }
 
