@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=17">
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
@@ -173,30 +173,37 @@
   <div class="modal-backdrop"></div>
   <div class="modal-panel tryon-modal-panel">
     <button class="close-modal" data-close>×</button>
-    <p class="eyebrow">KOSTENLOSE VORSCHAU</p>
+    <p class="eyebrow" id="tryOnEyebrow">KOSTENLOSE VORSCHAU</p>
     <h2 id="tryOnTitle">Virtuelle Anprobe</h2>
-    <p class="modal-note" id="tryOnHint">Das Foto bleibt auf deinem Gerät.</p>
-    <p class="tryon-privacy">🔒 Dein Foto wird nirgendwo gespeichert oder hochgeladen. Es bleibt nur auf deinem Handy bzw. Gerät und wird beim Schließen über das × sofort aus der Anprobe gelöscht.</p>
-    <label class="btn btn-gold tryon-upload"><span id="tryOnUploadLabel">Ganzkörperfoto auswählen</span><input id="tryOnPhoto" type="file" accept="image/*"></label>
-    <p class="tryon-fallback" id="tryOnFallback" hidden>Für dieses ältere Produkt wurde noch kein freigestelltes Anprobe-Bild erzeugt. Im Admin-Bereich kannst du es automatisch erstellen.</p>
-    <div class="tryon-stage">
-      <div class="tryon-empty" id="tryOnEmpty">
-        <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=700&q=80" alt="Beispiel einer virtuellen Kleideranprobe">
-        <div><strong>Beispielansicht</strong><span>Lade ein Ganzkörperfoto von vorne hoch.</span></div>
+    <p class="modal-note" id="tryOnHint"></p>
+    <p class="tryon-privacy" id="tryOnPrivacy"></p>
+
+    <div class="tryon-layout">
+      <figure class="tryon-example-card">
+        <img id="tryOnExampleImage" alt="">
+        <figcaption><strong id="tryOnExampleTitle">Beispiel</strong><span id="tryOnExampleHint"></span></figcaption>
+      </figure>
+
+      <div class="tryon-workspace">
+        <label class="btn btn-gold tryon-upload"><span id="tryOnUploadLabel">Ganzkörperfoto auswählen</span><input id="tryOnPhoto" type="file" accept="image/*"></label>
+        <p class="tryon-fallback" id="tryOnFallback" hidden></p>
+        <div class="tryon-stage">
+          <div class="tryon-empty" id="tryOnEmpty">Hier erscheint dein Ganzkörperfoto.</div>
+          <img id="tryOnPerson" class="tryon-person" alt="" hidden>
+          <img id="tryOnGarment" class="tryon-garment" alt="" hidden>
+        </div>
+        <div class="tryon-controls">
+          <label><span id="tryOnSizeLabel">Größe</span><input id="tryOnScale" type="range" min="0.35" max="2.2" value="1" step="0.05"></label>
+          <label><span id="tryOnHeightLabel">Höhe</span><input id="tryOnVertical" type="range" min="-160" max="160" value="0" step="2"></label>
+          <div>
+            <button class="small-btn" id="tryOnRotateLeft" type="button">↶ Drehen</button>
+            <button class="small-btn" id="tryOnRotateRight" type="button">Drehen ↷</button>
+            <button class="small-btn" id="tryOnAutoFit" type="button">Automatisch anpassen</button>
+            <button class="small-btn" id="tryOnReset" type="button">Zurücksetzen</button>
+          </div>
+          <p class="modal-note" id="tryOnAutoStatus"></p>
+        </div>
       </div>
-      <img id="tryOnPerson" class="tryon-person" alt="Dein hochgeladenes Foto" hidden>
-      <img id="tryOnGarment" class="tryon-garment" alt="Kleid für virtuelle Anprobe" hidden>
-    </div>
-    <div class="tryon-controls">
-      <label>Größe <input id="tryOnScale" type="range" min="0.35" max="2.2" value="1" step="0.05"></label>
-      <label>Höhe <input id="tryOnVertical" type="range" min="-160" max="160" value="0" step="2"></label>
-      <div>
-        <button class="small-btn" id="tryOnRotateLeft" type="button">↶ Drehen</button>
-        <button class="small-btn" id="tryOnRotateRight" type="button">Drehen ↷</button>
-        <button class="small-btn" id="tryOnAutoFit" type="button">Automatisch anpassen</button>
-        <button class="small-btn" id="tryOnReset" type="button">Zurücksetzen</button>
-      </div>
-      <p class="modal-note" id="tryOnAutoStatus">Nach dem Hochladen wird das Kleid automatisch angepasst.</p>
     </div>
   </div>
 </div>
@@ -234,7 +241,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 
 </body>
 </html>
