@@ -345,7 +345,7 @@ async function autoFitTryOn() {
   if (!person?.src || person.hidden || !garment || !stage) return;
 
   try {
-    status.textContent = "Körper wird automatisch erkannt …";
+    status.textContent = tryOnText("detecting");
     const detector = await getPoseLandmarker();
     const result = detector.detect(person);
     const points = result.landmarks?.[0];
@@ -386,18 +386,34 @@ async function autoFitTryOn() {
     $("#tryOnScale").value = String(tryOnState.scale);
     $("#tryOnVertical").value = String(Math.max(-160, Math.min(160, tryOnState.y)));
     updateTryOnTransform();
-    status.textContent = "Automatisch angepasst. Du kannst das Kleid bei Bedarf noch verschieben.";
+    status.textContent = tryOnText("fitted");
   } catch (error) {
     console.warn("Automatische Körpererkennung nicht möglich", error);
-    status.textContent = "Körper nicht eindeutig erkannt. Bitte nutze ein Ganzkörperfoto von vorne oder passe das Kleid manuell an.";
+    status.textContent = tryOnText("notFound");
   }
 }
 
 function tryOnText(key) {
   const labels = {
-    open: { de:"Virtuell anprobieren", en:"Virtual try-on", ps:"مجازی یې وازمویئ", fa:"پرو مجازی" },
+    open: { de:"Virtuell anprobieren", en:"Virtual try-on", ps:"مجازی یې وازمویئ", fa:"پرو مجازی لباس" },
+    eyebrow: { de:"KOSTENLOSE VORSCHAU", en:"FREE PREVIEW", ps:"وړیا مخکتنه", fa:"پیش‌نمایش رایگان" },
+    hint: { de:"Links siehst du das Produkt. Rechts lädst du dein eigenes Ganzkörperfoto hoch.", en:"The product is shown on the left. Upload your own full-body photo on the right.", ps:"محصول په کیڼ اړخ کې وګورئ او خپل د ټول بدن انځور په ښي اړخ کې پورته کړئ.", fa:"محصول را در سمت چپ ببینید و عکس تمام‌قد خود را در سمت راست بارگذاری کنید." },
+    privacy: { de:"🔒 Dein Foto wird nirgendwo gespeichert oder hochgeladen. Es bleibt nur auf deinem Handy bzw. Gerät und wird beim Schließen über das × sofort aus der Anprobe gelöscht.", en:"🔒 Your photo is never saved or uploaded. It stays only on your phone or device and is deleted from the preview immediately when you close it with ×.", ps:"🔒 ستاسو انځور هېڅ ځای نه ساتل کېږي او نه پورته کېږي. یوازې ستاسو په موبایل یا وسیله کې پاتې کېږي او د × په تړلو سره سمدستي له مخکتنې حذف کېږي.", fa:"🔒 عکس شما در هیچ‌جا ذخیره یا بارگذاری نمی‌شود. فقط روی موبایل یا دستگاه شما می‌ماند و با بستن پنجره از طریق × فوراً از پیش‌نمایش حذف می‌شود." },
+    example: { de:"Beispiel", en:"Example", ps:"بېلګه", fa:"نمونه" },
+    exampleHint: { de:"So sieht das ausgewählte Produkt aus.", en:"This is the selected product.", ps:"ټاکل شوی محصول داسې ښکاري.", fa:"محصول انتخاب‌شده به این شکل است." },
     upload: { de:"Ganzkörperfoto auswählen", en:"Choose a full-body photo", ps:"د ټول بدن انځور وټاکئ", fa:"عکس تمام‌قد را انتخاب کنید" },
-    hint: { de:"Das Foto bleibt auf deinem Gerät. Ziehe das Kleid mit dem Finger an die richtige Stelle.", en:"Your photo stays on your device. Drag the dress into position.", ps:"ستاسو انځور ستاسو په وسیله کې پاتې کېږي.", fa:"عکس شما روی دستگاه خودتان باقی می‌ماند." }
+    fallback: { de:"Für dieses ältere Produkt wurde noch kein freigestelltes Anprobe-Bild erzeugt. Im Admin-Bereich kannst du es automatisch erstellen.", en:"A cut-out try-on image has not yet been created for this older product. You can create it automatically in the admin area.", ps:"د دې پخواني محصول لپاره لا شفاف انځور نه دی جوړ شوی. په اډمین برخه کې یې په اوتومات ډول جوړولی شئ.", fa:"برای این محصول قدیمی هنوز تصویر بدون پس‌زمینه ساخته نشده است. می‌توانید آن را در بخش مدیریت به‌صورت خودکار ایجاد کنید." },
+    empty: { de:"Hier erscheint dein Ganzkörperfoto.", en:"Your full-body photo will appear here.", ps:"ستاسو د ټول بدن انځور به دلته ښکاره شي.", fa:"عکس تمام‌قد شما اینجا نمایش داده می‌شود." },
+    size: { de:"Größe", en:"Size", ps:"اندازه", fa:"اندازه" },
+    height: { de:"Höhe", en:"Height", ps:"لوړوالی", fa:"ارتفاع" },
+    rotateLeft: { de:"↶ Drehen", en:"↶ Rotate", ps:"↶ وڅرخوئ", fa:"↶ چرخش" },
+    rotateRight: { de:"Drehen ↷", en:"Rotate ↷", ps:"وڅرخوئ ↷", fa:"چرخش ↷" },
+    auto: { de:"Automatisch anpassen", en:"Fit automatically", ps:"اوتومات برابرول", fa:"تنظیم خودکار" },
+    reset: { de:"Zurücksetzen", en:"Reset", ps:"بیا تنظیم", fa:"بازنشانی" },
+    waiting: { de:"Nach dem Hochladen wird das Kleid automatisch angepasst.", en:"The dress will be fitted automatically after upload.", ps:"له پورته کولو وروسته به کالي په اوتومات ډول برابر شي.", fa:"پس از بارگذاری، لباس به‌صورت خودکار تنظیم می‌شود." },
+    detecting: { de:"Körper wird automatisch erkannt …", en:"Detecting your body automatically …", ps:"بدن په اوتومات ډول پېژندل کېږي …", fa:"بدن به‌صورت خودکار شناسایی می‌شود …" },
+    fitted: { de:"Automatisch angepasst. Du kannst das Kleid bei Bedarf noch verschieben.", en:"Fitted automatically. You can still move the dress if needed.", ps:"په اوتومات ډول برابر شو. که اړتیا وي کالي خوځولی شئ.", fa:"به‌صورت خودکار تنظیم شد. در صورت نیاز می‌توانید لباس را جابه‌جا کنید." },
+    notFound: { de:"Körper nicht eindeutig erkannt. Bitte nutze ein Ganzkörperfoto von vorne oder passe das Kleid manuell an.", en:"Your body could not be detected clearly. Use a front-facing full-body photo or adjust the dress manually.", ps:"بدن روښانه ونه پېژندل شو. له مخ څخه د ټول بدن انځور وکاروئ یا کالي په لاس برابر کړئ.", fa:"بدن به‌وضوح شناسایی نشد. از عکس تمام‌قد روبه‌رو استفاده کنید یا لباس را دستی تنظیم کنید." }
   };
   return labels[key]?.[lang] || labels[key]?.de || key;
 }
@@ -432,14 +448,29 @@ function clearTryOnPhoto() {
   if (garment) garment.hidden = true;
   if (empty) empty.hidden = false;
   const status = $("#tryOnAutoStatus");
-  if (status) status.textContent = "Nach dem Hochladen wird das Kleid automatisch angepasst.";
+  if (status) status.textContent = tryOnText("waiting");
   resetTryOn();
 }
 
 function openTryOn(product) {
   $("#tryOnTitle").textContent = name(product);
+  $("#tryOnEyebrow").textContent = tryOnText("eyebrow");
   $("#tryOnUploadLabel").textContent = tryOnText("upload");
   $("#tryOnHint").textContent = tryOnText("hint");
+  $("#tryOnPrivacy").textContent = tryOnText("privacy");
+  $("#tryOnExampleTitle").textContent = tryOnText("example");
+  $("#tryOnExampleHint").textContent = tryOnText("exampleHint");
+  $("#tryOnFallback").textContent = tryOnText("fallback");
+  $("#tryOnEmpty").textContent = tryOnText("empty");
+  $("#tryOnSizeLabel").textContent = tryOnText("size");
+  $("#tryOnHeightLabel").textContent = tryOnText("height");
+  $("#tryOnRotateLeft").textContent = tryOnText("rotateLeft");
+  $("#tryOnRotateRight").textContent = tryOnText("rotateRight");
+  $("#tryOnAutoFit").textContent = tryOnText("auto");
+  $("#tryOnReset").textContent = tryOnText("reset");
+  $("#tryOnAutoStatus").textContent = tryOnText("waiting");
+  $("#tryOnExampleImage").src = product.image;
+  $("#tryOnExampleImage").alt = name(product);
   const garment = $("#tryOnGarment");
   garment.src = product.tryOnImage || product.image;
   garment.classList.toggle("uncut", !product.tryOnImage);
