@@ -1,7 +1,7 @@
 const db = window.supabaseClient;
 const $ = s => document.querySelector(s);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let state = { settings: {}, categories: [], products: [], gallery: [], media: [], orders: [] };
+let state = { settings: {}, categories: [], products: [], gallery: [], media: [], orders: [], tryonRequests: [] };
 let orderNotificationsChannel = null;
 
 function notice(message, bad = false) {
@@ -40,17 +40,18 @@ async function requireAdmin() {
 async function loadAdmin() {
   try {
     if (!await requireAdmin()) return;
-    const [settings, categories, products, gallery, media, orders] = await Promise.all([
+    const [settings, categories, products, gallery, media, orders, tryonRequests] = await Promise.all([
       db.from("site_settings").select("*").eq("id", 1).single(),
       db.from("categories").select("*").order("sort_order"),
       db.from("products").select("*").order("sort_order"),
       db.from("gallery").select("*").order("sort_order"),
       db.from("product_media").select("*").order("sort_order"),
-      db.from("orders").select("*").order("created_at", { ascending: false }).limit(50)
+      db.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
+      db.from("tryon_edit_requests").select("*").order("created_at", { ascending: false })
     ]);
-    const failed = [settings,categories,products,gallery,media,orders].find(r => r.error);
+    const failed = [settings,categories,products,gallery,media,orders,tryonRequests].find(r => r.error);
     if (failed) throw failed.error;
-    state = { settings: settings.data || {}, categories: categories.data || [], products: products.data || [], gallery: gallery.data || [], media: media.data || [], orders: orders.data || [] };
+    state = { settings: settings.data || {}, categories: categories.data || [], products: products.data || [], gallery: gallery.data || [], media: media.data || [], orders: orders.data || [], tryonRequests: tryonRequests.data || [] };
     renderAll();
     setupOrderNotifications();
   } catch (error) { notice(error.message, true); }
@@ -121,10 +122,16 @@ function categoryOptions(value) { return state.categories.map(c => `<option valu
 
 function productEditorMarkup(p) {
   const media = state.media.filter(m => m.product_id === p.id);
+  const editRequest = state.tryonRequests.find(r => r.product_id === p.id);
   return `<article class="product-editor" data-id="${p.id}">
     <div class="product-preview"><img src="${esc(p.image_url)}" alt=""><label>Hauptbild<input type="file" accept="image/*" data-product-main></label>
       <div class="tryon-admin-status ${p.tryon_image_url ? "ready" : ""}">${p.tryon_image_url ? `<img src="${esc(p.tryon_image_url)}" alt=""><span>Anprobe-Bild bereit</span>` : "<span>Noch kein Anprobe-Bild</span>"}</div>
-      <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button></div>
+      <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button>
+      <div class="codex-edit-request">
+        <strong>Von Codex sauber freistellen lassen</strong>
+        <span>${editRequest ? `Status: ${esc(editRequest.status)} · hochgeladen am ${new Date(editRequest.created_at).toLocaleDateString("de-DE")}` : "Noch kein Bild zur Bearbeitung geschickt."}</span>
+        <label class="upload">Bild zur Bearbeitung hochladen<input type="file" accept="image/jpeg,image/png,image/webp" data-codex-edit-request></label>
+      </div></div>
     <div class="product-fields">
       <div class="input-grid"><input data-k="name_de" value="${esc(p.name_de)}" placeholder="Name Deutsch"><input data-k="name_en" value="${esc(p.name_en)}" placeholder="Name Englisch"><input data-k="name_ps" value="${esc(p.name_ps)}" placeholder="Name Pashto"><input data-k="name_fa" value="${esc(p.name_fa)}" placeholder="Name Dari"></div>
       <div class="input-grid"><textarea data-k="description_de" placeholder="Beschreibung Deutsch">${esc(p.description_de)}</textarea><textarea data-k="description_en" placeholder="Beschreibung Englisch">${esc(p.description_en)}</textarea><textarea data-k="description_ps" placeholder="Beschreibung Pashto">${esc(p.description_ps)}</textarea><textarea data-k="description_fa" placeholder="Beschreibung Dari">${esc(p.description_fa)}</textarea></div>
@@ -313,6 +320,22 @@ document.addEventListener("change", async event => {
     if (event.target.id === "galleryUpload") return addGallery([...event.target.files]);
     if (event.target.id === "logoFile" && event.target.files[0]) { const url=await upload(event.target.files[0],"brand"); const {error}=await db.from("site_settings").update({logo_url:url}).eq("id",1); if(error)throw error; await loadAdmin(); notice("Logo ersetzt."); }
     const product = event.target.closest(".product-editor");
+    if (product && event.target.matches("[data-codex-edit-request]") && event.target.files[0]) {
+      const file = event.target.files[0];
+      if (file.size > 12 * 1024 * 1024) throw new Error("Das Bild darf höchstens 12 MB groß sein.");
+      event.target.disabled = true;
+      try {
+        const url = await upload(file, "tryon-requests");
+        const existing = state.tryonRequests.find(r => r.product_id === product.dataset.id && r.status !== "cancelled");
+        const payload = { product_id:product.dataset.id, source_url:url, status:"pending", updated_at:new Date().toISOString() };
+        const query = existing ? db.from("tryon_edit_requests").update(payload).eq("id", existing.id) : db.from("tryon_edit_requests").insert(payload);
+        const { error } = await query;
+        if (error) throw error;
+        await loadAdmin();
+        notice("Bild wurde für Codex hinterlegt. Schreibe mir jetzt die Produktnummer im Chat.");
+      } finally { event.target.disabled = false; }
+      return;
+    }
     if (product && event.target.matches("[data-product-main]") && event.target.files[0]) {
       event.target.disabled = true;
       try { await processMainProductImage(event.target.files[0], product.dataset.id); }
