@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=27">
 </head>
 <body>
 
@@ -30,10 +30,13 @@
       <a href="#contact" data-i18n="nav.contact">Kontakt</a>
     </nav>
     <div class="header-actions">
-      <button class="header-photo-btn" type="button" onclick="document.getElementById('wishPhotoButton').click()">Wunschkleid nach Foto</button>
       <div class="top-social-links" aria-label="Social Media">
-        <a id="headerInstagramLink" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">IG</a>
-        <a id="headerTiktokLink" href="#" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok">TT</a>
+        <a id="headerInstagramLink" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle class="social-dot" cx="17.4" cy="6.7" r="1.1"></circle></svg>
+        </a>
+        <a id="headerTiktokLink" href="#" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v11.1a4.6 4.6 0 1 1-3.5-4.46v3.02a1.75 1.75 0 1 0 .5 1.23V3h3Zm0 0c.45 2.8 2.05 4.45 4.7 4.75v3.03c-1.8-.05-3.38-.7-4.7-1.84V3Z"></path></svg>
+        </a>
       </div>
       <select id="languageSelect" class="language" aria-label="Language">
         <option value="de">DE</option>
@@ -70,14 +73,10 @@
     </section>
 
     <section class="mission-intro" aria-label="Unsere Mission">
-      <div class="mission-intro-founder">
-        <span>GEGRÜNDET IN DEUTSCHLAND VON</span>
-        <strong>Muhammad Ali Tajik</strong>
-      </div>
       <div class="mission-intro-copy">
         <p class="eyebrow">UNSERE VISION</p>
-        <h2>Afghanische Tradition trifft deutsche Qualitätsansprüche.</h2>
-        <p>Alle Arten von Kleidern an einem Ort – fair im Preis, direkt vom Hersteller und mit dem Ziel, Handwerk, kleine Betriebe und Arbeitsplätze in Afghanistan zu stärken.</p>
+        <h2>Tradition, Stil und Qualität an einem Ort.</h2>
+        <p>Von afghanischen Kleidern über Abendkleider und Hijabs bis zu weiteren individuellen Designs – fair im Preis, direkt vom Hersteller und mit dem Ziel, Handwerk, kleine Betriebe und Arbeitsplätze in Afghanistan zu stärken.</p>
       </div>
       <a class="btn btn-gold" href="#materials">Unsere Mission entdecken</a>
     </section>
@@ -88,7 +87,7 @@
           <p class="eyebrow" data-i18n="collection.eyebrow">THE COLLECTION</p>
           <h2 data-i18n="collection.title">Eleganz, die bleibt.</h2>
         </div>
-        <p class="section-intro" data-i18n="collection.intro">Entdecke ausgewählte afghanische Kleider. Verfügbar aus unserem Lager oder individuell nach deinen Maßen gefertigt.</p>
+        <p class="section-intro" data-i18n="collection.intro">Entdecke afghanische Kleider, Abendkleider, Hijabs und weitere Mode. Verfügbar aus unserem Lager oder individuell nach deinen Wünschen gefertigt.</p>
       </div>
       <div class="wish-photo-feature">
         <div>
@@ -163,15 +162,10 @@
           <p class="founder-name">Gegründet von <strong>Muhammad Ali Tajik</strong></p>
         </div>
         <div class="mission-copy">
-          <p><strong>Unser Ziel:</strong> Bei AT Afghanen kommen afghanische Tradition, deutsche Qualitätsansprüche und eine gemeinsame Zukunft zusammen. Du sollst afghanische Kleider, Abendmode, Festmode und individuelle Designs an einem Ort finden – zu fairen Preisen.</p>
+          <p><strong>Unser Ziel:</strong> Bei AT Afghanen kommen Tradition, moderne Mode, deutsche Qualitätsansprüche und eine gemeinsame Zukunft zusammen. Du sollst afghanische Kleider, Abendkleider, Hijabs, Festmode und individuelle Designs an einem Ort finden – zu fairen Preisen.</p>
           <p>Wir arbeiten direkt mit Herstellern und Schneidereien in Afghanistan. Dadurch vermeiden wir unnötige Kosten für Zwischenhändler und Ladenflächen und können diesen Preisvorteil an dich weitergeben.</p>
           <p>Unser Ziel ist nicht nur Gewinn. Mit jeder Bestellung möchten wir kleine Betriebe, Handwerkskunst und neue Arbeitsmöglichkeiten in Afghanistan unterstützen und langfristig stärken.</p>
           <p>Das Unternehmen wurde in Deutschland von Muhammad Ali Tajik gegründet. Begonnen hat AT Afghanen mit Abendkleidern; heute erweitern wir das Angebot Schritt für Schritt um weitere Kleidungsarten.</p>
-        </div>
-        <div class="mission-quote">
-          <strong>Dein Wunschkleid nach Foto</strong>
-          <p>Schicke uns ein Bild des gewünschten Modells. Wir prüfen Stoff, Schnitt, Stickerei und Aufwand und erstellen dir einen unverbindlichen Preisvoranschlag.</p>
-          <button class="btn btn-gold" type="button" onclick="document.getElementById('wishPhotoButton').click()">Wunschkleid anfragen</button>
         </div>
       </div>
     </section>
@@ -187,13 +181,6 @@
       <div class="gallery-grid" id="galleryGrid"></div>
     </section>
 
-    <section class="cta-section">
-      <div>
-        <p class="eyebrow" data-i18n="cta.eyebrow">READY FOR YOUR LOOK?</p>
-        <h2 data-i18n="cta.title">Ein Kleid, das zu dir gehört.</h2>
-      </div>
-      <button class="btn btn-gold" id="ctaButton" data-i18n="cta.button">Bestellanfrage starten</button>
-    </section>
   </main>
 
   <footer id="contact" class="footer">
