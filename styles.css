@@ -173,3 +173,102 @@ img,video{max-width:100%}
 
 /* V19: uploaded customer photo must replace the empty state. */
 .tryon-empty[hidden],.tryon-person[hidden],.tryon-garment[hidden]{display:none!important}
+
+
+/* Stoffe & Mission */
+.materials-section {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(190, 145, 72, .10), transparent 34%),
+    var(--cream);
+}
+.materials-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.material-card {
+  min-height: 210px;
+  padding: 28px 24px;
+  border: 1px solid rgba(190, 145, 72, .28);
+  background: rgba(255, 255, 255, .55);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.material-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 16px 38px rgba(34, 26, 20, .08);
+}
+.material-card > span {
+  display: block;
+  margin-bottom: 32px;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: .18em;
+}
+.material-card h3 {
+  margin: 0 0 10px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 27px;
+  line-height: 1.05;
+}
+.material-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.mission-panel {
+  display: grid;
+  grid-template-columns: .7fr 1.3fr;
+  gap: 48px 64px;
+  margin-top: 56px;
+  padding: 52px;
+  color: #f7f1e7;
+  background: #1d1916;
+  border: 1px solid rgba(190, 145, 72, .45);
+}
+.mission-panel h2 {
+  margin: 0;
+  max-width: 420px;
+  color: #fff;
+}
+.mission-copy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
+}
+.mission-copy p {
+  margin: 0;
+  color: rgba(255,255,255,.74);
+  line-height: 1.75;
+}
+.mission-quote {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: .55fr 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(190, 145, 72, .35);
+}
+.mission-quote strong {
+  color: var(--gold);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 25px;
+}
+.mission-quote p {
+  margin: 0;
+  color: rgba(255,255,255,.72);
+  line-height: 1.65;
+}
+@media (max-width: 980px) {
+  .materials-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mission-panel { grid-template-columns: 1fr; padding: 38px; }
+  .mission-quote { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .materials-grid { grid-template-columns: 1fr; }
+  .material-card { min-height: auto; }
+  .mission-panel { padding: 28px 22px; gap: 32px; }
+  .mission-copy { grid-template-columns: 1fr; }
+}
