@@ -70,16 +70,16 @@ Object.assign(translations.fa, {
 });
 
 Object.assign(translations.de, {
-  "checkout.note":"Kontrolliere deinen Warenkorb. Name und Wunschtext sind freiwillig.","checkout.name":"Name (freiwillig)","checkout.message":"Wunschtext oder Hinweise (freiwillig)","checkout.submit":"Über WhatsApp bestellen","checkout.size":"Größe","checkout.chooseSize":"Bitte wähle zuerst eine Größe.","fallback.eyebrow":"BESTELLUNG GESPEICHERT","fallback.title":"WhatsApp im externen Browser öffnen","fallback.text":"TikTok und Instagram können WhatsApp blockieren. Deine Bestellung wurde gespeichert. Kopiere die Nachricht und sende sie in WhatsApp an die angezeigte Nummer.","fallback.number":"WhatsApp-Nummer","fallback.copy":"Nachricht kopieren","fallback.copied":"Nachricht kopiert","fallback.open":"WhatsApp öffnen","order.customer":"Name","order.cart":"WARENKORB","order.total":"Gesamt","order.note":"Wunschtext"
+  "checkout.note":"Kontrolliere deinen Warenkorb. Name und Wunschtext sind freiwillig.","checkout.name":"Name (freiwillig)","checkout.message":"Wunschtext oder Hinweise (freiwillig)","checkout.submit":"Über WhatsApp bestellen","checkout.size":"Größe","checkout.chooseSize":"Bitte wähle zuerst eine Größe.","fallback.eyebrow":"BESTELLUNG GESPEICHERT","fallback.title":"WhatsApp im externen Browser öffnen","fallback.text":"Deine Bestellung wurde gespeichert. Tippe auf „WhatsApp-App öffnen“. Falls TikTok den Wechsel blockiert, kopiere die Nachricht, öffne WhatsApp selbst und sende sie an die angezeigte Nummer.","fallback.number":"WhatsApp-Nummer","fallback.copy":"Nachricht kopieren","fallback.copied":"Nachricht kopiert","fallback.open":"WhatsApp-App öffnen","order.customer":"Name","order.cart":"WARENKORB","order.total":"Gesamt","order.note":"Wunschtext"
 });
 Object.assign(translations.en, {
-  "checkout.note":"Check your shopping bag. Name and request text are optional.","checkout.name":"Name (optional)","checkout.message":"Requests or notes (optional)","checkout.submit":"Order via WhatsApp","checkout.size":"Size","checkout.chooseSize":"Please select a size first.","fallback.eyebrow":"ORDER SAVED","fallback.title":"Open WhatsApp in an external browser","fallback.text":"TikTok and Instagram may block WhatsApp. Your order has been saved. Copy the message and send it in WhatsApp to the displayed number.","fallback.number":"WhatsApp number","fallback.copy":"Copy message","fallback.copied":"Message copied","fallback.open":"Open WhatsApp","order.customer":"Name","order.cart":"SHOPPING BAG","order.total":"Total","order.note":"Request"
+  "checkout.note":"Check your shopping bag. Name and request text are optional.","checkout.name":"Name (optional)","checkout.message":"Requests or notes (optional)","checkout.submit":"Order via WhatsApp","checkout.size":"Size","checkout.chooseSize":"Please select a size first.","fallback.eyebrow":"ORDER SAVED","fallback.title":"Open WhatsApp in an external browser","fallback.text":"Your order has been saved. Tap “Open WhatsApp app”. If TikTok blocks the switch, copy the message, open WhatsApp yourself and send it to the displayed number.","fallback.number":"WhatsApp number","fallback.copy":"Copy message","fallback.copied":"Message copied","fallback.open":"Open WhatsApp app","order.customer":"Name","order.cart":"SHOPPING BAG","order.total":"Total","order.note":"Request"
 });
 Object.assign(translations.ps, {
-  "checkout.note":"خپل د پېرود کڅوړه وګورئ. نوم او غوښتنه اختیاري دي.","checkout.name":"نوم (اختیاري)","checkout.message":"غوښتنه یا یادونه (اختیاري)","checkout.submit":"په WhatsApp کې فرمایش","checkout.size":"اندازه","checkout.chooseSize":"مهرباني وکړئ لومړی اندازه وټاکئ.","fallback.eyebrow":"فرمایش ثبت شو","fallback.title":"WhatsApp په بهرني براوزر کې پرانیزئ","fallback.text":"TikTok او Instagram کېدای شي WhatsApp بند کړي. فرمایش مو ثبت شو؛ پیغام کاپي او ښودل شوې شمېرې ته یې واستوئ.","fallback.number":"د WhatsApp شمېره","fallback.copy":"پیغام کاپي کړئ","fallback.copied":"پیغام کاپي شو","fallback.open":"WhatsApp پرانیزئ","order.customer":"نوم","order.cart":"د پېرود کڅوړه","order.total":"ټول","order.note":"غوښتنه"
+  "checkout.note":"خپل د پېرود کڅوړه وګورئ. نوم او غوښتنه اختیاري دي.","checkout.name":"نوم (اختیاري)","checkout.message":"غوښتنه یا یادونه (اختیاري)","checkout.submit":"په WhatsApp کې فرمایش","checkout.size":"اندازه","checkout.chooseSize":"مهرباني وکړئ لومړی اندازه وټاکئ.","fallback.eyebrow":"فرمایش ثبت شو","fallback.title":"WhatsApp په بهرني براوزر کې پرانیزئ","fallback.text":"ستاسو فرمایش ثبت شو. «WhatsApp اپ پرانیزئ» ووهئ. که TikTok یې بند کړي، پیغام کاپي کړئ، WhatsApp پخپله پرانیزئ او ښودل شوې شمېرې ته یې واستوئ.","fallback.number":"د WhatsApp شمېره","fallback.copy":"پیغام کاپي کړئ","fallback.copied":"پیغام کاپي شو","fallback.open":"WhatsApp اپ پرانیزئ","order.customer":"نوم","order.cart":"د پېرود کڅوړه","order.total":"ټول","order.note":"غوښتنه"
 });
 Object.assign(translations.fa, {
-  "checkout.note":"سبد خرید را بررسی کنید. نام و متن درخواست اختیاری است.","checkout.name":"نام (اختیاری)","checkout.message":"درخواست یا توضیحات (اختیاری)","checkout.submit":"سفارش با WhatsApp","checkout.size":"سایز","checkout.chooseSize":"لطفاً ابتدا سایز را انتخاب کنید.","fallback.eyebrow":"سفارش ذخیره شد","fallback.title":"WhatsApp را در مرورگر خارجی باز کنید","fallback.text":"TikTok و Instagram ممکن است WhatsApp را مسدود کنند. سفارش شما ذخیره شده است؛ پیام را کپی و به شماره نمایش‌داده‌شده ارسال کنید.","fallback.number":"شماره WhatsApp","fallback.copy":"کپی پیام","fallback.copied":"پیام کپی شد","fallback.open":"باز کردن WhatsApp","order.customer":"نام","order.cart":"سبد خرید","order.total":"مجموع","order.note":"درخواست"
+  "checkout.note":"سبد خرید را بررسی کنید. نام و متن درخواست اختیاری است.","checkout.name":"نام (اختیاری)","checkout.message":"درخواست یا توضیحات (اختیاری)","checkout.submit":"سفارش با WhatsApp","checkout.size":"سایز","checkout.chooseSize":"لطفاً ابتدا سایز را انتخاب کنید.","fallback.eyebrow":"سفارش ذخیره شد","fallback.title":"WhatsApp را در مرورگر خارجی باز کنید","fallback.text":"سفارش شما ذخیره شد. روی «باز کردن اپ WhatsApp» بزنید. اگر TikTok مانع شد، پیام را کپی کنید، WhatsApp را خودتان باز کرده و به شماره نمایش‌داده‌شده بفرستید.","fallback.number":"شماره WhatsApp","fallback.copy":"کپی پیام","fallback.copied":"پیام کپی شد","fallback.open":"باز کردن اپ WhatsApp","order.customer":"نام","order.cart":"سبد خرید","order.total":"مجموع","order.note":"درخواست"
 });
 
 
@@ -663,13 +663,8 @@ function showWhatsAppFallback(number, message, directUrl) {
 
 function openWhatsAppChat(number, message) {
   const encoded = encodeURIComponent(message);
-  const url = `https://api.whatsapp.com/send/?phone=${number}&text=${encoded}&type=phone_number&app_absent=0`;
-  const inAppBrowser = /TikTok|Bytedance|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
-  if (inAppBrowser) {
-    showWhatsAppFallback(number, message, url);
-    return;
-  }
-  window.location.href = url;
+  const appUrl = `whatsapp://send?phone=${number}&text=${encoded}`;
+  showWhatsAppFallback(number, message, appUrl);
 }
 
 async function sendOrderToWhatsApp(form) {
@@ -775,7 +770,7 @@ function setupWishPhotoRequest() {
         "Maße: " + (String(fd.get("measurements") || "").trim() || "–"),
         "Wünsche: " + (String(fd.get("notes") || "").trim() || "–"),
         "",
-        "Das ausgewählte Wunschkleid-Foto wird im WhatsApp-Chat angehängt."
+        "Bitte das ausgewählte Wunschkleid-Foto im WhatsApp-Chat hinzufügen."
       ].join("\n");
       openWhatsAppChat(number, msg);
     };
