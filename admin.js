@@ -82,27 +82,31 @@ function renderCategories() {
 
 function categoryOptions(value) { return state.categories.map(c => `<option value="${esc(c.slug)}" ${c.slug === value ? "selected" : ""}>${esc(c.name_de)}</option>`).join(""); }
 
+function productEditorMarkup(p) {
+  const media = state.media.filter(m => m.product_id === p.id);
+  return `<article class="product-editor" data-id="${p.id}">
+    <div class="product-preview"><img src="${esc(p.image_url)}" alt=""><label>Hauptbild<input type="file" accept="image/*" data-product-main></label>
+      <div class="tryon-admin-status ${p.tryon_image_url ? "ready" : ""}">${p.tryon_image_url ? `<img src="${esc(p.tryon_image_url)}" alt=""><span>Anprobe-Bild bereit</span>` : "<span>Noch kein Anprobe-Bild</span>"}</div>
+      <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button></div>
+    <div class="product-fields">
+      <div class="input-grid"><input data-k="name_de" value="${esc(p.name_de)}" placeholder="Name Deutsch"><input data-k="name_en" value="${esc(p.name_en)}" placeholder="Name Englisch"><input data-k="name_ps" value="${esc(p.name_ps)}" placeholder="Name Pashto"><input data-k="name_fa" value="${esc(p.name_fa)}" placeholder="Name Dari"></div>
+      <div class="input-grid"><textarea data-k="description_de" placeholder="Beschreibung Deutsch">${esc(p.description_de)}</textarea><textarea data-k="description_en" placeholder="Beschreibung Englisch">${esc(p.description_en)}</textarea><textarea data-k="description_ps" placeholder="Beschreibung Pashto">${esc(p.description_ps)}</textarea><textarea data-k="description_fa" placeholder="Beschreibung Dari">${esc(p.description_fa)}</textarea></div>
+      <div class="input-grid compact"><select data-k="category">${categoryOptions(p.category)}</select><input data-k="price" type="number" step="0.01" value="${p.price}"><input data-k="old_price" type="number" step="0.01" value="${p.old_price || ""}" placeholder="Alter Preis"><label class="check"><input data-k="active" type="checkbox" ${p.active ? "checked" : ""}> Sichtbar</label></div>
+      <div class="media-list">${media.map(m => `<div class="media-chip">${m.media_type === "video" ? `<video src="${esc(m.url)}"></video>` : `<img src="${esc(m.url)}" alt="">`}<button class="delete" data-delete-product-media="${m.id}">×</button></div>`).join("")}</div>
+      <label class="upload">Weitere Fotos oder Videos<input type="file" multiple accept="image/*,video/mp4,video/webm,video/quicktime" data-product-media></label>
+      <div class="row-actions"><button data-save-product>Produkt speichern</button><button class="delete" data-delete-product>Produkt löschen</button></div>
+    </div></article>`;
+}
+
 function renderProducts() {
-  $("#products").innerHTML = state.products.map(p => {
-    const media = state.media.filter(m => m.product_id === p.id);
-    return `<article class="product-editor" data-id="${p.id}">
-      <div class="product-preview">
-        <img src="${esc(p.image_url)}" alt="">
-        <label>Hauptbild<input type="file" accept="image/*" data-product-main></label>
-        <div class="tryon-admin-status ${p.tryon_image_url ? "ready" : ""}">
-          ${p.tryon_image_url ? `<img src="${esc(p.tryon_image_url)}" alt=""><span>Anprobe-Bild bereit</span>` : "<span>Noch kein Anprobe-Bild</span>"}
-        </div>
-        <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button>
-      </div>
-      <div class="product-fields">
-        <div class="input-grid"><input data-k="name_de" value="${esc(p.name_de)}" placeholder="Name Deutsch"><input data-k="name_en" value="${esc(p.name_en)}" placeholder="Name Englisch"><input data-k="name_ps" value="${esc(p.name_ps)}" placeholder="Name Pashto"><input data-k="name_fa" value="${esc(p.name_fa)}" placeholder="Name Dari"></div>
-        <div class="input-grid"><textarea data-k="description_de" placeholder="Beschreibung Deutsch">${esc(p.description_de)}</textarea><textarea data-k="description_en" placeholder="Beschreibung Englisch">${esc(p.description_en)}</textarea><textarea data-k="description_ps" placeholder="Beschreibung Pashto">${esc(p.description_ps)}</textarea><textarea data-k="description_fa" placeholder="Beschreibung Dari">${esc(p.description_fa)}</textarea></div>
-        <div class="input-grid compact"><select data-k="category">${categoryOptions(p.category)}</select><input data-k="price" type="number" step="0.01" value="${p.price}"><input data-k="old_price" type="number" step="0.01" value="${p.old_price || ""}" placeholder="Alter Preis"><label class="check"><input data-k="active" type="checkbox" ${p.active ? "checked" : ""}> Sichtbar</label></div>
-        <div class="media-list">${media.map(m => `<div class="media-chip">${m.media_type === "video" ? `<video src="${esc(m.url)}"></video>` : `<img src="${esc(m.url)}" alt="">`}<button class="delete" data-delete-product-media="${m.id}">×</button></div>`).join("")}</div>
-        <label class="upload">Weitere Fotos oder Videos<input type="file" multiple accept="image/*,video/mp4,video/webm,video/quicktime" data-product-media></label>
-        <div class="row-actions"><button data-save-product>Produkt speichern</button><button class="delete" data-delete-product>Produkt löschen</button></div>
-      </div></article>`;
-  }).join("");
+  const groups = state.categories.filter(c => c.active).map(c => ({ category:c, products:state.products.filter(p => p.category === c.slug) }));
+  const known = new Set(state.categories.map(c => c.slug));
+  const uncategorized = state.products.filter(p => !known.has(p.category));
+  if (uncategorized.length) groups.push({ category:{ slug:"other", name_de:"Ohne Kategorie" }, products:uncategorized });
+  $("#products").innerHTML = groups.map(group => `<section class="admin-product-group">
+    <div class="admin-product-group-heading"><div><span>Kategorie</span><h3>${esc(group.category.name_de)}</h3></div><b>${group.products.length} Produkt${group.products.length === 1 ? "" : "e"}</b></div>
+    ${group.products.length ? group.products.map(productEditorMarkup).join("") : '<p class="admin-empty-category">Noch keine Produkte in dieser Kategorie.</p>'}
+  </section>`).join("");
 }
 
 function renderGallery() {
