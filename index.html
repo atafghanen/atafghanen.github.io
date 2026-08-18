@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=29">
+  <link rel="stylesheet" href="styles.css?v=30">
 </head>
 <body>
 
@@ -288,10 +288,10 @@
     </div>
     <form id="wishPhotoForm" class="request-form wish-photo-form">
       <label class="wish-upload-box">
-        <span id="wishUploadText" data-i18n="wish.upload">Foto des Wunschkleides auswählen</span>
-        <input id="wishPhotoFile" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
+        <span id="wishUploadText" data-i18n="wish.upload">Bis zu 5 Bilder des Wunschkleides auswählen</span>
+        <input id="wishPhotoFile" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required>
       </label>
-      <img id="wishPhotoPreview" class="wish-photo-preview" alt="Vorschau des Wunschkleides" hidden>
+      <div id="wishPhotoPreview" class="wish-photo-preview-grid" aria-label="Vorschau der ausgewählten Bilder" hidden></div>
       <input name="name" data-placeholder="wish.name" placeholder="Dein Name (freiwillig)">
       <input name="phone" type="tel" required data-placeholder="wish.phone" placeholder="Deine Telefonnummer">
       <select name="size">
@@ -344,7 +344,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=28"></script>
+<script src="app.js?v=29"></script>
 
 </body>
 </html>
