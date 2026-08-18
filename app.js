@@ -632,8 +632,7 @@ function openRequest() {
 function openWhatsAppChat(number, message) {
   const encoded = encodeURIComponent(message);
   const url = `https://api.whatsapp.com/send/?phone=${number}&text=${encoded}&type=phone_number&app_absent=0`;
-  const opened = window.open(url, "_blank", "noopener");
-  if (!opened) window.location.href = url;
+  window.location.href = url;
 }
 
 async function sendOrderToWhatsApp(form) {
