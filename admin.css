@@ -74,7 +74,19 @@ input,textarea,select{background:#fffaf6;color:#421e2a;border:1px solid #dec4bc;
 .order-actions .delete{background:#8b1e2d;color:#fff;border-color:#8b1e2d}
 @media(max-width:700px){.order-section-top{align-items:stretch}.order-section-top #enableOrderNotifications{width:100%}}
 
-.codex-edit-request{margin-top:12px;padding:12px;border:1px solid rgba(189,123,56,.45);border-radius:10px;background:#fff8e8;display:grid;gap:7px;color:#35271f}
-.codex-edit-request strong{font-size:13px}
-.codex-edit-request span{font-size:12px}
-.codex-edit-request .upload{margin:0}
+.professional-edit-request{margin-top:12px;padding:12px;border:1px solid rgba(189,123,56,.45);border-radius:10px;background:#fff8e8;display:grid;gap:7px;color:#35271f}
+.professional-edit-request strong{font-size:13px}
+.professional-edit-request span{font-size:12px}
+.professional-edit-request .upload{margin:0}
+
+.tryon-version-panel{grid-column:1/-1;padding:16px;border:1px solid rgba(243,182,200,.35);border-radius:16px;background:#fffaf6;color:#35271f}
+.tryon-version-panel h4{margin:0 0 4px;font-size:19px}.tryon-version-panel p{margin:0 0 12px;font-size:13px}
+.tryon-version-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tryon-version-card{position:relative;display:grid!important;gap:8px;margin:0!important;padding:12px;border:2px solid #e4d1c8;border-radius:14px;background:#fff;cursor:pointer}
+.tryon-version-card.selected{border-color:#a94f6c;box-shadow:0 0 0 3px rgba(169,79,108,.12)}
+.tryon-version-card input{position:absolute;top:12px;right:12px;width:20px;height:20px;accent-color:#8b2949}
+.tryon-version-card strong{padding-right:28px}.tryon-version-card img{width:100%!important;height:230px!important;object-fit:contain!important;border-radius:10px!important;background:linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0}
+.tryon-choice-label{font-size:12px;font-weight:800;color:#7c2945}.tryon-version-empty{display:grid;place-items:center;height:230px;border:1px dashed #cbb5ac;border-radius:10px;color:#816b62}
+.tryon-version-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}.tryon-version-actions .upload{margin:0;padding:10px 14px;border:1px solid #c99bab;border-radius:10px;background:#fff}
+.active-tryon-status{margin-top:12px!important;padding:10px 12px;border-radius:10px;background:#f5e3e9;color:#68213a}
+@media(max-width:700px){.tryon-version-grid{grid-template-columns:1fr}.tryon-version-card img,.tryon-version-empty{height:300px!important}.product-preview{display:grid}.product-preview>img{width:100%;height:260px;object-fit:contain;background:#fff}}
