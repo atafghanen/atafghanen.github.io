@@ -104,8 +104,8 @@ function renderProducts() {
   const uncategorized = state.products.filter(p => !known.has(p.category));
   if (uncategorized.length) groups.push({ category:{ slug:"other", name_de:"Ohne Kategorie" }, products:uncategorized });
   $("#products").innerHTML = groups.map(group => `<section class="admin-product-group">
-    <div class="admin-product-group-heading"><div><span>Kategorie</span><h3>${esc(group.category.name_de)}</h3></div><b>${group.products.length} Produkt${group.products.length === 1 ? "" : "e"}</b></div>
-    ${group.products.length ? group.products.map(productEditorMarkup).join("") : '<p class="admin-empty-category">Noch keine Produkte in dieser Kategorie.</p>'}
+    <div class="admin-product-group-heading"><div><span>Kategorie</span><h3>${esc(group.category.name_de)}</h3></div><div class="admin-product-group-actions"><b>${group.products.length} Produkt${group.products.length === 1 ? "" : "e"}</b><button type="button" data-add-product-category="${esc(group.category.slug)}">+ Produkt hier hinzufügen</button></div></div>
+    ${group.products.length ? group.products.map(productEditorMarkup).join("") : '<p class="admin-empty-category">Noch keine Produkte in dieser Kategorie. Klicke oben auf „Produkt hier hinzufügen“.</p>'}
   </section>`).join("");
 }
 
@@ -213,7 +213,22 @@ $("#categoryForm").addEventListener("submit", async event => {
   } catch (error) { $("#categoryFormError").textContent = error.message; }
   finally { submit.disabled = false; submit.textContent = "Kategorie erstellen"; }
 });
-async function addProduct() { const { error } = await db.from("products").insert({ name_de:"Neues Produkt", name_en:"New product", category:state.categories[0]?.slug || "new", price:0, image_url:"https://placehold.co/800x1000/f3b6c8/76223b?text=AT+Elegance", sort_order:state.products.length }); if (error) notice(error.message,true); else loadAdmin(); }
+async function addProduct(categorySlug = state.categories[0]?.slug || "new") {
+  const category = state.categories.find(c => c.slug === categorySlug);
+  const { error } = await db.from("products").insert({
+    name_de:"Neues Produkt",
+    name_en:"New product",
+    category:categorySlug,
+    price:0,
+    image_url:"https://placehold.co/800x1000/f3b6c8/76223b?text=AT+Elegance",
+    sort_order:state.products.length,
+    active:true
+  });
+  if (error) return notice(error.message,true);
+  await loadAdmin();
+  notice(`Neues Produkt wurde in „${category?.name_de || "Kategorie"}“ angelegt. Du kannst es jetzt bearbeiten.`);
+  document.querySelector(`.product-editor select[data-k="category"] option[value="${CSS.escape(categorySlug)}"]:checked`)?.closest(".product-editor")?.scrollIntoView({ behavior:"smooth", block:"center" });
+}
 
 async function addGallery(files) {
   for (const file of files) { const url = await upload(file, file.type.startsWith("video/") ? "videos" : "gallery"); const { error } = await db.from("gallery").insert({ image_url:url, media_type:file.type.startsWith("video/") ? "video" : "image", title:file.name, sort_order:state.gallery.length++ }); if (error) throw error; }
@@ -226,6 +241,7 @@ document.addEventListener("click", async event => {
     if (button.id === "saveSettings") return saveSettings();
     if (button.id === "addCategory") return openCategoryDialog();
     if (button.id === "addProduct") return addProduct();
+    if (button.hasAttribute("data-add-product-category")) return addProduct(button.dataset.addProductCategory);
     if (button.hasAttribute("data-create-tryon")) {
       const productRow = button.closest(".product-editor");
       const productData = state.products.find(p => p.id === productRow?.dataset.id);
