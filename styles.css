@@ -570,3 +570,49 @@ img,video{max-width:100%}
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Zuverlässiger Warenkorb und WhatsApp-Ausweichlösung */
+.cart-row small {
+  display: block;
+  margin-top: 5px;
+  color: #6b5b51;
+  line-height: 1.5;
+}
+.whatsapp-fallback-panel {
+  max-width: 620px;
+}
+.fallback-number {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 20px 0 12px;
+  padding: 16px 18px;
+  color: #fff;
+  background: #211914;
+}
+.fallback-number strong {
+  color: #d4aa63;
+}
+#fallbackMessage {
+  width: 100%;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid rgba(47,37,31,.2);
+  background: #fffaf1;
+  font: inherit;
+  line-height: 1.5;
+}
+.fallback-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.fallback-actions .btn {
+  text-align: center;
+}
+@media (max-width: 560px) {
+  .fallback-actions { grid-template-columns: 1fr; }
+  .fallback-number { flex-direction: column; }
+}
