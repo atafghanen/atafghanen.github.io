@@ -628,6 +628,63 @@ async function sendOrderToWhatsApp(form) {
   window.open(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
 }
 
+function openWishPhotoRequest() {
+  openModal("#wishPhotoModal");
+}
+
+function setupWishPhotoRequest() {
+  const button = $("#wishPhotoButton");
+  const form = $("#wishPhotoForm");
+  const fileInput = $("#wishPhotoFile");
+  const preview = $("#wishPhotoPreview");
+  const uploadText = $("#wishUploadText");
+
+  if (button) button.onclick = openWishPhotoRequest;
+
+  if (fileInput) {
+    fileInput.onchange = () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
+        alert("Bitte wähle ein JPG-, PNG- oder WebP-Bild bis maximal 8 MB.");
+        fileInput.value = "";
+        return;
+      }
+      if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+      const objectUrl = URL.createObjectURL(file);
+      preview.dataset.objectUrl = objectUrl;
+      preview.src = objectUrl;
+      preview.hidden = false;
+      uploadText.textContent = file.name;
+    };
+  }
+
+  if (form) {
+    form.onsubmit = e => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "");
+      if (!number || number === "491700000000") {
+        alert("Die echte WhatsApp-Nummer ist noch nicht hinterlegt. Bitte trage sie zuerst im Website-Editor ein.");
+        return;
+      }
+      const msg = [
+        "AT Afghanen – Wunschkleid nach Foto",
+        "",
+        "Name: " + String(fd.get("name") || "").trim(),
+        "Telefon: " + String(fd.get("phone") || "").trim(),
+        "Größe: " + String(fd.get("size") || "").trim(),
+        "Maße: " + (String(fd.get("measurements") || "").trim() || "–"),
+        "Wünsche: " + (String(fd.get("notes") || "").trim() || "–"),
+        "",
+        "Das ausgewählte Wunschkleid-Foto wird im WhatsApp-Chat angehängt."
+      ].join("\n");
+      window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+      alert("WhatsApp wurde geöffnet. Bitte füge dort das ausgewählte Foto über die Büroklammer hinzu und sende die Nachricht ab.");
+    };
+  }
+}
+
 function setup() {
   lang = localStorage.getItem("atEELang") || "de";
   const yearEl = $("#year");
@@ -679,6 +736,7 @@ function setup() {
   }
 
   updateCartCount();
+  setupWishPhotoRequest();
   setupTryOn();
   loadDataFromSupabase();
 
