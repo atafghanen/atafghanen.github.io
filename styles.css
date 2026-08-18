@@ -616,3 +616,12 @@ img,video{max-width:100%}
   .fallback-actions { grid-template-columns: 1fr; }
   .fallback-number { flex-direction: column; }
 }
+
+
+.external-browser-tip{
+  margin:14px 0 18px;padding:13px 15px;border:1px solid rgba(189,123,56,.5);
+  border-left:4px solid var(--gold2);border-radius:10px;background:#fff3d8;color:#35271f;
+}
+.external-browser-tip strong{display:block;margin-bottom:3px;font-size:14px}
+.external-browser-tip span{display:block;font-size:13px;line-height:1.5}
+[dir="rtl"] .external-browser-tip{border-left:1px solid rgba(189,123,56,.5);border-right:4px solid var(--gold2)}
