@@ -647,7 +647,7 @@ async function sendOrderToWhatsApp(form) {
   };
   const msg = `AT Afghanen – Bestellung\n\nKundin/Kunde: ${customer.name}\nTelefon: ${customer.phone}\nE-Mail: ${customer.email}\nAdresse: ${customer.address}\n\nWARENKORB\n${lines}\n\nGesamt: €${total.toFixed(2)}\n\nNotiz: ${customer.notes || "–"}`;
 
-  const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "");
+  const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
   if (!number) {
     alert(
       lang === "de" ? "Bitte zuerst die WhatsApp-Nummer im Editor eintragen." :
@@ -701,7 +701,7 @@ function setupWishPhotoRequest() {
     form.onsubmit = e => {
       e.preventDefault();
       const fd = new FormData(form);
-      const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "");
+      const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
       if (!number || number === "491700000000") {
         alert(t("wish.numberMissing"));
         return;
