@@ -185,7 +185,38 @@ function saveCart() {
 
 // Daten aus Supabase laden (falls vorhanden)
 async function loadDataFromSupabase() {
-  if (!supabaseClient) return;
+  if (!supabaseClient) {
+    try {
+      const response = await fetch(
+        SUPABASE_URL + "/rest/v1/products?select=*&order=sort_order.asc",
+        {
+          cache: "no-store",
+          headers: {
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            Authorization: "Bearer " + SUPABASE_PUBLISHABLE_KEY
+          }
+        }
+      );
+      if (!response.ok) throw new Error("Produktdaten konnten nicht geladen werden");
+      const productsData = await response.json();
+      if (productsData.length) {
+        data.products = productsData.map(p => ({
+          ...p,
+          name: { de: p.name_de, en: p.name_en, ps: p.name_ps, fa: p.name_fa },
+          description: { de: p.description_de, en: p.description_en, ps: p.description_ps, fa: p.description_fa },
+          oldPrice: p.old_price,
+          image: p.image_url,
+          tryOnImage: p.tryon_image_url || "",
+          createdAt: p.created_at || ""
+        }));
+      }
+    } catch (err) {
+      console.warn("Direktes Laden der Produkte fehlgeschlagen, verwende Standard-Daten.", err);
+    } finally {
+      applyLang();
+    }
+    return;
+  }
 
   try {
     // 1. Settings
