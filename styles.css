@@ -272,3 +272,46 @@ img,video{max-width:100%}
   .mission-panel { padding: 28px 22px; gap: 32px; }
   .mission-copy { grid-template-columns: 1fr; }
 }
+
+
+/* Verbesserte Lesbarkeit im Stoffbereich */
+.materials-section .section-heading h2 {
+  color: #241b16;
+}
+.materials-section .section-intro {
+  color: #55483f;
+}
+.material-card {
+  color: #241b16;
+  background: #fffdf9;
+  border-color: rgba(153, 105, 43, .38);
+}
+.material-card > span {
+  color: #9a661f;
+  font-weight: 700;
+}
+.material-card h3 {
+  color: #241b16;
+  font-weight: 700;
+}
+.material-card p {
+  color: #51453d;
+  font-weight: 500;
+}
+.founder-name {
+  margin: 22px 0 0;
+  color: rgba(255,255,255,.78);
+  font-size: 15px;
+  letter-spacing: .04em;
+}
+.founder-name strong {
+  display: block;
+  margin-top: 5px;
+  color: #d4aa63;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 27px;
+  letter-spacing: .01em;
+}
+.mission-copy strong {
+  color: #d4aa63;
+}
