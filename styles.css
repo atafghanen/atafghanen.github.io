@@ -642,3 +642,10 @@ img,video{max-width:100%}
 .social-browser-banner span{font-size:12px}
 .social-browser-banner button{flex:0 0 auto;border:0;border-radius:999px;background:#35271f;color:#fff;padding:9px 14px;font-weight:700;cursor:pointer}
 @media(max-width:760px){.social-browser-banner{align-items:stretch;flex-direction:column;gap:9px;padding:12px 14px}.social-browser-banner button{width:100%}}
+
+/* V18: show the complete garment in mobile virtual try-on */
+@media(max-width:760px){
+  .tryon-stage{height:min(62vh,620px);max-height:none;aspect-ratio:3/4}
+  .tryon-person{object-fit:contain}
+  .tryon-garment{width:auto;height:auto;max-width:92%;max-height:92%;object-fit:contain}
+}
