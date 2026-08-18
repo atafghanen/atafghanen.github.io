@@ -544,3 +544,29 @@ img,video{max-width:100%}
     white-space: normal;
   }
 }
+
+
+/* Ruhiger Kopfbereich mit echten Social-Media-Symbolen */
+.top-social-links a svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.top-social-links a svg path,
+.top-social-links a svg .social-dot {
+  fill: currentColor;
+  stroke: none;
+}
+.mission-intro {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.mission-intro-copy {
+  max-width: 900px;
+}
+@media (max-width: 680px) {
+  .mission-intro {
+    grid-template-columns: 1fr;
+  }
+}
