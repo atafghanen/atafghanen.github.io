@@ -314,7 +314,7 @@ function renderProducts() {
   `).join("");
 
   $$("[data-details]").forEach(b => b.onclick = () => openProduct(b.dataset.details));
-  $("[data-add]").forEach(b => b.onclick = () => openProduct(b.dataset.add));
+  document.querySelectorAll("[data-add]").forEach(b => b.onclick = () => openProduct(b.dataset.add));
 }
 
 function name(p) {
