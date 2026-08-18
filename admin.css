@@ -73,3 +73,8 @@ input,textarea,select{background:#fffaf6;color:#421e2a;border:1px solid #dec4bc;
 .order-actions{display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid rgba(47,37,31,.12)}
 .order-actions .delete{background:#8b1e2d;color:#fff;border-color:#8b1e2d}
 @media(max-width:700px){.order-section-top{align-items:stretch}.order-section-top #enableOrderNotifications{width:100%}}
+
+.codex-edit-request{margin-top:12px;padding:12px;border:1px solid rgba(189,123,56,.45);border-radius:10px;background:#fff8e8;display:grid;gap:7px;color:#35271f}
+.codex-edit-request strong{font-size:13px}
+.codex-edit-request span{font-size:12px}
+.codex-edit-request .upload{margin:0}
