@@ -97,6 +97,19 @@ Object.assign(translations.fa, {
 });
 
 Object.assign(translations.de, {
+  "browserBanner.title":"Bestellen über TikTok oder Instagram?","browserBanner.text":"Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Öffne die Seite danach in Safari oder Chrome.","browserBanner.copy":"Webseiten-Link kopieren","browserBanner.copied":"Link kopiert – jetzt Safari oder Chrome öffnen"
+});
+Object.assign(translations.en, {
+  "browserBanner.title":"Ordering through TikTok or Instagram?","browserBanner.text":"Tap ⋯ at the top right and choose “Open in browser”. Then open the site in Safari or Chrome.","browserBanner.copy":"Copy website link","browserBanner.copied":"Link copied — now open Safari or Chrome"
+});
+Object.assign(translations.ps, {
+  "browserBanner.title":"د TikTok یا Instagram له لارې فرمایش کوئ؟","browserBanner.text":"په پورته ښي لور کې پر ⋯ ټک وکړئ او «په براوزر کې پرانیزئ» وټاکئ. بیا پاڼه په Safari یا Chrome کې پرانیزئ.","browserBanner.copy":"د پاڼې لینک کاپي کړئ","browserBanner.copied":"لینک کاپي شو — اوس Safari یا Chrome پرانیزئ"
+});
+Object.assign(translations.fa, {
+  "browserBanner.title":"از طریق TikTok یا Instagram سفارش می‌دهید؟","browserBanner.text":"بالا سمت راست روی ⋯ بزنید و «باز کردن در مرورگر» را انتخاب کنید. سپس سایت را در Safari یا Chrome باز کنید.","browserBanner.copy":"کپی لینک سایت","browserBanner.copied":"لینک کپی شد — اکنون Safari یا Chrome را باز کنید"
+});
+
+Object.assign(translations.de, {
   "browserTip.title":"Über TikTok oder Instagram geöffnet?",
   "browserTip.text":"Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Bestelle danach in Safari oder Chrome."
 });
@@ -824,6 +837,29 @@ function setup() {
   lang = localStorage.getItem("atEELang") || "de";
   const yearEl = $("#year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const socialBrowserBanner = $("#socialBrowserBanner");
+  const isSocialBrowser = /TikTok|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
+  if (socialBrowserBanner && (isSocialBrowser || window.matchMedia("(max-width: 760px)").matches)) {
+    socialBrowserBanner.hidden = false;
+  }
+  const copyWebsiteLink = $("#copyWebsiteLink");
+  if (copyWebsiteLink) {
+    copyWebsiteLink.onclick = async () => {
+      const websiteUrl = "https://atafghanen.github.io/";
+      try {
+        await navigator.clipboard.writeText(websiteUrl);
+      } catch {
+        const helper = document.createElement("textarea");
+        helper.value = websiteUrl;
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
+      copyWebsiteLink.textContent = t("browserBanner.copied");
+    };
+  }
 
   const langSelect = $("#languageSelect");
   if (langSelect) {
