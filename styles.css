@@ -457,3 +457,90 @@ img,video{max-width:100%}
     font-size: 9px;
   }
 }
+
+
+/* Wunschkleid-Anfrage direkt vor den Kategorien */
+.wish-photo-feature {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 32px;
+  margin: 8px 0 30px;
+  padding: 28px 32px;
+  color: #fff;
+  background: linear-gradient(115deg, #211914, #4a321f);
+  border: 1px solid rgba(212,170,99,.55);
+}
+.wish-photo-kicker {
+  color: #d4aa63;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+.wish-photo-feature h3 {
+  margin: 7px 0 6px;
+  color: #fff;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(27px, 3vw, 38px);
+}
+.wish-photo-feature p {
+  margin: 0;
+  max-width: 720px;
+  color: rgba(255,255,255,.76);
+  line-height: 1.6;
+}
+.wish-photo-main-btn {
+  white-space: nowrap;
+}
+.wish-photo-modal-panel {
+  max-width: 610px;
+}
+.wish-upload-box {
+  display: grid;
+  place-items: center;
+  min-height: 112px;
+  padding: 20px;
+  border: 2px dashed rgba(154,102,31,.55);
+  color: #6e4716;
+  background: #fffaf1;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+.wish-upload-box input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.wish-photo-preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  background: #f4eee5;
+  border: 1px solid rgba(154,102,31,.25);
+}
+.wish-photo-form select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(47,37,31,.18);
+  background: #fff;
+  font: inherit;
+}
+.wish-photo-notice {
+  margin: 0;
+  color: #6a5c53;
+  font-size: 12px;
+  line-height: 1.55;
+}
+@media (max-width: 760px) {
+  .wish-photo-feature {
+    grid-template-columns: 1fr;
+    padding: 24px 20px;
+  }
+  .wish-photo-main-btn {
+    width: 100%;
+    white-space: normal;
+  }
+}
