@@ -324,3 +324,7 @@ document.addEventListener("change", async event => {
 
 window.loadAdmin = loadAdmin;
 
+db.auth.getSession().then(({ data: { session } }) => {
+  if (session) loadAdmin();
+}).catch(error => notice(error.message, true));
+
