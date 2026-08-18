@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AT Afghanen – Admin</title>
 
-  <link rel="stylesheet" href="admin.css?v=14">
+  <link rel="stylesheet" href="admin.css?v=15">
 
   <!-- Supabase Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -255,7 +255,13 @@
 
 <section class="card">
 
-  <h2>Bestellungen</h2>
+  <div class="section-top order-section-top">
+    <div>
+      <h2>Bestellungen</h2>
+      <p>Neue Bestellungen erscheinen hier automatisch.</p>
+    </div>
+    <button id="enableOrderNotifications" type="button">🔔 Benachrichtigungen aktivieren</button>
+  </div>
 
   <div id="orders">
     <p>Bestellanfragen werden geladen …</p>
@@ -410,7 +416,7 @@ document.querySelector("#logoutBtn").addEventListener("click", async function ()
 </script>
 
 <!-- Einbinden des Admin-Logik-Skripts -->
-<script src="admin.js?v=16"></script>
+<script src="admin.js?v=17"></script>
 
 </body>
 </html>
