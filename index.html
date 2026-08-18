@@ -294,17 +294,17 @@
     <button class="close-modal" data-close>×</button>
     <p class="eyebrow">PERSÖNLICHE ANFERTIGUNG</p>
     <h2>Dein Wunschkleid nach Foto</h2>
-    <p class="modal-note">Lade ein Bild hoch und gib deine Größe an. Deine Angaben werden für die WhatsApp-Anfrage vorbereitet.</p>
+    <p class="modal-note">Nur das Bild ist erforderlich. Größe und alle weiteren Angaben sind freiwillig.</p>
     <form id="wishPhotoForm" class="request-form wish-photo-form">
       <label class="wish-upload-box">
         <span id="wishUploadText">Foto des Wunschkleides auswählen</span>
         <input id="wishPhotoFile" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required>
       </label>
       <img id="wishPhotoPreview" class="wish-photo-preview" alt="Vorschau des Wunschkleides" hidden>
-      <input name="name" required placeholder="Dein Name">
-      <input name="phone" type="tel" required placeholder="Deine Telefonnummer">
-      <select name="size" required>
-        <option value="">Größe auswählen</option>
+      <input name="name" placeholder="Dein Name (freiwillig)">
+      <input name="phone" type="tel" placeholder="Deine Telefonnummer (freiwillig)">
+      <select name="size">
+        <option value="">Größe auswählen (freiwillig)</option>
         <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>Maßanfertigung</option>
       </select>
       <textarea name="measurements" rows="3" placeholder="Optional: Körpergröße, Brust, Taille, Hüfte"></textarea>
