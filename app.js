@@ -69,9 +69,25 @@ Object.assign(translations.fa, {
   "wish.modalEyebrow":"دوخت اختصاصی","wish.modalTitle":"لباس دلخواه شما از روی عکس","wish.modalNote":"عکس و شماره تلفن الزامی است؛ اطلاعات دیگر اختیاری است.","wish.upload":"عکس لباس دلخواه را انتخاب کنید","wish.name":"نام شما (اختیاری)","wish.phone":"شماره تلفن شما","wish.size":"انتخاب سایز (اختیاری)","wish.customSize":"دوخت سفارشی","wish.measurements":"اختیاری: قد، سینه، کمر، باسن","wish.notes":"رنگ، پارچه یا خواسته ویژه","wish.notice":"WhatsApp با اطلاعات شما باز می‌شود. عکس انتخاب‌شده را با گیره به پیام اضافه کنید.","wish.submit":"ارسال درخواست با WhatsApp","wish.invalidPhoto":"لطفاً عکس JPG، PNG یا WebP تا ۸ MB انتخاب کنید.","wish.numberMissing":"شماره درست WhatsApp هنوز ثبت نشده است.","wish.opened":"WhatsApp باز شد. لطفاً عکس را با گیره اضافه و پیام را ارسال کنید."
 });
 
+Object.assign(translations.de, {
+  "checkout.note":"Kontrolliere deinen Warenkorb. Name und Wunschtext sind freiwillig.","checkout.name":"Name (freiwillig)","checkout.message":"Wunschtext oder Hinweise (freiwillig)","checkout.submit":"Über WhatsApp bestellen","checkout.size":"Größe","checkout.chooseSize":"Bitte wähle zuerst eine Größe.","fallback.eyebrow":"BESTELLUNG GESPEICHERT","fallback.title":"WhatsApp im externen Browser öffnen","fallback.text":"TikTok und Instagram können WhatsApp blockieren. Deine Bestellung wurde gespeichert. Kopiere die Nachricht und sende sie in WhatsApp an die angezeigte Nummer.","fallback.number":"WhatsApp-Nummer","fallback.copy":"Nachricht kopieren","fallback.copied":"Nachricht kopiert","fallback.open":"WhatsApp öffnen","order.customer":"Name","order.cart":"WARENKORB","order.total":"Gesamt","order.note":"Wunschtext"
+});
+Object.assign(translations.en, {
+  "checkout.note":"Check your shopping bag. Name and request text are optional.","checkout.name":"Name (optional)","checkout.message":"Requests or notes (optional)","checkout.submit":"Order via WhatsApp","checkout.size":"Size","checkout.chooseSize":"Please select a size first.","fallback.eyebrow":"ORDER SAVED","fallback.title":"Open WhatsApp in an external browser","fallback.text":"TikTok and Instagram may block WhatsApp. Your order has been saved. Copy the message and send it in WhatsApp to the displayed number.","fallback.number":"WhatsApp number","fallback.copy":"Copy message","fallback.copied":"Message copied","fallback.open":"Open WhatsApp","order.customer":"Name","order.cart":"SHOPPING BAG","order.total":"Total","order.note":"Request"
+});
+Object.assign(translations.ps, {
+  "checkout.note":"خپل د پېرود کڅوړه وګورئ. نوم او غوښتنه اختیاري دي.","checkout.name":"نوم (اختیاري)","checkout.message":"غوښتنه یا یادونه (اختیاري)","checkout.submit":"په WhatsApp کې فرمایش","checkout.size":"اندازه","checkout.chooseSize":"مهرباني وکړئ لومړی اندازه وټاکئ.","fallback.eyebrow":"فرمایش ثبت شو","fallback.title":"WhatsApp په بهرني براوزر کې پرانیزئ","fallback.text":"TikTok او Instagram کېدای شي WhatsApp بند کړي. فرمایش مو ثبت شو؛ پیغام کاپي او ښودل شوې شمېرې ته یې واستوئ.","fallback.number":"د WhatsApp شمېره","fallback.copy":"پیغام کاپي کړئ","fallback.copied":"پیغام کاپي شو","fallback.open":"WhatsApp پرانیزئ","order.customer":"نوم","order.cart":"د پېرود کڅوړه","order.total":"ټول","order.note":"غوښتنه"
+});
+Object.assign(translations.fa, {
+  "checkout.note":"سبد خرید را بررسی کنید. نام و متن درخواست اختیاری است.","checkout.name":"نام (اختیاری)","checkout.message":"درخواست یا توضیحات (اختیاری)","checkout.submit":"سفارش با WhatsApp","checkout.size":"سایز","checkout.chooseSize":"لطفاً ابتدا سایز را انتخاب کنید.","fallback.eyebrow":"سفارش ذخیره شد","fallback.title":"WhatsApp را در مرورگر خارجی باز کنید","fallback.text":"TikTok و Instagram ممکن است WhatsApp را مسدود کنند. سفارش شما ذخیره شده است؛ پیام را کپی و به شماره نمایش‌داده‌شده ارسال کنید.","fallback.number":"شماره WhatsApp","fallback.copy":"کپی پیام","fallback.copied":"پیام کپی شد","fallback.open":"باز کردن WhatsApp","order.customer":"نام","order.cart":"سبد خرید","order.total":"مجموع","order.note":"درخواست"
+});
+
+
 let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DATA;
 let lang = localStorage.getItem("atEELang") || "de";
-let cart = JSON.parse(localStorage.getItem("atEECart") || "[]");
+let cart = JSON.parse(localStorage.getItem("atEECart") || "[]").map(item =>
+  typeof item === "string" ? { productId: item, size: "" } : item
+);
 let currentCategory = "all";
 let productMedia = [];
 let shopCategories = [];
@@ -325,8 +341,8 @@ function openProduct(id) {
         </div>
         <p>${esc(description)}</p>
         <div class="size-row">
-          ${["XS", "S", "M", "L", "XL"].map(s => `<button class="size-btn">${s}</button>`).join("")}
-          <button class="size-btn" data-custom>${uiText("custom")}</button>
+          ${["XS", "S", "M", "L", "XL"].map(s => `<button class="size-btn" data-size="${s}">${s}</button>`).join("")}
+          <button class="size-btn" data-size="${esc(uiText("custom"))}" data-custom>${uiText("custom")}</button>
         </div>
         <button class="btn btn-gold full" id="modalAdd">${t("add")}</button>
         <button class="btn btn-ghost full tryon-open" id="modalTryOn">${tryOnText("open")}</button>
@@ -347,7 +363,12 @@ function openProduct(id) {
   });
 
   $("#modalAdd").onclick = () => {
-    addToCart(id);
+    const selectedSize = $("#productModalContent .size-btn.selected");
+    if (!selectedSize) {
+      alert(t("checkout.chooseSize"));
+      return;
+    }
+    addToCart(id, selectedSize.dataset.size || selectedSize.textContent.trim());
     closeModal($("#productModalContent"));
   };
   $("#modalTryOn").onclick = () => {
@@ -583,8 +604,8 @@ function setupTryOn() {
   garment.addEventListener("pointercancel", () => { tryOnState.dragging = false; });
 }
 
-function addToCart(id) {
-  cart.push(id);
+function addToCart(id, size) {
+  cart.push({ productId: id, size: size || "" });
   saveCart();
   updateCartCount();
   openModal("#cartModal");
@@ -597,28 +618,32 @@ function updateCartCount() {
 }
 
 function renderCart() {
-  const items = cart.map(id => data.products.find(p => p.id === id)).filter(Boolean);
+  const items = cart.map((entry, index) => ({
+    entry,
+    index,
+    product: data.products.find(p => p.id === entry.productId)
+  })).filter(item => item.product);
   const cartItemsEl = $("#cartItems");
 
   if (cartItemsEl) {
-    cartItemsEl.innerHTML = items.length ? items.map((p, i) => `
+    cartItemsEl.innerHTML = items.length ? items.map(({ product: p, entry, index }) => `
       <div class="cart-row">
         <img src="${esc(p.image)}">
         <div>
           <h4>${esc(name(p))}</h4>
-          <small>€${Number(p.price).toFixed(0)}</small>
+          <small>${t("checkout.size")}: ${esc(entry.size || "–")} · €${Number(p.price).toFixed(0)}</small>
         </div>
-        <button class="cart-remove" data-remove="${i}">×</button>
+        <button class="cart-remove" data-remove="${index}">×</button>
       </div>
     `).join("") : `<p class="modal-note">${uiText("empty")}</p>`;
   }
 
-  const total = items.reduce((s, p) => s + Number(p.price), 0);
+  const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
   const cartTotalEl = $("#cartTotal");
   if (cartTotalEl) cartTotalEl.textContent = `€${total.toFixed(0)}`;
 
-  $$("[data-remove]").forEach(b => b.onclick = () => {
-    cart.splice(Number(b.dataset.remove), 1);
+  $$("[data-remove]").forEach(button => button.onclick = () => {
+    cart.splice(Number(button.dataset.remove), 1);
     saveCart();
     renderCart();
     updateCartCount();
@@ -629,46 +654,75 @@ function openRequest() {
   openModal("#requestModal");
 }
 
+function showWhatsAppFallback(number, message, directUrl) {
+  $("#fallbackWhatsAppNumber").textContent = "+" + number;
+  $("#fallbackMessage").value = message;
+  $("#fallbackWhatsAppLink").href = directUrl;
+  openModal("#whatsappFallbackModal");
+}
+
 function openWhatsAppChat(number, message) {
   const encoded = encodeURIComponent(message);
   const url = `https://api.whatsapp.com/send/?phone=${number}&text=${encoded}&type=phone_number&app_absent=0`;
+  const inAppBrowser = /TikTok|Bytedance|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
+  if (inAppBrowser) {
+    showWhatsAppFallback(number, message, url);
+    return;
+  }
   window.location.href = url;
 }
 
 async function sendOrderToWhatsApp(form) {
-  const items = cart.map(id => data.products.find(p => p.id === id)).filter(Boolean);
+  const items = cart.map(entry => ({
+    entry,
+    product: data.products.find(p => p.id === entry.productId)
+  })).filter(item => item.product);
   if (!items.length) {
     renderCart();
     return;
   }
 
-  const grouped = items.reduce((map, p) => map.set(p.id, { product: p, qty: (map.get(p.id)?.qty || 0) + 1 }), new Map());
-  const lines = [...grouped.values()].map(({ product: p, qty }) => `• ${name(p)} | ${qty} × €${Number(p.price).toFixed(2)} = €${(qty * Number(p.price)).toFixed(2)}`).join("\n");
-  const total = items.reduce((s, p) => s + Number(p.price), 0);
+  const grouped = items.reduce((map, item) => {
+    const key = item.product.id + "|" + (item.entry.size || "");
+    const current = map.get(key) || { product: item.product, size: item.entry.size || "–", qty: 0 };
+    current.qty += 1;
+    map.set(key, current);
+    return map;
+  }, new Map());
+  const lines = [...grouped.values()].map(({ product: p, size, qty }) =>
+    `• ${name(p)} | ${t("checkout.size")}: ${size} | ${qty} × €${Number(p.price).toFixed(2)}`
+  ).join("\n");
+  const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
   const fd = new FormData(form);
   const customer = {
-    name: String(fd.get("name") || "").trim(), phone: String(fd.get("phone") || "").trim(),
-    email: String(fd.get("email") || "").trim(), address: String(fd.get("address") || "").trim(),
+    name: String(fd.get("name") || "").trim(),
     notes: String(fd.get("message") || "").trim()
   };
-  const msg = `AT Afghanen – Bestellung\n\nKundin/Kunde: ${customer.name}\nTelefon: ${customer.phone}\nE-Mail: ${customer.email}\nAdresse: ${customer.address}\n\nWARENKORB\n${lines}\n\nGesamt: €${total.toFixed(2)}\n\nNotiz: ${customer.notes || "–"}`;
+  const msg = `AT Afghanen – Bestellung\n\n${t("order.customer")}: ${customer.name || "–"}\n\n${t("order.cart")}\n${lines}\n\n${t("order.total")}: €${total.toFixed(2)}\n\n${t("order.note")}: ${customer.notes || "–"}`;
 
   const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
   if (!number) {
-    alert(
-      lang === "de" ? "Bitte zuerst die WhatsApp-Nummer im Editor eintragen." :
-      lang === "en" ? "Please add the WhatsApp number in the editor first." :
-      lang === "ps" ? "مهرباني وکړئ لومړی په اېډیټر کې د WhatsApp شمېره ولیکئ." :
-      "لطفاً ابتدا شماره واتساپ را در ویرایشگر وارد کنید."
-    );
+    alert(t("wish.numberMissing"));
     return;
   }
 
-  const orderItems = [...grouped.values()].map(({ product: p, qty }) => ({ product_id: p.id, name: name(p), quantity: qty, unit_price: Number(p.price) }));
+  const orderItems = [...grouped.values()].map(({ product: p, size, qty }) => ({
+    product_id: p.id, name: name(p), size, quantity: qty, unit_price: Number(p.price)
+  }));
   if (supabaseClient) {
-    const { error } = await supabaseClient.from("orders").insert({ customer_name: customer.name, phone: customer.phone, email: customer.email, address: customer.address, notes: customer.notes, items: orderItems, total });
+    const { error } = await supabaseClient.from("orders").insert({
+      customer_name: customer.name,
+      phone: "",
+      email: "",
+      address: "",
+      notes: customer.notes,
+      items: orderItems,
+      total
+    });
     if (error) console.warn("Bestellung konnte nicht protokolliert werden", error);
   }
+
+  closeModal(form);
   openWhatsAppChat(number, msg);
 }
 
@@ -769,6 +823,20 @@ function setup() {
     closeModal(orderBtn);
     openRequest();
   };
+
+  const copyFallbackMessage = $("#copyFallbackMessage");
+  if (copyFallbackMessage) {
+    copyFallbackMessage.onclick = async () => {
+      const message = $("#fallbackMessage").value;
+      try {
+        await navigator.clipboard.writeText(message);
+      } catch {
+        $("#fallbackMessage").select();
+        document.execCommand("copy");
+      }
+      copyFallbackMessage.textContent = t("fallback.copied");
+    };
+  }
 
   const requestForm = $("#requestForm");
   if (requestForm) {
