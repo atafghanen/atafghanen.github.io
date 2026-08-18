@@ -66,7 +66,7 @@ function renderAll() {
 async function saveSettings() {
   const content = {};
   ["hero_text","tailoring_text","story_text_1","story_text_2"].forEach(id => content[id] = $(`#${id}`).value.trim());
-  const payload = { id:1, instagram:$("#instagram").value.trim(), tiktok:$("#tiktok").value.trim(), email:$("#email").value.trim(), whatsapp:$("#whatsapp").value.replace(/\D/g,""), content, updated_at:new Date().toISOString() };
+  const payload = { id:1, instagram:$("#instagram").value.trim(), tiktok:$("#tiktok").value.trim(), email:$("#email").value.trim(), whatsapp:$("#whatsapp").value.replace(/\D/g,"").replace(/^00/,""), content, updated_at:new Date().toISOString() };
   try {
     const saved = await verifiedMutation(db.from("site_settings").upsert(payload), "Website gespeichert – die normale Seite wird automatisch aktualisiert.");
     state.settings = { ...state.settings, ...saved };
