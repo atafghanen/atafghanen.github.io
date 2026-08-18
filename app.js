@@ -629,6 +629,16 @@ function openRequest() {
   openModal("#requestModal");
 }
 
+function openWhatsAppChat(number, message) {
+  const encoded = encodeURIComponent(message);
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const url = isMobile
+    ? `https://wa.me/${number}?text=${encoded}`
+    : `https://web.whatsapp.com/send?phone=${number}&text=${encoded}`;
+  const opened = window.open(url, "_blank", "noopener");
+  if (!opened) window.location.href = url;
+}
+
 async function sendOrderToWhatsApp(form) {
   const items = cart.map(id => data.products.find(p => p.id === id)).filter(Boolean);
   if (!items.length) {
@@ -663,7 +673,7 @@ async function sendOrderToWhatsApp(form) {
     const { error } = await supabaseClient.from("orders").insert({ customer_name: customer.name, phone: customer.phone, email: customer.email, address: customer.address, notes: customer.notes, items: orderItems, total });
     if (error) console.warn("Bestellung konnte nicht protokolliert werden", error);
   }
-  window.open(`https://wa.me/${number}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  openWhatsAppChat(number, msg);
 }
 
 function openWishPhotoRequest() {
@@ -717,8 +727,7 @@ function setupWishPhotoRequest() {
         "",
         "Das ausgewählte Wunschkleid-Foto wird im WhatsApp-Chat angehängt."
       ].join("\n");
-      window.open("https://wa.me/" + number + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
-      alert(t("wish.opened"));
+      openWhatsAppChat(number, msg);
     };
   }
 }
