@@ -634,3 +634,11 @@ img,video{max-width:100%}
 [dir="rtl"] .external-browser-tip{border-left:1px solid rgba(189,123,56,.5);border-right:4px solid var(--gold2)}
 
 @media (max-width: 560px){.wish-photo-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wish-photo-preview-grid img{height:110px}}
+
+.social-browser-banner{display:flex;align-items:center;justify-content:center;gap:18px;padding:12px 18px;background:#fff3d8;color:#35271f;border-bottom:2px solid var(--gold2);position:relative;z-index:45}
+.social-browser-banner[hidden]{display:none}
+.social-browser-banner div{display:flex;flex-direction:column;line-height:1.35}
+.social-browser-banner strong{font-size:14px}
+.social-browser-banner span{font-size:12px}
+.social-browser-banner button{flex:0 0 auto;border:0;border-radius:999px;background:#35271f;color:#fff;padding:9px 14px;font-weight:700;cursor:pointer}
+@media(max-width:760px){.social-browser-banner{align-items:stretch;flex-direction:column;gap:9px;padding:12px 14px}.social-browser-banner button{width:100%}}
