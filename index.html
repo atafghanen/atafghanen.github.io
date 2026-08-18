@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=28">
+  <link rel="stylesheet" href="styles.css?v=29">
 </head>
 <body>
 
@@ -282,6 +282,10 @@
     <p class="eyebrow" data-i18n="wish.modalEyebrow">PERSÖNLICHE ANFERTIGUNG</p>
     <h2 data-i18n="wish.modalTitle">Dein Wunschkleid nach Foto</h2>
     <p class="modal-note" data-i18n="wish.modalNote">Bild und Telefonnummer sind erforderlich. Alle weiteren Angaben sind freiwillig.</p>
+    <div class="external-browser-tip">
+      <strong data-i18n="browserTip.title">Über TikTok oder Instagram geöffnet?</strong>
+      <span data-i18n="browserTip.text">Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Bestelle danach in Safari oder Chrome.</span>
+    </div>
     <form id="wishPhotoForm" class="request-form wish-photo-form">
       <label class="wish-upload-box">
         <span id="wishUploadText" data-i18n="wish.upload">Foto des Wunschkleides auswählen</span>
@@ -325,6 +329,10 @@
     <p class="eyebrow" data-i18n="request.eyebrow">PERSONAL REQUEST</p>
     <h2 data-i18n="request.title">Bestellanfrage</h2>
     <p class="modal-note" data-i18n="checkout.note">Kontrolliere deinen Warenkorb. Name und Wunschtext sind freiwillig.</p>
+    <div class="external-browser-tip">
+      <strong data-i18n="browserTip.title">Über TikTok oder Instagram geöffnet?</strong>
+      <span data-i18n="browserTip.text">Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Bestelle danach in Safari oder Chrome.</span>
+    </div>
     <form id="requestForm" class="request-form">
       <input name="name" data-placeholder="checkout.name" placeholder="Name (freiwillig)">
       <textarea name="message" rows="4" data-placeholder="checkout.message" placeholder="Wunschtext oder Hinweise (freiwillig)"></textarea>
@@ -336,7 +344,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=27"></script>
+<script src="app.js?v=28"></script>
 
 </body>
 </html>
