@@ -83,6 +83,23 @@ Object.assign(translations.fa, {
 });
 
 
+Object.assign(translations.de, {
+  "browserTip.title":"Über TikTok oder Instagram geöffnet?",
+  "browserTip.text":"Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Bestelle danach in Safari oder Chrome."
+});
+Object.assign(translations.en, {
+  "browserTip.title":"Opened from TikTok or Instagram?",
+  "browserTip.text":"Tap ⋯ at the top right and choose “Open in browser”. Then order in Safari or Chrome."
+});
+Object.assign(translations.ps, {
+  "browserTip.title":"پاڼه مو په TikTok یا Instagram کې پرانیستې؟",
+  "browserTip.text":"په پورته ښي لور کې پر ⋯ ټک وکړئ او «په براوزر کې پرانیزئ» وټاکئ. بیا په Safari یا Chrome کې فرمایش وکړئ."
+});
+Object.assign(translations.fa, {
+  "browserTip.title":"صفحه را داخل TikTok یا Instagram باز کرده‌اید؟",
+  "browserTip.text":"بالا سمت راست روی ⋯ بزنید و «باز کردن در مرورگر» را انتخاب کنید. سپس در Safari یا Chrome سفارش دهید."
+});
+
 let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DATA;
 let lang = localStorage.getItem("atEELang") || "de";
 let cart = JSON.parse(localStorage.getItem("atEECart") || "[]").map(item =>
