@@ -67,3 +67,9 @@ input,textarea,select{background:#fffaf6;color:#421e2a;border:1px solid #dec4bc;
 .admin-product-group-actions button{padding:9px 13px;font-size:12px;white-space:nowrap}
 .admin-empty-category{padding:18px;border:1px dashed rgba(243,182,200,.25);border-radius:12px;color:#cdb8b0}
 @media(max-width:700px){.admin-product-group{padding:12px}.admin-product-group-heading{align-items:flex-start;flex-direction:column}.admin-product-group-heading h3{font-size:22px}.admin-product-group-actions{width:100%;justify-content:space-between}.admin-product-group-actions button{flex:1}}
+
+.order-section-top{align-items:center}
+#enableOrderNotifications{white-space:nowrap}
+.order-actions{display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid rgba(47,37,31,.12)}
+.order-actions .delete{background:#8b1e2d;color:#fff;border-color:#8b1e2d}
+@media(max-width:700px){.order-section-top{align-items:stretch}.order-section-top #enableOrderNotifications{width:100%}}
