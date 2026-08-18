@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=24">
+  <link rel="stylesheet" href="styles.css?v=25">
 </head>
 <body>
 
@@ -31,6 +31,10 @@
     </nav>
     <div class="header-actions">
       <button class="header-photo-btn" type="button" onclick="document.getElementById('tailoringButton').click()">Wunschkleid nach Foto</button>
+      <div class="top-social-links" aria-label="Social Media">
+        <a id="headerInstagramLink" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">IG</a>
+        <a id="headerTiktokLink" href="#" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok">TT</a>
+      </div>
       <select id="languageSelect" class="language" aria-label="Language">
         <option value="de">DE</option>
         <option value="en">EN</option>
@@ -297,7 +301,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=19"></script>
+<script src="app.js?v=20"></script>
 
 </body>
 </html>
