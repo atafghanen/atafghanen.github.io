@@ -110,7 +110,8 @@ async function loadDataFromSupabase() {
         description: { de: p.description_de, en: p.description_en, ps: p.description_ps, fa: p.description_fa },
         oldPrice: p.old_price,
         image: p.image_url,
-        tryOnImage: p.tryon_image_url || ""
+        tryOnImage: p.tryon_image_url || "",
+        createdAt: p.created_at || ""
       }));
     }
 
@@ -161,13 +162,13 @@ function applyLang() {
 function renderFilters() {
   const savedCategories = shopCategories.map(category => category.slug);
   const productCategories = data.products.map(product => product.category);
-  const cats = ["all", ...new Set([...savedCategories, ...productCategories])];
+  const cats = ["all", "newest", ...new Set([...savedCategories, ...productCategories])];
   const filtersEl = $("#categoryFilters");
   if (!filtersEl) return;
 
   filtersEl.innerHTML = cats.map(c => `
     <button class="filter ${c === currentCategory ? "active" : ""}" data-cat="${esc(c)}">
-      ${c === "all" ? t("all") : esc(categoryLabel(c))}
+      ${c === "all" ? t("all") : c === "newest" ? esc(newestLabel()) : esc(categoryLabel(c))}
     </button>
   `).join("");
 
@@ -180,11 +181,19 @@ function renderFilters() {
   });
 }
 
+function newestLabel() {
+  return ({ de:"Neuheiten", en:"New arrivals", ps:"نوي توکي", fa:"جدیدترین‌ها" })[lang] || "Neuheiten";
+}
+
 function renderProducts() {
   const gridEl = $("#productGrid");
   if (!gridEl) return;
 
-  const list = currentCategory === "all" ? data.products : data.products.filter(p => p.category === currentCategory);
+  const list = currentCategory === "all"
+    ? data.products
+    : currentCategory === "newest"
+      ? [...data.products].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 12)
+      : data.products.filter(p => p.category === currentCategory);
 
   gridEl.innerHTML = list.map(p => `
     <article class="product-card">
@@ -312,6 +321,7 @@ function openProduct(id) {
 }
 
 let tryOnObjectUrl = "";
+let currentTryOnProduct = null;
 let poseLandmarkerPromise = null;
 let tryOnState = { x: 0, y: 0, scale: 1, rotation: 0, dragging: false, startX: 0, startY: 0 };
 
@@ -351,7 +361,9 @@ async function autoFitTryOn() {
     const points = result.landmarks?.[0];
     if (!points) throw new Error("pose-not-found");
 
-    const needed = [11,12,23,24,27,28].map(i => points[i]);
+    const hijabMode = /hijab/i.test(currentTryOnProduct?.category || "");
+    const neededIndexes = hijabMode ? [0,7,8,11,12] : [11,12,23,24,27,28];
+    const needed = neededIndexes.map(i => points[i]);
     if (needed.some(p => !p || (p.visibility ?? 1) < 0.35)) throw new Error("pose-not-clear");
 
     const stageW = stage.clientWidth;
@@ -364,15 +376,26 @@ async function autoFitTryOn() {
     const point = p => ({ x: offsetX + p.x * renderW, y: offsetY + p.y * renderH });
 
     const leftShoulder = point(points[11]), rightShoulder = point(points[12]);
-    const leftHip = point(points[23]), rightHip = point(points[24]);
-    const leftAnkle = point(points[27]), rightAnkle = point(points[28]);
-    const topY = (leftShoulder.y + rightShoulder.y) / 2 - renderH * 0.025;
-    const bottomY = (leftAnkle.y + rightAnkle.y) / 2;
-    const hipX = (leftHip.x + rightHip.x) / 2;
     const shoulderX = (leftShoulder.x + rightShoulder.x) / 2;
-    const targetX = (hipX + shoulderX) / 2;
-    const targetY = (topY + bottomY) / 2;
-    const targetHeight = Math.max(120, bottomY - topY);
+    let targetX, targetY, targetHeight;
+    if (hijabMode) {
+      const nose = point(points[0]);
+      const leftEar = point(points[7]), rightEar = point(points[8]);
+      const headTopY = nose.y - Math.max(28, Math.abs(leftEar.x - rightEar.x) * 0.72);
+      const shoulderY = (leftShoulder.y + rightShoulder.y) / 2;
+      targetX = (nose.x + shoulderX) / 2;
+      targetY = (headTopY + shoulderY + renderH * 0.12) / 2;
+      targetHeight = Math.max(110, shoulderY + renderH * 0.12 - headTopY);
+    } else {
+      const leftHip = point(points[23]), rightHip = point(points[24]);
+      const leftAnkle = point(points[27]), rightAnkle = point(points[28]);
+      const topY = (leftShoulder.y + rightShoulder.y) / 2 - renderH * 0.025;
+      const bottomY = (leftAnkle.y + rightAnkle.y) / 2;
+      const hipX = (leftHip.x + rightHip.x) / 2;
+      targetX = (hipX + shoulderX) / 2;
+      targetY = (topY + bottomY) / 2;
+      targetHeight = Math.max(120, bottomY - topY);
+    }
 
     if (!garment.complete) await new Promise((resolve,reject) => {
       garment.addEventListener("load", resolve, { once:true });
@@ -453,6 +476,7 @@ function clearTryOnPhoto() {
 }
 
 function openTryOn(product) {
+  currentTryOnProduct = product;
   $("#tryOnTitle").textContent = name(product);
   $("#tryOnEyebrow").textContent = tryOnText("eyebrow");
   $("#tryOnUploadLabel").textContent = tryOnText("upload");
