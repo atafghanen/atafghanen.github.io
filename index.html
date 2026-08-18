@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=27">
+  <link rel="stylesheet" href="styles.css?v=28">
 </head>
 <body>
 
@@ -302,20 +302,33 @@
   </div>
 </div>
 
+<div class="modal" id="whatsappFallbackModal" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel whatsapp-fallback-panel">
+    <button class="close-modal" data-close>×</button>
+    <p class="eyebrow" data-i18n="fallback.eyebrow">BESTELLUNG GESPEICHERT</p>
+    <h2 data-i18n="fallback.title">WhatsApp im externen Browser öffnen</h2>
+    <p class="modal-note" data-i18n="fallback.text">TikTok und Instagram können WhatsApp blockieren. Deine Bestellung wurde gespeichert. Kopiere die Nachricht und sende sie in WhatsApp an die angezeigte Nummer.</p>
+    <div class="fallback-number"><span data-i18n="fallback.number">WhatsApp-Nummer</span><strong id="fallbackWhatsAppNumber"></strong></div>
+    <textarea id="fallbackMessage" rows="9" readonly></textarea>
+    <div class="fallback-actions">
+      <button class="btn btn-gold" id="copyFallbackMessage" type="button" data-i18n="fallback.copy">Nachricht kopieren</button>
+      <a class="btn btn-ghost" id="fallbackWhatsAppLink" href="#" target="_blank" rel="noopener" data-i18n="fallback.open">WhatsApp öffnen</a>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="requestModal" aria-hidden="true">
   <div class="modal-backdrop"></div>
   <div class="modal-panel">
     <button class="close-modal" data-close>×</button>
     <p class="eyebrow" data-i18n="request.eyebrow">PERSONAL REQUEST</p>
     <h2 data-i18n="request.title">Bestellanfrage</h2>
-    <p class="modal-note">Fülle deine Daten aus. Danach öffnet sich WhatsApp mit der vollständigen Bestellung.</p>
+    <p class="modal-note" data-i18n="checkout.note">Kontrolliere deinen Warenkorb. Name und Wunschtext sind freiwillig.</p>
     <form id="requestForm" class="request-form">
-      <input name="name" required data-placeholder="request.name" placeholder="Name">
-      <input name="email" type="email" required data-placeholder="request.email" placeholder="E-Mail">
-      <input name="phone" type="tel" required placeholder="Telefonnummer">
-      <textarea name="address" rows="3" required placeholder="Lieferadresse"></textarea>
-      <textarea name="message" rows="4" data-placeholder="request.message" placeholder="Größe, Maße oder weitere Hinweise"></textarea>
-      <button class="btn btn-gold full" type="submit">Über WhatsApp bestellen</button>
+      <input name="name" data-placeholder="checkout.name" placeholder="Name (freiwillig)">
+      <textarea name="message" rows="4" data-placeholder="checkout.message" placeholder="Wunschtext oder Hinweise (freiwillig)"></textarea>
+      <button class="btn btn-gold full" type="submit" data-i18n="checkout.submit">Über WhatsApp bestellen</button>
     </form>
   </div>
 </div>
@@ -323,7 +336,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=25"></script>
+<script src="app.js?v=26"></script>
 
 </body>
 </html>
