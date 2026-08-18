@@ -2,6 +2,7 @@ const db = window.supabaseClient;
 const $ = s => document.querySelector(s);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let state = { settings: {}, categories: [], products: [], gallery: [], media: [], orders: [] };
+let orderNotificationsChannel = null;
 
 function notice(message, bad = false) {
   const el = $("#adminNotice");
@@ -51,7 +52,43 @@ async function loadAdmin() {
     if (failed) throw failed.error;
     state = { settings: settings.data || {}, categories: categories.data || [], products: products.data || [], gallery: gallery.data || [], media: media.data || [], orders: orders.data || [] };
     renderAll();
+    setupOrderNotifications();
   } catch (error) { notice(error.message, true); }
+}
+
+function setupOrderNotifications() {
+  if (orderNotificationsChannel) return;
+  orderNotificationsChannel = db.channel("admin-new-orders")
+    .on("postgres_changes", { event:"INSERT", schema:"public", table:"orders" }, async payload => {
+      await loadAdmin();
+      const order = payload.new || {};
+      const name = order.customer_name || "Kunde ohne Namen";
+      notice(`🔔 Neue Bestellung von ${name}`);
+      document.title = "🔔 Neue Bestellung – AT Afghanen";
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Neue Bestellung – AT Afghanen", {
+          body: `${name} · €${Number(order.total || 0).toFixed(2)}`,
+          icon: state.settings.logo_url || "assets/logo.gif",
+          tag: "order-" + order.id
+        });
+      }
+    })
+    .subscribe();
+}
+
+async function enableOrderNotifications() {
+  if (!("Notification" in window)) {
+    notice("Dieses Gerät unterstützt keine Browser-Benachrichtigungen.", true);
+    return;
+  }
+  const permission = await Notification.requestPermission();
+  const button = $("#enableOrderNotifications");
+  if (permission === "granted") {
+    button.textContent = "🔔 Benachrichtigungen sind aktiv";
+    notice("Benachrichtigungen für neue Bestellungen sind aktiviert.");
+  } else {
+    notice("Benachrichtigungen wurden nicht erlaubt. Neue Bestellungen erscheinen trotzdem sofort hier.", true);
+  }
 }
 
 function renderAll() {
@@ -116,7 +153,7 @@ function renderGallery() {
 }
 
 function renderOrders() {
-  $("#orders").innerHTML = state.orders.length ? state.orders.map(o => `<details class="order"><summary><strong>${esc(o.customer_name)}</strong><span>${new Date(o.created_at).toLocaleString("de-DE")}</span><b>€${Number(o.total).toFixed(2)}</b></summary><p>${esc(o.phone)} · ${esc(o.email)}</p><p>${esc(o.address)}</p><ul>${(o.items || []).map(i => `<li>${esc(i.name)} – ${i.quantity} × €${Number(i.unit_price).toFixed(2)}</li>`).join("")}</ul><p>${esc(o.notes)}</p></details>`).join("") : "<p>Noch keine Bestellanfragen.</p>";
+  $("#orders").innerHTML = state.orders.length ? state.orders.map(o => `<details class="order" data-order-id="${o.id}"><summary><strong>${esc(o.customer_name || "Ohne Namen")}</strong><span>${new Date(o.created_at).toLocaleString("de-DE")}</span><b>€${Number(o.total).toFixed(2)}</b></summary><p>${esc(o.phone)} · ${esc(o.email)}</p><p>${esc(o.address)}</p><ul>${(o.items || []).map(i => `<li>${esc(i.name)} – ${i.quantity} × €${Number(i.unit_price).toFixed(2)}</li>`).join("")}</ul><p>${esc(o.notes)}</p><div class="order-actions"><button type="button" class="delete" data-delete-order="${o.id}">Bestellung löschen</button></div></details>`).join("") : "<p>Noch keine Bestellanfragen.</p>";
 }
 
 async function upload(file, folder) {
@@ -239,6 +276,15 @@ document.addEventListener("click", async event => {
   const button = event.target.closest("button"); if (!button) return;
   try {
     if (button.id === "saveSettings") return saveSettings();
+    if (button.id === "enableOrderNotifications") return enableOrderNotifications();
+    if (button.dataset.deleteOrder && confirm("Diese Bestellung wirklich dauerhaft löschen?")) {
+      const { data, error } = await db.from("orders").delete().eq("id", button.dataset.deleteOrder).select("id").single();
+      if (error) throw error;
+      if (!data) throw new Error("Die Bestellung konnte nicht gelöscht werden.");
+      await loadAdmin();
+      notice("Bestellung wurde gelöscht.");
+      return;
+    }
     if (button.id === "addCategory") return openCategoryDialog();
     if (button.id === "addProduct") return addProduct();
     if (button.hasAttribute("data-add-product-category")) return addProduct(button.dataset.addProductCategory);
