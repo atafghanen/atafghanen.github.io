@@ -84,6 +84,19 @@ Object.assign(translations.fa, {
 
 
 Object.assign(translations.de, {
+  "wish.upload":"Bis zu 5 Bilder des Wunschkleides auswählen","wish.selectedPhotos":"{count} Bilder ausgewählt","wish.invalidPhoto":"Bitte wähle höchstens 5 JPG-, PNG- oder WebP-Bilder mit jeweils maximal 8 MB.","wish.notice":"WhatsApp öffnet sich mit deinen Angaben. Füge dort alle ausgewählten Bilder über die Büroklammer hinzu.","wish.attachPhotos":"Bitte alle ausgewählten Wunschkleid-Bilder im WhatsApp-Chat hinzufügen."
+});
+Object.assign(translations.en, {
+  "wish.upload":"Select up to 5 dress photos","wish.selectedPhotos":"{count} photos selected","wish.invalidPhoto":"Please select no more than 5 JPG, PNG or WebP images, each up to 8 MB.","wish.notice":"WhatsApp opens with your details. Attach all selected photos there using the paperclip.","wish.attachPhotos":"Please attach all selected dress photos in the WhatsApp chat."
+});
+Object.assign(translations.ps, {
+  "wish.upload":"د کالي تر ۵ پورې انځورونه وټاکئ","wish.selectedPhotos":"{count} انځورونه ټاکل شوي","wish.invalidPhoto":"تر ۵ پورې JPG، PNG یا WebP انځورونه وټاکئ؛ د هر یوه اندازه تر ۸ MB پورې.","wish.notice":"WhatsApp ستاسو له معلوماتو سره پرانیستل کېږي. ټول ټاکل شوي انځورونه هلته د کاغذکلېپ له لارې ورزیات کړئ.","wish.attachPhotos":"مهرباني وکړئ ټول ټاکل شوي د کالي انځورونه په WhatsApp چټ کې ورزیات کړئ."
+});
+Object.assign(translations.fa, {
+  "wish.upload":"حداکثر ۵ عکس لباس انتخاب کنید","wish.selectedPhotos":"{count} عکس انتخاب شد","wish.invalidPhoto":"حداکثر ۵ عکس JPG، PNG یا WebP انتخاب کنید؛ حجم هر عکس حداکثر ۸ MB باشد.","wish.notice":"WhatsApp با اطلاعات شما باز می‌شود. همه عکس‌های انتخاب‌شده را با گیره به پیام اضافه کنید.","wish.attachPhotos":"لطفاً همه عکس‌های انتخاب‌شده لباس را در چت WhatsApp اضافه کنید."
+});
+
+Object.assign(translations.de, {
   "browserTip.title":"Über TikTok oder Instagram geöffnet?",
   "browserTip.text":"Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Bestelle danach in Safari oder Chrome."
 });
@@ -748,24 +761,34 @@ function setupWishPhotoRequest() {
   const fileInput = $("#wishPhotoFile");
   const preview = $("#wishPhotoPreview");
   const uploadText = $("#wishUploadText");
+  let previewUrls = [];
 
   if (button) button.onclick = openWishPhotoRequest;
 
   if (fileInput) {
     fileInput.onchange = () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
-      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
+      const files = [...(fileInput.files || [])];
+      const invalid = files.length > 5 || files.some(file =>
+        !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+        file.size > 8 * 1024 * 1024
+      );
+      if (!files.length) return;
+      if (invalid) {
         alert(t("wish.invalidPhoto"));
         fileInput.value = "";
         return;
       }
-      if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
-      const objectUrl = URL.createObjectURL(file);
-      preview.dataset.objectUrl = objectUrl;
-      preview.src = objectUrl;
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      previewUrls = files.map(file => URL.createObjectURL(file));
+      preview.innerHTML = "";
+      files.forEach((file, index) => {
+        const image = document.createElement("img");
+        image.src = previewUrls[index];
+        image.alt = file.name;
+        preview.appendChild(image);
+      });
       preview.hidden = false;
-      uploadText.textContent = file.name;
+      uploadText.textContent = t("wish.selectedPhotos").replace("{count}", files.length);
     };
   }
 
@@ -773,6 +796,8 @@ function setupWishPhotoRequest() {
     form.onsubmit = e => {
       e.preventDefault();
       const fd = new FormData(form);
+      const files = [...(fileInput?.files || [])];
+      if (!files.length) return;
       const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
       if (!number || number === "491700000000") {
         alert(t("wish.numberMissing"));
@@ -786,8 +811,9 @@ function setupWishPhotoRequest() {
         "Größe: " + String(fd.get("size") || "").trim(),
         "Maße: " + (String(fd.get("measurements") || "").trim() || "–"),
         "Wünsche: " + (String(fd.get("notes") || "").trim() || "–"),
+        "Ausgewählte Bilder: " + files.length,
         "",
-        "Bitte das ausgewählte Wunschkleid-Foto im WhatsApp-Chat hinzufügen."
+        t("wish.attachPhotos")
       ].join("\n");
       openWhatsAppChat(number, msg);
     };
