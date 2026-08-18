@@ -123,16 +123,35 @@ function categoryOptions(value) { return state.categories.map(c => `<option valu
 function productEditorMarkup(p) {
   const media = state.media.filter(m => m.product_id === p.id);
   const editRequest = state.tryonRequests.find(r => r.product_id === p.id);
+  const autoUrl = p.tryon_auto_url || p.tryon_image_url || "";
+  const manualUrl = p.tryon_manual_url || "";
+  const choice = p.tryon_choice === "manual" && manualUrl ? "manual" : "auto";
+  const versionCard = (value, title, url) => `<label class="tryon-version-card ${choice === value ? "selected" : ""}">
+    <input type="radio" name="tryon-choice-${p.id}" value="${value}" data-tryon-choice ${choice === value ? "checked" : ""} ${url ? "" : "disabled"}>
+    <span class="tryon-choice-label">✓ Diese Version auf der Webseite verwenden</span>
+    <strong>${title}</strong>
+    ${url ? `<img src="${esc(url)}" alt="${esc(title)}">` : '<span class="tryon-version-empty">Noch kein Bild vorhanden</span>'}
+  </label>`;
   return `<article class="product-editor" data-id="${p.id}">
-    <div class="product-preview"><img src="${esc(p.image_url)}" alt=""><label>Hauptbild<input type="file" accept="image/*" data-product-main></label>
-      <div class="tryon-admin-status ${p.tryon_image_url ? "ready" : ""}">${p.tryon_image_url ? `<img src="${esc(p.tryon_image_url)}" alt=""><span>Anprobe-Bild bereit</span>` : "<span>Noch kein Anprobe-Bild</span>"}</div>
-      <button type="button" data-create-tryon>Anprobe-Bild automatisch erstellen</button>
-      <div class="codex-edit-request">
-        <strong>Von Codex sauber freistellen lassen</strong>
-        <span>${editRequest ? `Status: ${esc(editRequest.status)} · hochgeladen am ${new Date(editRequest.created_at).toLocaleDateString("de-DE")}` : "Noch kein Bild zur Bearbeitung geschickt."}</span>
-        <label class="upload">Bild zur Bearbeitung hochladen<input type="file" accept="image/jpeg,image/png,image/webp" data-codex-edit-request></label>
-      </div></div>
+    <div class="product-preview"><img src="${esc(p.image_url)}" alt=""><label>Hauptbild<input type="file" accept="image/*" data-product-main></label></div>
     <div class="product-fields">
+      <section class="tryon-version-panel">
+        <div><h4>Anprobe-Bild auswählen</h4><p>Vergleiche beide Bilder und hake an, welche Version die Webseite verwenden soll.</p></div>
+        <div class="tryon-version-grid">
+          ${versionCard("auto", "Automatisch freigestellt", autoUrl)}
+          ${versionCard("manual", "Eigenes transparentes Bild", manualUrl)}
+        </div>
+        <div class="tryon-version-actions">
+          <button type="button" data-create-tryon>Automatische Version neu erstellen</button>
+          <label class="upload">Eigenes transparentes PNG/WebP einfügen<input type="file" accept="image/png,image/webp" data-manual-tryon></label>
+        </div>
+        <p class="active-tryon-status">Aktiv auf der Webseite: <strong>${choice === "manual" ? "dein eigenes Bild" : "automatische Freistellung"}</strong></p>
+      </section>
+      <div class="professional-edit-request">
+        <strong>Bild professionell bearbeiten lassen</strong>
+        <span>${editRequest ? `Status: ${esc(editRequest.status)} · hochgeladen am ${new Date(editRequest.created_at).toLocaleDateString("de-DE")}` : "Noch kein Bild zur Bearbeitung hinterlegt."}</span>
+        <label class="upload">Bild zur Bearbeitung hinterlegen<input type="file" accept="image/jpeg,image/png,image/webp" data-professional-edit-request></label>
+      </div>
       <div class="input-grid"><input data-k="name_de" value="${esc(p.name_de)}" placeholder="Name Deutsch"><input data-k="name_en" value="${esc(p.name_en)}" placeholder="Name Englisch"><input data-k="name_ps" value="${esc(p.name_ps)}" placeholder="Name Pashto"><input data-k="name_fa" value="${esc(p.name_fa)}" placeholder="Name Dari"></div>
       <div class="input-grid"><textarea data-k="description_de" placeholder="Beschreibung Deutsch">${esc(p.description_de)}</textarea><textarea data-k="description_en" placeholder="Beschreibung Englisch">${esc(p.description_en)}</textarea><textarea data-k="description_ps" placeholder="Beschreibung Pashto">${esc(p.description_ps)}</textarea><textarea data-k="description_fa" placeholder="Beschreibung Dari">${esc(p.description_fa)}</textarea></div>
       <div class="input-grid compact"><select data-k="category">${categoryOptions(p.category)}</select><input data-k="price" type="number" step="0.01" value="${p.price}"><input data-k="old_price" type="number" step="0.01" value="${p.old_price || ""}" placeholder="Alter Preis"><label class="check"><input data-k="active" type="checkbox" ${p.active ? "checked" : ""}> Sichtbar</label></div>
@@ -192,14 +211,18 @@ async function createTryOnImage(source, productId) {
 async function processMainProductImage(file, productId) {
   const originalUrl = await upload(file, "products");
   const tryOnUrl = await createTryOnImage(file, productId);
-  const { error } = await db.from("products").update({
+  const product = state.products.find(p => p.id === productId);
+  const activateAuto = !product?.tryon_choice || product.tryon_choice === "auto";
+  const payload = {
     image_url: originalUrl,
-    tryon_image_url: tryOnUrl,
+    tryon_auto_url: tryOnUrl,
     updated_at: new Date().toISOString()
-  }).eq("id", productId);
+  };
+  if (activateAuto) Object.assign(payload, { tryon_choice:"auto", tryon_image_url:tryOnUrl });
+  const { error } = await db.from("products").update(payload).eq("id", productId);
   if (error) throw error;
   await loadAdmin();
-  notice("Bild gespeichert und automatisch für die virtuelle Anprobe freigestellt.");
+  notice("Hauptbild und automatische Anprobe-Version wurden gespeichert.");
 }
 
 async function rebuildTryOnImage(productId, imageUrl) {
@@ -207,13 +230,14 @@ async function rebuildTryOnImage(productId, imageUrl) {
   if (!response.ok) throw new Error("Das vorhandene Produktbild konnte nicht geladen werden.");
   const blob = await response.blob();
   const tryOnUrl = await createTryOnImage(blob, productId);
-  const { error } = await db.from("products").update({
-    tryon_image_url: tryOnUrl,
-    updated_at: new Date().toISOString()
-  }).eq("id", productId);
+  const product = state.products.find(p => p.id === productId);
+  const activateAuto = !product?.tryon_choice || product.tryon_choice === "auto";
+  const payload = { tryon_auto_url:tryOnUrl, updated_at:new Date().toISOString() };
+  if (activateAuto) Object.assign(payload, { tryon_choice:"auto", tryon_image_url:tryOnUrl });
+  const { error } = await db.from("products").update(payload).eq("id", productId);
   if (error) throw error;
   await loadAdmin();
-  notice("Anprobe-Bild wurde automatisch erstellt.");
+  notice("Die automatische Version wurde neu erstellt.");
 }
 
 function openCategoryDialog() {
@@ -320,7 +344,41 @@ document.addEventListener("change", async event => {
     if (event.target.id === "galleryUpload") return addGallery([...event.target.files]);
     if (event.target.id === "logoFile" && event.target.files[0]) { const url=await upload(event.target.files[0],"brand"); const {error}=await db.from("site_settings").update({logo_url:url}).eq("id",1); if(error)throw error; await loadAdmin(); notice("Logo ersetzt."); }
     const product = event.target.closest(".product-editor");
-    if (product && event.target.matches("[data-codex-edit-request]") && event.target.files[0]) {
+    if (product && event.target.matches("[data-tryon-choice]")) {
+      const productData = state.products.find(p => p.id === product.dataset.id);
+      const choice = event.target.value;
+      const selectedUrl = choice === "manual" ? productData?.tryon_manual_url : (productData?.tryon_auto_url || productData?.tryon_image_url);
+      if (!selectedUrl) throw new Error("Für diese Auswahl ist noch kein Bild vorhanden.");
+      const { error } = await db.from("products").update({
+        tryon_choice: choice,
+        tryon_image_url: selectedUrl,
+        updated_at: new Date().toISOString()
+      }).eq("id", product.dataset.id);
+      if (error) throw error;
+      await loadAdmin();
+      notice("Diese Bildversion wird jetzt auf der Webseite verwendet.");
+      return;
+    }
+    if (product && event.target.matches("[data-manual-tryon]") && event.target.files[0]) {
+      const file = event.target.files[0];
+      if (!["image/png","image/webp"].includes(file.type)) throw new Error("Bitte nur ein transparentes PNG- oder WebP-Bild auswählen.");
+      if (file.size > 12 * 1024 * 1024) throw new Error("Das Bild darf höchstens 12 MB groß sein.");
+      event.target.disabled = true;
+      try {
+        const url = await upload(file, "tryon-manual");
+        const { error } = await db.from("products").update({
+          tryon_manual_url:url,
+          tryon_choice:"manual",
+          tryon_image_url:url,
+          updated_at:new Date().toISOString()
+        }).eq("id", product.dataset.id);
+        if (error) throw error;
+        await loadAdmin();
+        notice("Dein eigenes Bild wurde hochgeladen und direkt für die Webseite ausgewählt.");
+      } finally { event.target.disabled = false; }
+      return;
+    }
+    if (product && event.target.matches("[data-professional-edit-request]") && event.target.files[0]) {
       const file = event.target.files[0];
       if (file.size > 12 * 1024 * 1024) throw new Error("Das Bild darf höchstens 12 MB groß sein.");
       event.target.disabled = true;
@@ -332,7 +390,7 @@ document.addEventListener("change", async event => {
         const { error } = await query;
         if (error) throw error;
         await loadAdmin();
-        notice("Bild wurde für Codex hinterlegt. Schreibe mir jetzt die Produktnummer im Chat.");
+        notice("Bild wurde zur professionellen Bearbeitung hinterlegt. Schreibe mir jetzt die Produktnummer im Chat.");
       } finally { event.target.disabled = false; }
       return;
     }
