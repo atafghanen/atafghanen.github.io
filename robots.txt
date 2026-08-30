@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://atafghanen.github.io/sitemap.xml
