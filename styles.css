@@ -1522,3 +1522,10 @@ html.social-webview .social-browser-banner{display:none!important}
 .app-intro-compact .app-intro-steps p{font-size:10px!important}
 .app-intro-compact .app-intro-install,.app-intro-compact .app-intro-continue{min-height:40px!important}
 [dir="rtl"].app-intro .app-intro-language{left:13px;right:auto}
+/* === TIKTOK APP GUIDE VISIBILITY FIX v58 === */
+body .app-intro{
+  display:grid!important;
+}
+@media(display-mode:standalone){
+  body .app-intro{display:none!important}
+}
