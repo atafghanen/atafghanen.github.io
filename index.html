@@ -17,9 +17,53 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=58">
+  <link rel="stylesheet" href="styles.css?v=59">
 </head>
 <body>
+<div class="app-intro visible" id="appIntroStatic" dir="rtl">
+  <div class="app-intro-card app-intro-compact" role="dialog" aria-modal="true" aria-labelledby="staticAppTitle">
+    <select class="app-intro-language" id="staticAppLanguage" aria-label="Language">
+      <option value="de">DE</option><option value="en">EN</option><option value="ps">پښتو</option><option value="fa" selected>دری</option>
+    </select>
+    <button class="app-intro-close" id="staticAppClose" type="button" aria-label="Close">×</button>
+    <img src="assets/app-icon.svg" alt="AT Afghanen">
+    <h2 id="staticAppTitle">فروشگاه را به‌صورت اپ نصب کنید</h2>
+    <p id="staticAppText">AT Afghanen را روی موبایل خود ذخیره کنید؛ سپس فروشگاه مانند یک اپ عادی باز می‌شود.</p>
+    <div class="app-social-tip"><strong id="staticSocialTitle">از طریق TikTok یا Instagram باز کرده‌اید؟</strong><span id="staticSocialText">بالا سمت راست روی ⋯ بزنید و «Open in browser» را انتخاب کنید. سپس از Safari یا Chrome استفاده کنید.</span></div>
+    <div class="app-intro-steps"><span>1</span><p id="staticIos">آیفون: Share ← «Add to Home Screen».</p><span>2</span><p id="staticAndroid">اندروید: «Install app» را انتخاب کنید.</p></div>
+    <button class="app-intro-install" id="staticInstall" type="button">نصب اپلیکیشن</button>
+    <button class="app-intro-continue" id="staticContinue" type="button">ادامه به فروشگاه</button>
+  </div>
+</div>
+<script>
+(() => {
+  const root=document.getElementById("appIntroStatic");
+  if(!root)return;
+  const installed=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa";
+  const desktop=matchMedia("(min-width:821px) and (pointer:fine)").matches;
+  if(installed||desktop){root.remove();return;}
+  const words={
+    de:["Shop als App installieren","Speichere AT Afghanen auf deinem Handy. Danach öffnet sich der Shop wie eine normale App.","Über TikTok oder Instagram geöffnet?","Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Nutze danach Safari oder Chrome.","iPhone: Teilen → „Zum Home-Bildschirm“.","Android: „App installieren“ auswählen.","App installieren","Weiter zur Website"],
+    en:["Install the shop as an app","Save AT Afghanen on your phone. The shop will then open like a normal app.","Opened through TikTok or Instagram?","Tap ⋯ at the top right and choose “Open in browser”. Then use Safari or Chrome.","iPhone: Share → “Add to Home Screen”.","Android: Choose “Install app”.","Install app","Continue to website"],
+    ps:["پلورنځی د اپ په توګه نصب کړئ","AT Afghanen په خپل موبایل کې وساتئ؛ وروسته به د عادي اپ په شان پرانیستل شي.","له TikTok یا Instagram څخه مو پرانیستی؟","پورته ښي لور ته ⋯ ووهئ او «Open in browser» وټاکئ. بیا Safari یا Chrome وکاروئ.","iPhone: Share → «Add to Home Screen».","Android: «Install app» وټاکئ.","اپ نصب کړئ","وېبپاڼې ته دوام"],
+    fa:["فروشگاه را به‌صورت اپ نصب کنید","AT Afghanen را روی موبایل خود ذخیره کنید؛ سپس فروشگاه مانند یک اپ عادی باز می‌شود.","از طریق TikTok یا Instagram باز کرده‌اید؟","بالا سمت راست روی ⋯ بزنید و «Open in browser» را انتخاب کنید. سپس از Safari یا Chrome استفاده کنید.","آیفون: Share ← «Add to Home Screen».","اندروید: «Install app» را انتخاب کنید.","نصب اپلیکیشن","ادامه به فروشگاه"]
+  };
+  const ids=["staticAppTitle","staticAppText","staticSocialTitle","staticSocialText","staticIos","staticAndroid","staticInstall","staticContinue"];
+  const close=()=>{root.classList.add("closing");setTimeout(()=>root.remove(),220);};
+  document.getElementById("staticAppClose").onclick=close;
+  document.getElementById("staticContinue").onclick=close;
+  document.getElementById("staticInstall").onclick=()=>document.getElementById("installAppButton")?.click();
+  document.getElementById("staticAppLanguage").onchange=e=>{
+    const lang=e.target.value,values=words[lang]||words.fa;
+    ids.forEach((id,i)=>document.getElementById(id).textContent=values[i]);
+    root.dir=lang==="fa"||lang==="ps"?"rtl":"ltr";
+    document.documentElement.lang=lang;
+    document.documentElement.dir=root.dir;
+    const site=document.getElementById("languageSelect");
+    if(site){site.value=lang;site.dispatchEvent(new Event("change",{bubbles:true}));}
+  };
+})();
+</script>
 <button class="install-app-button" id="installAppButton" type="button" aria-label="App installieren">
   <strong aria-hidden="true">↓</strong><span>نصب اپلیکیشن</span>
 </button>
@@ -379,7 +423,7 @@
   </div>
 </div>
 
-<script src="pwa.js?v=9"></script>
+<script src="pwa.js?v=10"></script>
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
