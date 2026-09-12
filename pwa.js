@@ -114,15 +114,48 @@
   }
 
   function forceSocialBrowserNotice() {
-    if (standalone || !isSocialBrowser()) return;
+    if (standalone || !isSocialBrowser() || document.querySelector(".browser-intro")) return;
     const banner = document.getElementById("socialBrowserBanner");
-    if (!banner) return;
-    banner.classList.remove("is-hiding");
-    banner.hidden = false;
-    setTimeout(() => {
-      banner.classList.add("is-hiding");
-      setTimeout(() => { banner.hidden = true; }, 350);
-    }, 9000);
+    if (banner) banner.hidden = true;
+    document.documentElement.classList.add("social-webview");
+    const socialCopy = {
+      de:{title:"Im Browser öffnen",text:"Du bist gerade im TikTok- oder Instagram-Browser. Öffne den Shop in Safari oder Chrome, damit Installation, Bestellung und WhatsApp zuverlässig funktionieren.",step:"Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“.",copy:"Webseiten-Link kopieren",close:"Weiter zur Website",copied:"Link kopiert"},
+      en:{title:"Open in your browser",text:"You are using the TikTok or Instagram browser. Open the shop in Safari or Chrome so installation, orders and WhatsApp work reliably.",step:"Tap ⋯ at the top right and choose “Open in browser”.",copy:"Copy website link",close:"Continue to website",copied:"Link copied"},
+      ps:{title:"په براوزر کې یې پرانیزئ",text:"تاسو اوس د TikTok یا Instagram براوزر کاروئ. پلورنځی په Safari یا Chrome کې پرانیزئ، څو نصب، فرمایش او WhatsApp سم کار وکړي.",step:"پورته ښي لور ته ⋯ ووهئ او «Open in browser» وټاکئ.",copy:"د وېبپاڼې لینک کاپي",close:"وېبپاڼې ته دوام",copied:"لینک کاپي شو"},
+      fa:{title:"در مرورگر باز کنید",text:"شما اکنون داخل مرورگر TikTok یا Instagram هستید. فروشگاه را در Safari یا Chrome باز کنید تا نصب اپ، سفارش و WhatsApp درست کار کند.",step:"بالا سمت راست روی ⋯ بزنید و «Open in browser» را انتخاب کنید.",copy:"کپی لینک وب‌سایت",close:"ادامه به فروشگاه",copied:"لینک کپی شد"}
+    };
+    const t = socialCopy[language()] || socialCopy.fa;
+    const overlay = document.createElement("div");
+    overlay.className = "browser-intro";
+    overlay.innerHTML = `
+      <div class="browser-intro-card" role="dialog" aria-modal="true" aria-labelledby="browserIntroTitle">
+        <button class="browser-intro-close" type="button" aria-label="Close">×</button>
+        <div class="browser-intro-icon">⋯</div>
+        <p class="browser-intro-kicker">TIKTOK · INSTAGRAM</p>
+        <h2 id="browserIntroTitle">${t.title}</h2>
+        <p>${t.text}</p>
+        <div class="browser-intro-step"><span>1</span><strong>${t.step}</strong></div>
+        <button class="browser-intro-copy" type="button">${t.copy}</button>
+        <button class="browser-intro-continue" type="button">${t.close}</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add("visible"));
+    const dismiss = () => {
+      overlay.classList.add("closing");
+      setTimeout(() => overlay.remove(), 250);
+    };
+    overlay.querySelector(".browser-intro-close").onclick = dismiss;
+    overlay.querySelector(".browser-intro-continue").onclick = dismiss;
+    overlay.querySelector(".browser-intro-copy").onclick = async event => {
+      try { await navigator.clipboard.writeText("https://atafghanen.github.io/"); }
+      catch {
+        const helper=document.createElement("textarea");
+        helper.value="https://atafghanen.github.io/";
+        document.body.appendChild(helper); helper.select(); document.execCommand("copy"); helper.remove();
+      }
+      event.currentTarget.textContent=t.copied;
+    };
+    setTimeout(() => { if (overlay.isConnected) dismiss(); }, 25000);
   }
 
   forceSocialBrowserNotice();
