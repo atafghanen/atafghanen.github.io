@@ -876,3 +876,46 @@ img,video{max-width:100%}
   .hero-logo-wrap{top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important}
 }
 
+/* === MOBILE PRODUCT WOW v41 === */
+@media(max-width:720px){
+  .product-card{
+    position:relative!important;
+    padding:2px!important;
+    border:1px solid #d6a34c!important;
+    border-radius:16px!important;
+    background:linear-gradient(145deg,#f0c66f 0%,#7b4b12 24%,#e8b95c 52%,#4f300c 75%,#dca94f 100%)!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.62),0 0 22px rgba(211,151,54,.18),inset 0 0 0 1px rgba(255,225,155,.45)!important;
+    overflow:hidden!important;
+  }
+  .product-card:before{
+    content:""!important;
+    position:absolute!important;inset:5px!important;z-index:2!important;
+    border:1px solid rgba(247,210,132,.35)!important;
+    border-radius:11px!important;pointer-events:none!important;
+  }
+  .product-image{
+    border-radius:13px 13px 3px 3px!important;
+    overflow:hidden!important;
+    background:#080706!important;
+  }
+  .product-image img{filter:saturate(.96) contrast(1.05)!important}
+  .product-info{
+    position:relative!important;z-index:3!important;
+    margin-top:0!important;padding:17px 16px 18px!important;
+    border-radius:0 0 13px 13px!important;
+    background:linear-gradient(180deg,#11100d,#070706)!important;
+  }
+  .product-name{color:#fff6e8!important;text-shadow:0 2px 10px #000!important}
+  .price{color:#efbd5b!important;font-weight:700!important}
+  .product-actions .small-btn{
+    border-color:#b9802c!important;
+    background:rgba(8,7,5,.88)!important;
+    color:#efbd5b!important;
+    border-radius:5px!important;
+  }
+  .product-actions .small-btn.primary{
+    color:#0a0703!important;
+    background:linear-gradient(135deg,#b97f28,#edc36b,#ad7322)!important;
+  }
+}
+
