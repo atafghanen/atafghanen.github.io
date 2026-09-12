@@ -961,3 +961,27 @@ img,video{max-width:100%}
   }
 }
 
+/* === COMPLETE MOBILE TRYON EXAMPLE v44 === */
+@media(max-width:760px){
+  .tryon-example-card{
+    width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:3/4!important;
+    background:#120f0d!important;
+    border-radius:16px!important;
+  }
+  .tryon-example-card img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    background:#120f0d!important;
+  }
+  .tryon-example-card figcaption{
+    left:10px!important;
+    right:10px!important;
+    bottom:10px!important;
+  }
+}
+
