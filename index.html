@@ -5,13 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="AT Afghanen – afghanische Kleider, Abendmode und individuelle Maßanfertigung direkt vom Hersteller.">
   <title>AT Afghanen</title>
+  <meta name="theme-color" content="#24141a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AT Afghanen">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/logo.gif">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=51">
+  <link rel="stylesheet" href="styles.css?v=52">
 </head>
 <body>
+<button class="install-app-button" id="installAppButton" type="button" aria-label="App installieren">
+  <strong aria-hidden="true">↓</strong><span>نصب اپلیکیشن</span>
+</button>
 
 <div id="site">
   <div class="announcement" data-i18n="announcement">Weltweiter Versand · Maßanfertigung nach deinen Maßen</div>
@@ -358,6 +369,7 @@
 <!-- Haupt-Anwendungs-Skript -->
 <script src="app.js?v=35"></script>
 
+<script src="pwa.js?v=1"></script>
 </body>
 </html>
 
