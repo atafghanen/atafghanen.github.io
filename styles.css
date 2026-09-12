@@ -1009,3 +1009,21 @@ img,video{max-width:100%}
   .gold-orbit{width:242px!important;height:242px!important}
 }
 
+
+
+/* === FULL SCREEN DESKTOP HERO v46 === */
+@media (min-width:981px){
+  .hero{
+    width:100%!important;
+    max-width:none!important;
+    min-height:calc(100svh - 86px)!important;
+    height:calc(100svh - 86px)!important;
+    max-height:none!important;
+    padding-top:64px!important;
+    padding-bottom:64px!important;
+    padding-left:max(44px,calc((100vw - 1748px)/2))!important;
+    padding-right:max(44px,calc((100vw - 1748px)/2))!important;
+    align-items:center!important;
+  }
+  .hero-content,.hero-visual{align-self:center!important}
+}
