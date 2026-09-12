@@ -33,6 +33,21 @@
     </div>
     <button type="button" id="copyWebsiteLink" data-i18n="browserBanner.copy">Webseiten-Link kopieren</button>
   </div>
+  <!-- /* instant-mobile-browser-notice */ -->
+  <script>
+    (() => {
+      const banner = document.getElementById("socialBrowserBanner");
+      const social = /TikTok|musical_ly|Bytedance|BytedanceWebview|Aweme|Trill|Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(navigator.userAgent) ||
+        /tiktok\\.com|instagram\\.com|facebook\\.com/i.test(document.referrer);
+      const installed = !social && (
+        matchMedia("(display-mode: standalone)").matches ||
+        navigator.standalone === true ||
+        new URLSearchParams(location.search).get("source") === "pwa"
+      );
+      const mobile = matchMedia("(max-width: 900px)").matches || navigator.maxTouchPoints > 0;
+      if (banner && mobile && !installed) banner.hidden = false;
+    })();
+  </script>
 
   <header class="header">
     <a class="brand" href="#home" aria-label="AT Afghanen">
@@ -367,7 +382,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=37"></script>
+<script src="app.js?v=38"></script>
 
 <script src="pwa.js?v=3"></script>
 </body>
