@@ -755,3 +755,14 @@ img,video{max-width:100%}
 .benefit-item small{font-size:8px!important;white-space:normal!important;line-height:1.2!important}
 }
 
+/* === LOGO MOTION AND ORIGINAL PRODUCTS v37 === */
+.hero-logo{animation:heroLogoSpin 18s linear infinite!important;transform-style:preserve-3d!important}
+@media(min-width:981px){
+  .products-grid{grid-template-columns:repeat(3,1fr)!important;gap:18px!important}
+  .product-image{aspect-ratio:4/4.7!important;max-height:470px!important}
+  .product-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+  .product-card .product-info{padding:17px!important}
+  .product-card h3,.product-name{font-size:27px!important}
+}
+@media(prefers-reduced-motion:reduce){.hero-logo{animation:none!important}}
+
