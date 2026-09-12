@@ -746,12 +746,12 @@ img,video{max-width:100%}
 .hero-content{max-width:690px!important}.hero .eyebrow{font-size:10px!important;margin:0 0 7px!important}
 .hero h1{max-width:690px!important;font-size:clamp(2.15rem,2.45vw,3rem)!important;line-height:.94!important;margin:8px 0 11px!important}
 .hero h1 span{white-space:nowrap!important}.hero-text{font-size:11px!important;line-height:1.48!important;max-width:560px!important;margin:13px 0!important}
-.hero-actions{margin-top:14px!important;gap:10px!important}.hero-actions .btn{min-height:36px!importantpx!important;height:36px!important;padding:0 19px!important;font-size:9px!important}
+.hero-actions{margin-top:14px!important;gap:10px!important}.hero-actions .btn{min-height:36px!important;height:36px!important;padding:0 19px!important;font-size:9px!important}
 .hero-logo-wrap{width:238px!important;padding:5px!important}.gold-orbit{width:272px!important;height:272px!important}
 .benefit-strip{height:65px!important;padding:7px 2.2%!important}
 .benefit-item{gap:7px!important;padding:5px 9px!important;overflow:hidden!important}
 .benefit-icon{width:34px!important;height:34px!important;flex-basis:34px!important;font-size:14px!important}
 .benefit-item>div{min-width:0!important}.benefit-item strong{font-size:11px!important;white-space:normal!important}
-.benefit-item small{font-size:8pxlace!important;white-space:normal!important;line-height:1.2!important}
+.benefit-item small{font-size:8px!important;white-space:normal!important;line-height:1.2!important}
 }
 
