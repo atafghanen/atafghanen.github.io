@@ -1,6 +1,4 @@
 (() => {
-  if (!("serviceWorker" in navigator)) return;
-
   let installPrompt=null;
   const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa";
   const button=document.getElementById("installAppButton");
@@ -15,7 +13,9 @@
   let selectedLanguage=document.documentElement.lang||"fa";
   const words=()=>copy[selectedLanguage]||copy.fa;
 
-  navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(error=>console.warn("PWA registration failed",error));
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(error=>console.warn("PWA registration failed",error));
+  }
 
   function updateButton(){
     if(button)button.querySelector("span").textContent=(copy[document.documentElement.lang]||copy.fa).button;
