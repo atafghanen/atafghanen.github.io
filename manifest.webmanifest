@@ -1,0 +1,38 @@
+{
+  "id": "/",
+  "name": "AT Afghanen – Afghan Fashion",
+  "short_name": "AT Afghanen",
+  "description": "Afghanische Mode, Maßanfertigung und weltweite Lieferung.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#160b10",
+  "theme_color": "#24141a",
+  "categories": [
+    "shopping",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "مجموعه",
+      "short_name": "مجموعه",
+      "url": "./#collection"
+    },
+    {
+      "name": "دوخت سفارشی",
+      "short_name": "دوخت",
+      "url": "./#tailoring"
+    }
+  ]
+}
