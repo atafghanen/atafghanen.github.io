@@ -1435,3 +1435,55 @@ html.social-webview .social-browser-banner{display:none!important}
   color:#ead5c7;
   background:rgba(255,255,255,.035);
 }
+/* === UNIFIED APP AND BROWSER GUIDE v56 === */
+.social-browser-banner,.browser-intro{display:none!important}
+.app-guide-card{
+  width:min(100%,410px)!important;
+  max-height:calc(100dvh - 28px);
+  overflow:auto;
+  padding:24px 20px 18px!important;
+}
+.app-guide-card>img{width:64px!important;height:64px!important}
+.app-guide-card h2{font-size:28px!important;margin-top:10px!important}
+.app-guide-card>p{font-size:12px!important;margin-bottom:12px!important}
+.app-guide-options{display:grid;gap:8px;margin:12px 0}
+.app-guide-options section{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:10px;
+  align-items:start;
+  padding:10px;
+  text-align:start;
+  border:1px solid rgba(220,169,77,.28);
+  border-radius:11px;
+  background:rgba(255,255,255,.035);
+}
+.app-guide-options section>span{
+  display:grid;
+  place-items:center;
+  width:27px;height:27px;
+  border-radius:50%;
+  color:#1a1007;
+  background:#e8b652;
+  font-weight:900;
+}
+.app-guide-options strong{display:block;color:#f3c768;font-size:12px;line-height:1.4}
+.app-guide-options p{margin:3px 0 0;color:#e0d1c8;font-size:11px;line-height:1.45}
+.app-guide-status{
+  margin:8px 0!important;
+  padding:9px!important;
+  border-radius:8px;
+  color:#fff0d0!important;
+  background:rgba(210,151,54,.13);
+}
+.app-guide-copy{
+  width:100%;
+  min-height:42px;
+  margin-top:7px;
+  border:1px solid rgba(222,180,99,.45);
+  border-radius:9px;
+  color:#f0d4a0;
+  background:rgba(255,255,255,.045);
+  font-weight:800;
+}
+.app-guide-card .app-intro-install,.app-guide-card .app-intro-continue{min-height:42px!important}
