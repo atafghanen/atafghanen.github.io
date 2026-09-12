@@ -872,8 +872,13 @@ function setup() {
 
   const socialBrowserBanner = $("#socialBrowserBanner");
   const isSocialBrowser = /TikTok|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
-  if (socialBrowserBanner && (isSocialBrowser || window.matchMedia("(max-width: 760px)").matches)) {
+  const isInstalledApp = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  if (socialBrowserBanner && isSocialBrowser && !isInstalledApp) {
     socialBrowserBanner.hidden = false;
+    setTimeout(() => {
+      socialBrowserBanner.classList.add("is-hiding");
+      setTimeout(() => { socialBrowserBanner.hidden = true; }, 350);
+    }, 8000);
   }
   const copyWebsiteLink = $("#copyWebsiteLink");
   if (copyWebsiteLink) {
