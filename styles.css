@@ -1158,3 +1158,49 @@ html[lang="fa"] .hero h1 span{
     line-height:1.45!important;
   }
 }
+/* === INSTALLABLE PWA v52 === */
+.install-app-button{
+  position:fixed;
+  left:18px;
+  bottom:18px;
+  z-index:80;
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  min-height:48px;
+  padding:9px 17px 10px 11px;
+  border:1px solid rgba(246,198,102,.75);
+  border-radius:999px;
+  color:#120b07;
+  background:linear-gradient(135deg,#b97820,#f2ca6d 48%,#bd7b25);
+  box-shadow:0 12px 34px rgba(0,0,0,.52),0 0 20px rgba(216,157,54,.2);
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+.install-app-button[hidden]{display:none!important}
+.install-app-button strong{
+  display:grid;
+  place-items:center;
+  width:29px;
+  height:29px;
+  border-radius:50%;
+  color:#f7d98d;
+  background:#21120d;
+  font-size:20px;
+  line-height:1;
+}
+.install-app-button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+@media(max-width:720px){
+  .install-app-button{
+    left:12px;
+    bottom:12px;
+    min-height:44px;
+    padding:7px 14px 8px 8px;
+    font-size:12px;
+  }
+  .install-app-button strong{width:28px;height:28px}
+}
+@media(display-mode:standalone){
+  .install-app-button{display:none!important}
+}
