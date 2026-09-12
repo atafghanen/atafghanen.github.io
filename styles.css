@@ -793,3 +793,57 @@ img,video{max-width:100%}
   .product-actions{display:flex!important;gap:8px!important;margin-top:15px!important}
 }
 
+/* === DESKTOP WOW AND MOBILE STORY v39 === */
+/* Desktop: stronger medallion and refined copy */
+@media(min-width:981px){
+  .hero{grid-template-columns:55% 45%!important}
+  .hero-logo-wrap{
+    width:282px!important;padding:7px!important;
+    box-shadow:0 0 0 5px #171108,0 0 0 8px rgba(232,184,85,.82),0 26px 70px #000,0 0 55px rgba(218,153,48,.34)!important;
+  }
+  .gold-orbit{width:325px!important;height:325px!important;box-shadow:0 0 90px rgba(214,168,61,.2),inset 0 0 55px rgba(214,168,61,.08)!important}
+  .hero h1{font-size:clamp(2.45rem,2.75vw,3.35rem)!important;letter-spacing:-.018em!important}
+  .hero h1 span{font-weight:500!important}
+  .hero-text{max-width:610px!important}
+}
+/* Mobile: logo first, then message, then benefits and one product per row */
+@media(max-width:720px){
+  .header{min-height:62px!important;height:62px!important}
+  .nav{top:62px!important}
+  .hero{
+    display:flex!important;flex-direction:column!important;
+    min-height:auto!important;height:auto!important;
+    padding:24px 17px 34px!important;
+    text-align:center!important;background-position:68% center!important;
+  }
+  .hero-visual{order:1!important;width:100%!important;min-height:230px!important;margin:0 0 15px!important}
+  .hero-content{order:2!important;width:100%!important;max-width:520px!important;margin:auto!important}
+  .hero-logo-wrap{
+    position:absolute!important;width:205px!important;padding:5px!important;
+    box-shadow:0 0 0 4px #171108,0 0 0 6px rgba(232,184,85,.8),0 20px 50px #000,0 0 35px rgba(218,153,48,.3)!important;
+  }
+  .gold-orbit{width:232px!important;height:232px!important}
+  .hero .eyebrow{font-size:9px!important;letter-spacing:.2em!important;margin:0 0 9px!important}
+  .hero h1{font-size:clamp(2.25rem,11vw,3.15rem)!important;line-height:.94!important;margin:0 0 15px!important}
+  .hero h1 span{white-space:normal!important}
+  .hero-text{font-size:13px!important;line-height:1.55!important;margin:14px auto 19px!important;max-width:440px!important}
+  .hero-actions{justify-content:center!important;display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+  .hero-actions .btn{width:100%!important;max-width:360px!important;margin:auto!important;min-height:44px!important}
+  .benefit-strip{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:6px!important}
+  .benefit-item{padding:8px 7px!important;gap:7px!important;min-height:55px!important}
+  .benefit-icon{width:32px!important;height:32px!important;flex-basis:32px!important;font-size:13px!important}
+  .benefit-item strong{font-size:11px!important}
+  .benefit-item small{font-size:8px!important;white-space:normal!important}
+  #collection.section{padding:54px 16px 70px!important}
+  .products-grid{grid-template-columns:1fr!important;gap:20px!important}
+  .product-card{width:100%!important;max-width:480px!important;margin-inline:auto!important}
+  .product-image{aspect-ratio:4/4.7!important;max-height:none!important}
+  .product-name{font-size:25px!important}
+}
+@media(max-width:390px){
+  .benefit-strip{grid-template-columns:1fr!important}
+  .hero-visual{min-height:215px!important}
+  .hero-logo-wrap{width:188px!important}
+  .gold-orbit{width:212px!important;height:212px!important}
+}
+
