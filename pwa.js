@@ -1,6 +1,7 @@
 (() => {
   let installPrompt=null;
-  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa";
+  const socialBrowser=/TikTok|musical_ly|Bytedance|BytedanceWebview|Aweme|Trill|Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(navigator.userAgent)||/tiktok\.com|instagram\.com|facebook\.com/i.test(document.referrer);
+  const standalone=!socialBrowser&&(matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa");
   const button=document.getElementById("installAppButton");
 
   const copy={
@@ -49,7 +50,7 @@
 
   function showIntro(){
     const mobile=matchMedia("(max-width:820px)").matches||navigator.maxTouchPoints>0;
-    if(!mobile||standalone||localStorage.getItem("atSimpleAppIntroV3"))return;
+    if(!mobile||standalone)return;
     selectedLanguage=document.documentElement.lang||"fa";
     const overlay=document.createElement("div");
     overlay.className="app-intro";
@@ -74,7 +75,6 @@
     updateGuide(overlay);
     requestAnimationFrame(()=>overlay.classList.add("visible"));
     const dismiss=()=>{
-      localStorage.setItem("atSimpleAppIntroV3","1");
       overlay.classList.add("closing");
       setTimeout(()=>overlay.remove(),220);
     };
