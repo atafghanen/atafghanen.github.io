@@ -866,13 +866,18 @@ function setupWishPhotoRequest() {
 }
 
 function setup() {
-  lang = localStorage.getItem("atEELang") || "de";
+  lang = "fa";
+  localStorage.setItem("atEELang", lang);
   const yearEl = $("#year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   const socialBrowserBanner = $("#socialBrowserBanner");
-  const isSocialBrowser = /TikTok|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
-  const isInstalledApp = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  const isSocialBrowser = /TikTok|musical_ly|Bytedance|BytedanceWebview|Aweme|Trill|Instagram|FBAN|FBAV|FB_IAB|FBIOS/i.test(navigator.userAgent) || /tiktok\.com|instagram\.com|facebook\.com/i.test(document.referrer);
+  const isInstalledApp = !isSocialBrowser && (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true ||
+    new URLSearchParams(location.search).get("source") === "pwa"
+  );
   if (socialBrowserBanner && (isSocialBrowser || window.matchMedia("(max-width: 760px)").matches) && !isInstalledApp) {
     socialBrowserBanner.hidden = false;
     setTimeout(() => {
