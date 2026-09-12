@@ -49,6 +49,7 @@
   }
 
   function showIntro(){
+    if(document.getElementById("appIntroStatic"))return;
     const mobile=matchMedia("(max-width:820px)").matches||navigator.maxTouchPoints>0;
     if(!mobile||standalone)return;
     selectedLanguage=document.documentElement.lang||"fa";
