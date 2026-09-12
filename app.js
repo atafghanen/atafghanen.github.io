@@ -873,7 +873,7 @@ function setup() {
   const socialBrowserBanner = $("#socialBrowserBanner");
   const isSocialBrowser = /TikTok|Instagram|FBAN|FBAV/i.test(navigator.userAgent);
   const isInstalledApp = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  if (socialBrowserBanner && isSocialBrowser && !isInstalledApp) {
+  if (socialBrowserBanner && (isSocialBrowser || window.matchMedia("(max-width: 760px)").matches) && !isInstalledApp) {
     socialBrowserBanner.hidden = false;
     setTimeout(() => {
       socialBrowserBanner.classList.add("is-hiding");
