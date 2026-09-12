@@ -972,5 +972,38 @@ function scheduleShopRefresh() {
   realtimeRefreshTimer = setTimeout(loadDataFromSupabase, 250);
 }
 
-setup();
+// Benefit strip translations v33
+Object.assign(translations.de,{
+  "benefit.since.title":"Seit 2022","benefit.since.sub":"Über 2 Jahre Erfahrung",
+  "benefit.tailors.title":"Eigene Schneidereien","benefit.tailors.sub":"In Afghanistan",
+  "benefit.shipping.title":"Weltweiter Versand","benefit.shipping.sub":"Wir liefern überall",
+  "benefit.jobs.title":"Arbeitsplätze schaffen","benefit.jobs.sub":"Hoffnung für Familien",
+  "benefit.custom.title":"Maßanfertigung","benefit.custom.sub":"Für Ihre perfekte Passform",
+  "benefit.quality.title":"Höchste Qualität","benefit.quality.sub":"Stoffe & Verarbeitung"
+});
+Object.assign(translations.en,{
+  "benefit.since.title":"Since 2022","benefit.since.sub":"Over 2 years of experience",
+  "benefit.tailors.title":"Our own tailors","benefit.tailors.sub":"In Afghanistan",
+  "benefit.shipping.title":"Worldwide shipping","benefit.shipping.sub":"We deliver worldwide",
+  "benefit.jobs.title":"Creating jobs","benefit.jobs.sub":"Hope for families",
+  "benefit.custom.title":"Made to measure","benefit.custom.sub":"A perfect fit for you",
+  "benefit.quality.title":"Highest quality","benefit.quality.sub":"Fine fabrics and workmanship"
+});
+Object.assign(translations.ps,{
+  "benefit.since.title":"له ۲۰۲۲ کال راهیسې","benefit.since.sub":"له دوو کلونو زیاته تجربه",
+  "benefit.tailors.title":"زموږ خپل خیاطان","benefit.tailors.sub":"په افغانستان کې",
+  "benefit.shipping.title":"نړیوال لېږد","benefit.shipping.sub":"ټولې نړۍ ته لېږو",
+  "benefit.jobs.title":"د کار فرصتونه","benefit.jobs.sub":"د کورنیو لپاره هیله",
+  "benefit.custom.title":"ستاسو د اندازې مطابق","benefit.custom.sub":"ستاسو لپاره بشپړ مناسب",
+  "benefit.quality.title":"لوړ کیفیت","benefit.quality.sub":"غوره ټوکر او ګنډنه"
+});
+Object.assign(translations.fa,{
+  "benefit.since.title":"از سال ۲۰۲۲","benefit.since.sub":"بیش از دو سال تجربه",
+  "benefit.tailors.title":"خیاط‌خانه‌های خود ما","benefit.tailors.sub":"در افغانستان",
+  "benefit.shipping.title":"ارسال به سراسر جهان","benefit.shipping.sub":"به همه‌جا ارسال می‌کنیم",
+  "benefit.jobs.title":"ایجاد فرصت‌های کاری","benefit.jobs.sub":"امید برای خانواده‌ها",
+  "benefit.custom.title":"دوخت به اندازه","benefit.custom.sub":"برای اندازه دقیق شما",
+  "benefit.quality.title":"بالاترین کیفیت","benefit.quality.sub":"پارچه و دوخت باکیفیت"
+});
 
+setup();
