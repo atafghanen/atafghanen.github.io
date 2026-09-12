@@ -1070,3 +1070,51 @@ html[lang="fa"] .nav a{
 @media(min-width:981px) and (max-width:1199px){
   html[lang="fa"] body .header .nav a{font-size:16px!important}
 }
+/* === DARI LUXURY CONTRAST AND NAV PILLS v50 === */
+/* Clear contrast between both Dari hero lines */
+html[lang="fa"] .hero h1{
+  color:#fff3dc!important;
+  text-shadow:0 3px 22px rgba(0,0,0,.85)!important;
+}
+html[lang="fa"] .hero h1 span{
+  display:block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin-top:10px!important;
+  color:#e7ad43!important;
+  background:linear-gradient(100deg,#b8751c 0%,#ffd77a 48%,#c88625 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 4px 13px rgba(212,145,37,.25))!important;
+}
+
+/* Individual luxury shapes keep the large Dari menu visually separated */
+@media(min-width:1200px){
+  html[lang="fa"] .header .nav{
+    gap:8px!important;
+    align-items:center!important;
+  }
+  html[lang="fa"] .header .nav a{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:44px!important;
+    padding:6px 13px 8px!important;
+    border:1px solid rgba(207,151,61,.32)!important;
+    border-radius:999px!important;
+    background:linear-gradient(180deg,rgba(210,157,69,.10),rgba(255,255,255,.018))!important;
+    box-shadow:inset 0 1px 0 rgba(255,227,174,.08)!important;
+    white-space:nowrap!important;
+    transition:background .25s,border-color .25s,box-shadow .25s,color .25s!important;
+  }
+  html[lang="fa"] .header .nav a:hover{
+    color:#ffd77a!important;
+    border-color:rgba(239,187,92,.78)!important;
+    background:linear-gradient(180deg,rgba(213,156,62,.22),rgba(120,72,14,.10))!important;
+    box-shadow:0 0 18px rgba(206,143,41,.16),inset 0 1px 0 rgba(255,231,181,.17)!important;
+  }
+}
+@media(max-width:720px){
+  html[lang="fa"] .hero h1 span{width:auto!important;margin-top:7px!important}
+}
