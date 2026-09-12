@@ -1529,3 +1529,11 @@ body .app-intro{
 @media(display-mode:standalone){
   body .app-intro{display:none!important}
 }
+/* === STATIC MOBILE APP GUIDE v59 === */
+#appIntroStatic{display:grid!important}
+@media(min-width:821px) and (pointer:fine){
+  #appIntroStatic{display:none!important}
+}
+@media(display-mode:standalone){
+  #appIntroStatic{display:none!important}
+}
