@@ -919,3 +919,45 @@ img,video{max-width:100%}
   }
 }
 
+/* === TRANSPARENT 3D LOGO AND VISIBLE MOBILE FRAME v42 === */
+/* Rotate only the logo image; the surrounding area stays transparent. */
+.hero-logo-wrap{
+  padding:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.hero-logo{
+  animation:heroLogoTurn 16s linear infinite!important;
+  -webkit-animation:heroLogoTurn 16s linear infinite!important;
+  transform-style:preserve-3d!important;
+  backface-visibility:visible!important;
+  filter:drop-shadow(0 20px 34px rgba(0,0,0,.72)) drop-shadow(0 0 18px rgba(214,157,55,.24))!important;
+}
+@keyframes heroLogoTurn{from{transform:perspective(900px) rotateY(0deg)}to{transform:perspective(900px) rotateY(360deg)}}
+@-webkit-keyframes heroLogoTurn{from{-webkit-transform:perspective(900px) rotateY(0deg)}to{-webkit-transform:perspective(900px) rotateY(360deg)}}
+/* Strong, unmistakable mobile product frame. */
+@media(max-width:800px){
+  body .products-grid{grid-template-columns:1fr!important;gap:28px!important}
+  body .products-grid .product-card{
+    width:calc(100% - 16px)!important;
+    max-width:480px!important;
+    margin:0 auto!important;
+    padding:0!important;
+    border:4px solid #d7a23f!important;
+    outline:1px solid #ffe09a!important;
+    outline-offset:-7px!important;
+    border-radius:20px!important;
+    background:#080706!important;
+    box-shadow:0 20px 45px rgba(0,0,0,.72),0 0 0 2px #3b2408,0 0 28px rgba(224,164,66,.42)!important;
+    overflow:hidden!important;
+  }
+  body .products-grid .product-card:before{display:none!important}
+  body .products-grid .product-image{border-radius:15px 15px 0 0!important}
+  body .products-grid .product-info{
+    padding:19px 17px 20px!important;
+    background:linear-gradient(180deg,#16120c,#060605)!important;
+    border-top:1px solid #c58d31!important;
+  }
+}
+
