@@ -985,3 +985,27 @@ img,video{max-width:100%}
   }
 }
 
+/* === COMPLETE LOGO SWAY v45 === */
+.hero-logo{
+  animation:heroLogoSway 5.5s ease-in-out infinite alternate!important;
+  -webkit-animation:heroLogoSway 5.5s ease-in-out infinite alternate!important;
+  transform-origin:center center!important;
+  backface-visibility:hidden!important;
+}
+@keyframes heroLogoSway{
+  from{transform:perspective(1200px) rotateY(-11deg) scale(1)}
+  to{transform:perspective(1200px) rotateY(11deg) scale(1.025)}
+}
+@-webkit-keyframes heroLogoSway{
+  from{-webkit-transform:perspective(1200px) rotateY(-11deg) scale(1)}
+  to{-webkit-transform:perspective(1200px) rotateY(11deg) scale(1.025)}
+}
+@media(min-width:981px){
+  .hero-logo-wrap{width:292px!important}
+  .gold-orbit{width:332px!important;height:332px!important}
+}
+@media(max-width:720px){
+  .hero-logo-wrap{width:215px!important}
+  .gold-orbit{width:242px!important;height:242px!important}
+}
+
