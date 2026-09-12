@@ -4,6 +4,8 @@
   let installPrompt = null;
   const standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   const button = document.getElementById("installAppButton");
+  const socialBrowserPattern = /TikTok|musical_ly|Bytedance|BytedanceWebview|Aweme|Trill|Instagram|FBAN|FBAV|FB_IAB|FBIOS/i;
+  const isSocialBrowser = () => socialBrowserPattern.test(navigator.userAgent) || /tiktok\.com|instagram\.com|facebook\.com/i.test(document.referrer);
 
   const copy = {
     de: {
@@ -69,7 +71,7 @@
 
   function showIntro() {
     const isMobile = window.matchMedia("(max-width:820px)").matches;
-    if (!isMobile || standalone || localStorage.getItem("atAppIntroSeenV1")) return;
+    if (!isMobile || standalone || isSocialBrowser() || localStorage.getItem("atAppIntroSeenV1")) return;
     const t = words();
     const overlay = document.createElement("div");
     overlay.className = "app-intro";
@@ -111,5 +113,18 @@
     button.addEventListener("click", requestInstall);
   }
 
+  function forceSocialBrowserNotice() {
+    if (standalone || !isSocialBrowser()) return;
+    const banner = document.getElementById("socialBrowserBanner");
+    if (!banner) return;
+    banner.classList.remove("is-hiding");
+    banner.hidden = false;
+    setTimeout(() => {
+      banner.classList.add("is-hiding");
+      setTimeout(() => { banner.hidden = true; }, 350);
+    }, 9000);
+  }
+
+  forceSocialBrowserNotice();
   setTimeout(showIntro, 450);
 })();
