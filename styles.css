@@ -847,3 +847,32 @@ img,video{max-width:100%}
   .gold-orbit{width:212px!important;height:212px!important}
 }
 
+/* === LEFT COPY AND CLEAN LOGO v40 === */
+.hero{overflow:hidden!important}
+.hero-logo{
+  animation:heroLogoFlatSpin 24s linear infinite!important;
+  -webkit-animation:heroLogoFlatSpin 24s linear infinite!important;
+  transform-style:flat!important;
+  backface-visibility:visible!important;
+}
+@keyframes heroLogoFlatSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@-webkit-keyframes heroLogoFlatSpin{from{-webkit-transform:rotate(0deg)}to{-webkit-transform:rotate(360deg)}}
+.benefit-strip{position:relative!important;z-index:5!important}
+@media(min-width:981px){
+  .hero{
+    grid-template-columns:57% 43%!important;
+    padding:22px 5.2% 22px 4.2%!important;
+  }
+  .hero-content{max-width:760px!important;margin:0!important;justify-self:start!important;text-align:left!important}
+  .hero .eyebrow,.hero h1,.hero-text,.hero-actions{margin-left:0!important}
+  .hero h1{max-width:720px!important}
+  .hero-text{max-width:650px!important}
+  .hero-visual{min-width:0!important;overflow:visible!important}
+  .hero-logo-wrap{width:258px!important;position:absolute!important;top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important}
+  .gold-orbit{width:296px!important;height:296px!important}
+}
+@media(max-width:720px){
+  .hero-logo{animation-duration:28s!important}
+  .hero-logo-wrap{top:50%!important;left:50%!important;transform:translate(-50%,-50%)!important}
+}
+
