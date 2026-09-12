@@ -934,8 +934,8 @@ img,video{max-width:100%}
   backface-visibility:visible!important;
   filter:drop-shadow(0 20px 34px rgba(0,0,0,.72)) drop-shadow(0 0 18px rgba(214,157,55,.24))!important;
 }
-@keyframes heroLogoTurn{from{transform:perspective(900px) rotateY(0deg)}to{transform:perspective(900px) rotateY(360deg)}}
-@-webkit-keyframes heroLogoTurn{from{-webkit-transform:perspective(900px) rotateY(0deg)}to{-webkit-transform:perspective(900px) rotateY(360deg)}}
+@keyframes heroLogoTurn{from{transform:perspective(900px) rotateY(0deg)}to{transform:perspective(900px) rotateY(-360deg)}}
+@-webkit-keyframes heroLogoTurn{from{-webkit-transform:perspective(900px) rotateY(0deg)}to{-webkit-transform:perspective(900px) rotateY(-360deg)}}
 /* Strong, unmistakable mobile product frame. */
 @media(max-width:800px){
   body .products-grid{grid-template-columns:1fr!important;gap:28px!important}
