@@ -1315,3 +1315,15 @@ html[lang="fa"] .hero h1 span{
   background:rgba(255,255,255,.035);
 }
 @media(min-width:821px){.app-intro{display:none!important}}
+/* === SOCIAL BROWSER NOTICE v54 === */
+.social-browser-banner{
+  transition:opacity .35s ease,transform .35s ease!important;
+}
+.social-browser-banner.is-hiding{
+  opacity:0!important;
+  transform:translateY(-100%)!important;
+  pointer-events:none!important;
+}
+@media(display-mode:standalone){
+  .social-browser-banner{display:none!important}
+}
