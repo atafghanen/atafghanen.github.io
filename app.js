@@ -127,7 +127,8 @@ Object.assign(translations.fa, {
 });
 
 let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DATA;
-let lang = localStorage.getItem("atEELang") || "de";
+let lang = "fa";
+  localStorage.setItem("atEELang", lang);
 let cart = JSON.parse(localStorage.getItem("atEECart") || "[]").map(item =>
   typeof item === "string" ? { productId: item, size: "" } : item
 );
