@@ -2,22 +2,22 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="AT Afghanen – afghanische Kleider, Abendmode und individuelle Maßanfertigung direkt vom Hersteller.">
   <title>AT Afghanen</title>
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#24141a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AT Afghanen">
-  <link rel="manifest" href="manifest.webmanifest?v=3">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/logo.gif">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=64">
+  <link rel="stylesheet" href="styles.css?v=61">
 </head>
 <body>
 <div class="app-intro visible" id="appIntroStatic" dir="rtl">
@@ -41,7 +41,6 @@
   if(!root)return;
   const installed=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa";
   const desktop=matchMedia("(min-width:821px) and (pointer:fine)").matches;
-  if(installed) document.documentElement.classList.add("installed-app");
   if(installed||desktop){root.remove();return;}
   const words={
     de:["Shop als App installieren","Speichere AT Afghanen auf deinem Handy. Danach öffnet sich der Shop wie eine normale App.","Über TikTok oder Instagram geöffnet?","Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Nutze danach Safari oder Chrome.","iPhone: Teilen → „Zum Home-Bildschirm“.","Android: „App installieren“ auswählen.","App installieren","Weiter zur Website"],
