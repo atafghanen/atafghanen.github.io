@@ -1766,3 +1766,32 @@ body .app-intro{
     top:env(safe-area-inset-top);
   }
 }
+
+/* === SEAMLESS MOBILE TOP AREA v67 === */
+@media(max-width:720px){
+  .announcement{
+    display:none!important;
+  }
+}
+@supports(padding-top:env(safe-area-inset-top)){
+  @media(max-width:720px){
+    html.installed-app body{
+      padding-top:0!important;
+    }
+    html.installed-app body::after{
+      content:none!important;
+      display:none!important;
+    }
+    html.installed-app .header{
+      top:0!important;
+      height:calc(62px + env(safe-area-inset-top))!important;
+      min-height:calc(62px + env(safe-area-inset-top))!important;
+      padding-top:env(safe-area-inset-top)!important;
+      box-sizing:border-box!important;
+      background:linear-gradient(90deg,#050505 0%,#11090c 50%,#050505 100%)!important;
+    }
+    html.installed-app .nav{
+      top:calc(62px + env(safe-area-inset-top))!important;
+    }
+  }
+}
