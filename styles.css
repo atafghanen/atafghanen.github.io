@@ -1740,3 +1740,29 @@ body .app-intro{
   .mobile-nav-tools .menu-btn{width:37px!important;height:37px!important;min-height:37px!important}
   .header-language-wrap{width:82px!important;height:38px!important}
 }
+
+
+/* === TRANSPARENT IOS STATUS PREVIEW MATCH v66 === */
+@supports(padding-top:env(safe-area-inset-top)){
+  html.installed-app body{
+    padding-top:env(safe-area-inset-top);
+  }
+  html.installed-app body::after{
+    content:"";
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    height:env(safe-area-inset-top);
+    background-image:
+      linear-gradient(90deg,rgba(0,0,0,.46),rgba(24,13,8,.18),rgba(0,0,0,.38)),
+      url("assets/hero-luxury.webp");
+    background-position:center 14%;
+    background-size:cover;
+    z-index:1000;
+    pointer-events:none;
+  }
+  html.installed-app .header{
+    top:env(safe-area-inset-top);
+  }
+}
