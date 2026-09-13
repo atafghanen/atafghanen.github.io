@@ -41,6 +41,7 @@
   if(!root)return;
   const installed=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true||new URLSearchParams(location.search).get("source")==="pwa";
   const desktop=matchMedia("(min-width:821px) and (pointer:fine)").matches;
+  if(installed) document.documentElement.classList.add("installed-app");
   if(installed||desktop){root.remove();return;}
   const words={
     de:["Shop als App installieren","Speichere AT Afghanen auf deinem Handy. Danach öffnet sich der Shop wie eine normale App.","Über TikTok oder Instagram geöffnet?","Tippe oben rechts auf ⋯ und wähle „Im Browser öffnen“. Nutze danach Safari oder Chrome.","iPhone: Teilen → „Zum Home-Bildschirm“.","Android: „App installieren“ auswählen.","App installieren","Weiter zur Website"],
