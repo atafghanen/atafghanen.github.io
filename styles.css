@@ -1570,3 +1570,25 @@ body .app-intro{
     font-size:16px;
   }
 }
+
+
+/* === IOS APP STATUS AREA ONLY v64 === */
+@supports(padding-top:env(safe-area-inset-top)){
+  html.installed-app body{
+    padding-top:env(safe-area-inset-top);
+  }
+  html.installed-app body::after{
+    content:"";
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    height:env(safe-area-inset-top);
+    background:#000;
+    z-index:1000;
+    pointer-events:none;
+  }
+  html.installed-app .header{
+    top:env(safe-area-inset-top);
+  }
+}
