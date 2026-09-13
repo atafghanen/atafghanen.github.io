@@ -1570,18 +1570,3 @@ body .app-intro{
     font-size:16px;
   }
 }
-
-
-/* === IOS INSTALLED-APP BLACK SAFE AREA v62 === */
-html{background:#000}
-body{min-height:100vh;min-height:100dvh}
-@media(display-mode:standalone){
-  html,body,#site{background-color:#000}
-  .header{
-    height:calc(86px + env(safe-area-inset-top));
-    padding-top:env(safe-area-inset-top);
-  }
-}
-@media(max-width:720px) and (display-mode:standalone){
-  .header{height:calc(72px + env(safe-area-inset-top))}
-}
