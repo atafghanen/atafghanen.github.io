@@ -1,8 +1,8 @@
-const CACHE_NAME = "at-afghanen-app-v15";
+const CACHE_NAME = "at-afghanen-app-v16";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=66",
+  "./styles.css?v=67",
   "./app.js?v=38",
   "./pwa.js?v=10",
   "./manifest.webmanifest",
