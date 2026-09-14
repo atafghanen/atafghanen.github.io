@@ -377,20 +377,14 @@ function renderGallery() {
   `}).join("");
 }
 
-let modalPageScrollY = 0;
-
 function lockPageBehindModal() {
-  if (document.body.classList.contains("modal-open")) return;
-  modalPageScrollY = window.scrollY || window.pageYOffset || 0;
-  document.body.style.top = `-${modalPageScrollY}px`;
+  document.documentElement.classList.add("modal-open");
   document.body.classList.add("modal-open");
 }
 
 function unlockPageBehindModal() {
-  if (!document.body.classList.contains("modal-open")) return;
+  document.documentElement.classList.remove("modal-open");
   document.body.classList.remove("modal-open");
-  document.body.style.top = "";
-  window.scrollTo(0, modalPageScrollY);
 }
 
 function openModal(id) {
