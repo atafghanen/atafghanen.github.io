@@ -1776,7 +1776,7 @@ body .app-intro{
 @media (max-width:760px){
   #tryOnModal .close-modal{
     position:fixed;
-    top:calc(env(safe-area-inset-top, 0px) + 72px);
+    top:calc(env(safe-area-inset-top, 0px) + 54px);
     left:14px;
     right:auto;
     z-index:500;
@@ -1789,8 +1789,26 @@ body .app-intro{
     border-radius:50%;
     background:rgba(35,18,25,.96);
     color:#fff;
-    font-size:32px;
+    font-size:28px;
     line-height:1;
     box-shadow:0 6px 22px rgba(0,0,0,.45);
   }
+}
+
+
+/* Prevent the shop behind an open dialog from moving on iOS/Android. */
+body.modal-open{
+  position:fixed;
+  left:0;
+  right:0;
+  width:100%;
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+.modal.open .modal-panel{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+@media (max-width:760px){
+  .modal.open .modal-backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
 }
