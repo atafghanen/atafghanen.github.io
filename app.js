@@ -377,9 +377,26 @@ function renderGallery() {
   `}).join("");
 }
 
+let modalPageScrollY = 0;
+
+function lockPageBehindModal() {
+  if (document.body.classList.contains("modal-open")) return;
+  modalPageScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.top = `-${modalPageScrollY}px`;
+  document.body.classList.add("modal-open");
+}
+
+function unlockPageBehindModal() {
+  if (!document.body.classList.contains("modal-open")) return;
+  document.body.classList.remove("modal-open");
+  document.body.style.top = "";
+  window.scrollTo(0, modalPageScrollY);
+}
+
 function openModal(id) {
   const modal = $(id);
   if (modal) {
+    lockPageBehindModal();
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
   }
@@ -391,6 +408,7 @@ function closeModal(el) {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
     if (modal.id === "tryOnModal") clearTryOnPhoto();
+    if (!document.querySelector(".modal.open")) unlockPageBehindModal();
   }
 }
 
