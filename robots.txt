@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://atafghanen.github.io/sitemap.xml
+Sitemap: https://atafghanen.com/sitemap.xml
