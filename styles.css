@@ -1770,3 +1770,27 @@ body .app-intro{
     }
   }
 }
+
+
+/* Mobile try-on: keep the close button below the app header and easy to reach. */
+@media (max-width:760px){
+  #tryOnModal .close-modal{
+    position:fixed;
+    top:calc(env(safe-area-inset-top, 0px) + 72px);
+    left:14px;
+    right:auto;
+    z-index:500;
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:50%;
+    background:rgba(35,18,25,.96);
+    color:#fff;
+    font-size:32px;
+    line-height:1;
+    box-shadow:0 6px 22px rgba(0,0,0,.45);
+  }
+}
