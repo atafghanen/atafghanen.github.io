@@ -15,7 +15,7 @@
   const words=()=>copy[selectedLanguage]||copy.fa;
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(error=>console.warn("PWA registration failed",error));
+    navigator.serviceWorker.register("./sw.js?v=18",{scope:"./"}).catch(error=>console.warn("PWA registration failed",error));
   }
 
   function updateButton(){
