@@ -750,8 +750,9 @@ function showWhatsAppFallback(number, message, directUrl) {
 
 function openWhatsAppChat(number, message) {
   const encoded = encodeURIComponent(message);
-  const appUrl = `whatsapp://send?phone=${number}&text=${encoded}`;
-  showWhatsAppFallback(number, message, appUrl);
+  const webUrl = `https://wa.me/${number}?text=${encoded}`;
+  showWhatsAppFallback(number, message, webUrl);
+  window.open(webUrl, "_blank", "noopener,noreferrer");
 }
 
 async function sendOrderToWhatsApp(form) {
@@ -829,6 +830,11 @@ function setupWishPhotoRequest() {
         !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
         file.size > 8 * 1024 * 1024
       );
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      previewUrls = [];
+      preview.innerHTML = "";
+      preview.hidden = true;
+      uploadText.textContent = t("wish.upload");
       if (!files.length) return;
       if (invalid) {
         alert(t("wish.invalidPhoto"));
@@ -872,6 +878,7 @@ function setupWishPhotoRequest() {
         "",
         t("wish.attachPhotos")
       ].join("\n");
+      closeModal(form);
       openWhatsAppChat(number, msg);
     };
   }
@@ -940,10 +947,10 @@ function setup() {
   }
 
   const tailoringBtn = $("#tailoringButton");
-  if (tailoringBtn) tailoringBtn.onclick = openRequest;
+  if (tailoringBtn) tailoringBtn.onclick = openWishPhotoRequest;
 
   const ctaBtn = $("#ctaButton");
-  if (ctaBtn) ctaBtn.onclick = openRequest;
+  if (ctaBtn) ctaBtn.onclick = openWishPhotoRequest;
 
   const orderBtn = $("#orderButton");
   if (orderBtn) orderBtn.onclick = () => {
