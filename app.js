@@ -695,8 +695,17 @@ function addToCart(id, size) {
   cart.push({ productId: id, size: size || "" });
   saveCart();
   updateCartCount();
-  openModal("#cartModal");
+
+  // Close the product dialog before opening the cart. Otherwise it stays
+  // open behind the cart and traps the user after pressing the cart X.
+  const productModal = $("#productModal");
+  if (productModal?.classList.contains("open")) {
+    productModal.classList.remove("open");
+    productModal.setAttribute("aria-hidden", "true");
+  }
+
   renderCart();
+  openModal("#cartModal");
 }
 
 function updateCartCount() {
