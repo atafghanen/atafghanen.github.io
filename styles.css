@@ -1841,3 +1841,42 @@ html{
     background:#24141a;
   }
 }
+
+
+/* Cart close control: large, separated touch target on phones. */
+#cartModal .close-modal{
+  z-index:20;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+@media (max-width:760px){
+  #cartModal .close-modal{
+    position:fixed!important;
+    top:calc(env(safe-area-inset-top, 0px) + 62px)!important;
+    left:14px!important;
+    right:auto!important;
+    width:46px;
+    height:46px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(255,255,255,.38);
+    border-radius:50%;
+    background:rgba(35,18,25,.98);
+    color:#fff;
+    font-size:32px;
+    font-weight:600;
+    line-height:1;
+    box-shadow:0 6px 22px rgba(0,0,0,.48);
+    cursor:pointer;
+  }
+  #cartModal .close-modal:active{
+    transform:scale(.94);
+  }
+}
+
+/* Instagram is temporarily hidden. */
+#headerInstagramLink,
+#instagramLink{
+  display:none!important;
+}
