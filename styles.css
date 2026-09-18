@@ -1875,8 +1875,3 @@ html{
   }
 }
 
-/* Instagram is temporarily hidden. */
-#headerInstagramLink,
-#instagramLink{
-  display:none!important;
-}
