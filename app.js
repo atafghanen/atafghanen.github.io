@@ -263,7 +263,15 @@ function applyBranding() {
   const logo = data.settings.logo_url || data.settings.logo || "assets/logo.gif";
   $$(".logo-spin, .footer-logo, .hero-logo").forEach(img => { img.src = logo; });
 
-  if (data.settings.instagram) { $("#instagramLink").href = data.settings.instagram; $("#headerInstagramLink").href = data.settings.instagram; }
+  // Instagram remains visible, but its destination is disabled until a new link is added.
+  ["#instagramLink", "#headerInstagramLink"].forEach(selector => {
+    const link = $(selector);
+    if (!link) return;
+    link.removeAttribute("href");
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
+    link.setAttribute("aria-disabled", "true");
+  });
   if (data.settings.tiktok) { $("#tiktokLink").href = data.settings.tiktok; $("#headerTiktokLink").href = data.settings.tiktok; }
   if (data.settings.email) $("#contactEmail").textContent = data.settings.email;
   const content = data.settings.content || {};
