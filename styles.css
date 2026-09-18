@@ -1776,14 +1776,14 @@ body .app-intro{
 @media (max-width:760px){
   #tryOnModal .close-modal{
     position:fixed!important;
-    top:calc(env(safe-area-inset-top, 0px) + 72px)!important;
-    left:auto!important;
-    right:14px!important;
+    top:calc(env(safe-area-inset-top, 0px) + 56px)!important;
+    left:14px!important;
+    right:auto!important;
     bottom:auto!important;
     transform:none!important;
     z-index:500!important;
-    width:36px;
-    height:36px;
+    width:40px;
+    height:40px;
     display:grid;
     place-items:center;
     padding:0;
@@ -1791,7 +1791,7 @@ body .app-intro{
     border-radius:50%;
     background:rgba(35,18,25,.96);
     color:#fff;
-    font-size:24px;
+    font-size:28px;
     line-height:1;
     box-shadow:0 6px 22px rgba(0,0,0,.45);
   }
