@@ -126,6 +126,11 @@ Object.assign(translations.fa, {
   "browserTip.text":"بالا سمت راست روی ⋯ بزنید و «باز کردن در مرورگر» را انتخاب کنید. سپس در Safari یا Chrome سفارش دهید."
 });
 
+Object.assign(translations.de, { "price.onRequest":"Preis auf Anfrage" });
+Object.assign(translations.en, { "price.onRequest":"Price on request" });
+Object.assign(translations.ps, { "price.onRequest":"بیه د غوښتنې پر مهال" });
+Object.assign(translations.fa, { "price.onRequest":"قیمت پس از درخواست" });
+
 let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DATA;
 let lang = "fa";
   localStorage.setItem("atEELang", lang);
@@ -336,14 +341,12 @@ function renderProducts() {
     <article class="product-card">
       <div class="product-image">
         <img loading="lazy" src="${esc(p.image)}" alt="${esc(name(p))}">
-        ${p.oldPrice ? `<span class="sale">${t("sale")}</span>` : ""}
       </div>
       <div class="product-info">
         <div class="product-cat">${esc(categoryLabel(p.category))}</div>
         <div class="product-name">${esc(name(p))}</div>
         <div class="price">
-          <strong>€${Number(p.price).toFixed(0)}</strong>
-          ${p.oldPrice ? `<span class="old-price">€${Number(p.oldPrice).toFixed(0)}</span>` : ""}
+          <strong>${t("price.onRequest")}</strong>
         </div>
         <div class="product-actions">
           <button class="small-btn" data-details="${p.id}">${t("details")}</button>
@@ -431,8 +434,7 @@ function openProduct(id) {
         <p class="eyebrow">${esc(categoryLabel(p.category))}</p>
         <h2>${esc(name(p))}</h2>
         <div class="price">
-          <strong>€${Number(p.price).toFixed(0)}</strong>
-          ${p.oldPrice ? `<span class="old-price">€${Number(p.oldPrice).toFixed(0)}</span>` : ""}
+          <strong>${t("price.onRequest")}</strong>
         </div>
         <p>${esc(description)}</p>
         <div class="size-row">
@@ -735,7 +737,7 @@ function renderCart() {
         <img src="${esc(p.image)}">
         <div>
           <h4>${esc(name(p))}</h4>
-          <small>${t("checkout.size")}: ${esc(entry.size || "–")} · €${Number(p.price).toFixed(0)}</small>
+          <small>${t("checkout.size")}: ${esc(entry.size || "–")} · ${t("price.onRequest")}</small>
         </div>
         <button class="cart-remove" data-remove="${index}">×</button>
       </div>
@@ -744,7 +746,7 @@ function renderCart() {
 
   const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
   const cartTotalEl = $("#cartTotal");
-  if (cartTotalEl) cartTotalEl.textContent = `€${total.toFixed(0)}`;
+  if (cartTotalEl) cartTotalEl.textContent = t("price.onRequest");
 
   $$("[data-remove]").forEach(button => button.onclick = () => {
     cart.splice(Number(button.dataset.remove), 1);
@@ -790,7 +792,7 @@ async function sendOrderToWhatsApp(form) {
     return map;
   }, new Map());
   const lines = [...grouped.values()].map(({ product: p, size, qty }) =>
-    `• ${name(p)} | ${t("checkout.size")}: ${size} | ${qty} × €${Number(p.price).toFixed(2)}`
+    `• ${name(p)} | ${t("checkout.size")}: ${size} | ${qty} × ${t("price.onRequest")}`
   ).join("\n");
   const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
   const fd = new FormData(form);
@@ -798,7 +800,7 @@ async function sendOrderToWhatsApp(form) {
     name: String(fd.get("name") || "").trim(),
     notes: String(fd.get("message") || "").trim()
   };
-  const msg = `AT Afghanen – Bestellung\n\n${t("order.customer")}: ${customer.name || "–"}\n\n${t("order.cart")}\n${lines}\n\n${t("order.total")}: €${total.toFixed(2)}\n\n${t("order.note")}: ${customer.notes || "–"}`;
+  const msg = `AT Afghanen – Bestellung\n\n${t("order.customer")}: ${customer.name || "–"}\n\n${t("order.cart")}\n${lines}\n\n${t("order.total")}: ${t("price.onRequest")}\n\n${t("order.note")}: ${customer.notes || "–"}`;
 
   const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
   if (!number) {
