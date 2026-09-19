@@ -1852,7 +1852,7 @@ html{
 @media (max-width:760px){
   #cartModal .close-modal{
     position:fixed!important;
-    top:calc(env(safe-area-inset-top, 0px) + 62px)!important;
+    top:calc(env(safe-area-inset-top, 0px) + 8px)!important;
     left:14px!important;
     right:auto!important;
     width:46px;
