@@ -1875,3 +1875,111 @@ html{
   }
 }
 
+
+
+/* Product search below the main header. */
+.shop-search-section{
+  position:relative;
+  z-index:19;
+  padding:12px max(18px,calc((100vw - var(--max))/2));
+  background:linear-gradient(180deg,#120d0a,#080706);
+  border-bottom:1px solid rgba(211,160,67,.28);
+  box-shadow:0 8px 24px rgba(0,0,0,.22);
+}
+.shop-search-wrap{
+  position:relative;
+  width:min(100%,760px);
+  margin-inline:auto;
+}
+.shop-search-input{
+  width:100%;
+  height:48px;
+  padding:0 52px;
+  border:1px solid rgba(224,177,82,.55);
+  border-radius:999px;
+  outline:none;
+  background:rgba(255,255,255,.055);
+  color:#fff7e8;
+  font:500 15px/1 Inter,Arial,sans-serif;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 8px 25px rgba(0,0,0,.22);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.shop-search-input::placeholder{color:rgba(255,245,225,.62)}
+.shop-search-input:focus{
+  border-color:#efc66e;
+  background:rgba(255,255,255,.08);
+  box-shadow:0 0 0 3px rgba(239,198,110,.14),0 10px 28px rgba(0,0,0,.3);
+}
+.shop-search-icon{
+  position:absolute;
+  top:50%;
+  inset-inline-start:18px;
+  width:21px;
+  height:21px;
+  transform:translateY(-50%);
+  fill:none;
+  stroke:#efc66e;
+  stroke-width:1.8;
+  pointer-events:none;
+}
+.shop-search-clear{
+  position:absolute;
+  top:50%;
+  inset-inline-end:8px;
+  width:34px;
+  height:34px;
+  transform:translateY(-50%);
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:rgba(239,198,110,.13);
+  color:#f5d58c;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+}
+.shop-search-results{
+  position:absolute;
+  top:calc(100% - 8px);
+  left:50%;
+  width:min(calc(100% - 36px),760px);
+  max-height:min(62vh,520px);
+  overflow:auto;
+  transform:translateX(-50%);
+  border:1px solid rgba(211,160,67,.42);
+  border-radius:15px;
+  background:rgba(15,11,9,.985);
+  box-shadow:0 24px 55px rgba(0,0,0,.65);
+}
+.shop-search-result{
+  width:100%;
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr) auto;
+  gap:13px;
+  align-items:center;
+  padding:10px 13px;
+  border:0;
+  border-bottom:1px solid rgba(211,160,67,.16);
+  background:transparent;
+  color:#fff;
+  text-align:start;
+  cursor:pointer;
+}
+.shop-search-result:last-child{border-bottom:0}
+.shop-search-result:hover,.shop-search-result:focus{background:rgba(211,160,67,.12);outline:none}
+.shop-search-result img{width:54px;height:64px;object-fit:cover;border-radius:8px;border:1px solid rgba(239,198,110,.28)}
+.shop-search-result-text{min-width:0}
+.shop-search-result-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 17px/1.2 "Cormorant Garamond",Georgia,serif}
+.shop-search-result-category{display:block;margin-top:4px;color:#bdb09c;font-size:11px}
+.shop-search-result-code{direction:ltr;color:#efc66e;font:600 11px/1.2 Inter,Arial,sans-serif;letter-spacing:.045em}
+.shop-search-empty{padding:18px;text-align:center;color:#c9bdac;font-size:13px}
+@media(max-width:720px){
+  .shop-search-section{padding:9px 12px}
+  .shop-search-input{height:45px;font-size:14px;padding-inline:48px}
+  .shop-search-results{top:calc(100% - 4px);width:calc(100% - 24px);max-height:58vh}
+  .shop-search-result{grid-template-columns:48px minmax(0,1fr) auto;padding:9px 10px;gap:10px}
+  .shop-search-result img{width:48px;height:58px}
+  .shop-search-result-name{font-size:16px}
+}
