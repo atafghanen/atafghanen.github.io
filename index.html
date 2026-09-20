@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=75">
+  <link rel="stylesheet" href="styles.css?v=76">
   <style id="cart-close-left-hotfix">
     @media (max-width:760px){
       #cartModal .close-modal{
@@ -163,6 +163,29 @@
       </div>
     </div>
   </header>
+
+  <section class="shop-search-section" role="search" aria-label="Produktsuche">
+    <div class="shop-search-wrap">
+      <svg class="shop-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4.5 4.5"></path>
+      </svg>
+      <input
+        id="productSearch"
+        class="shop-search-input"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        spellcheck="false"
+        data-placeholder="search.placeholder"
+        placeholder="Nach Produktcode oder Name suchen"
+        aria-label="Produkt suchen"
+        aria-controls="productSearchResults"
+      >
+      <button id="productSearchClear" class="shop-search-clear" type="button" aria-label="Suche löschen" hidden>×</button>
+    </div>
+    <div id="productSearchResults" class="shop-search-results" aria-live="polite" hidden></div>
+  </section>
 
   <main>
     <section id="home" class="hero">
@@ -465,7 +488,7 @@
 <!-- Supabase SDK JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Haupt-Anwendungs-Skript -->
-<script src="app.js?v=43"></script>
+<script src="app.js?v=44"></script>
 
 </body>
 </html>
