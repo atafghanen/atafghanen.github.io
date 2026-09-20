@@ -131,6 +131,23 @@ Object.assign(translations.en, { "price.onRequest":"Price on request" });
 Object.assign(translations.ps, { "price.onRequest":"بیه د غوښتنې پر مهال" });
 Object.assign(translations.fa, { "price.onRequest":"قیمت پس از درخواست" });
 
+Object.assign(translations.de,{
+  "search.placeholder":"Nach Produktcode oder Name suchen",
+  "search.noResults":"Kein Produkt gefunden"
+});
+Object.assign(translations.en,{
+  "search.placeholder":"Search by product code or name",
+  "search.noResults":"No product found"
+});
+Object.assign(translations.ps,{
+  "search.placeholder":"د محصول د کوډ یا نوم له مخې ولټوئ",
+  "search.noResults":"هیڅ محصول ونه موندل شو"
+});
+Object.assign(translations.fa,{
+  "search.placeholder":"جستجو با کد یا نام محصول",
+  "search.noResults":"هیچ محصولی پیدا نشد"
+});
+
 let data = JSON.parse(localStorage.getItem("atEEData") || "null") || DEFAULT_DATA;
 let lang = "fa";
   localStorage.setItem("atEELang", lang);
@@ -138,6 +155,7 @@ let cart = JSON.parse(localStorage.getItem("atEECart") || "[]").map(item =>
   typeof item === "string" ? { productId: item, size: "" } : item
 );
 let currentCategory = "all";
+let productSearchQuery = "";
 let productMedia = [];
 let shopCategories = [];
 let realtimeRefreshTimer = null;
@@ -297,6 +315,7 @@ function applyLang() {
 
   renderFilters();
   renderProducts();
+  renderSearchResults();
   renderGallery();
   renderCart();
 }
@@ -327,15 +346,87 @@ function newestLabel() {
   return ({ de:"Neuheiten", en:"New arrivals", ps:"نوي توکي", fa:"جدیدترین‌ها" })[lang] || "Neuheiten";
 }
 
+function normalizeSearchValue(value) {
+  return String(value ?? "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase()
+    .trim();
+}
+
+function productCode(p) {
+  return String(p.code || p.sku || p.product_code || p.id || "").trim();
+}
+
+function productSearchText(p) {
+  const names = typeof p.name === "object" && p.name !== null
+    ? Object.values(p.name)
+    : [p.name];
+  return normalizeSearchValue([
+    productCode(p),
+    p.id,
+    p.code,
+    p.sku,
+    p.product_code,
+    ...names
+  ].filter(Boolean).join(" "));
+}
+
+function searchMatches(p, query = productSearchQuery) {
+  const normalizedQuery = normalizeSearchValue(query);
+  return !normalizedQuery || productSearchText(p).includes(normalizedQuery);
+}
+
+function renderSearchResults() {
+  const resultsEl = $("#productSearchResults");
+  const clearButton = $("#productSearchClear");
+  if (!resultsEl) return;
+
+  const query = productSearchQuery.trim();
+  if (clearButton) clearButton.hidden = !query;
+
+  if (!query) {
+    resultsEl.hidden = true;
+    resultsEl.innerHTML = "";
+    return;
+  }
+
+  const matches = data.products.filter(p => searchMatches(p, query)).slice(0, 8);
+  resultsEl.hidden = false;
+  resultsEl.innerHTML = matches.length
+    ? matches.map(p => `
+      <button class="shop-search-result" type="button" data-search-product="${esc(p.id)}">
+        <img src="${esc(p.image)}" alt="">
+        <span class="shop-search-result-text">
+          <span class="shop-search-result-name">${esc(name(p))}</span>
+          <span class="shop-search-result-category">${esc(categoryLabel(p.category))}</span>
+        </span>
+        <span class="shop-search-result-code">${esc(productCode(p))}</span>
+      </button>
+    `).join("")
+    : `<div class="shop-search-empty">${esc(t("search.noResults"))}</div>`;
+
+  $("[data-search-product]").forEach(button => {
+    button.onclick = () => {
+      resultsEl.hidden = true;
+      openProduct(button.dataset.searchProduct);
+    };
+  });
+}
+
 function renderProducts() {
   const gridEl = $("#productGrid");
   if (!gridEl) return;
 
-  const list = currentCategory === "all"
+  let list = currentCategory === "all"
     ? data.products
     : currentCategory === "newest"
       ? [...data.products].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 12)
       : data.products.filter(p => p.category === currentCategory);
+
+  if (productSearchQuery.trim()) {
+    list = list.filter(p => searchMatches(p));
+  }
 
   gridEl.innerHTML = list.map(p => `
     <article class="product-card">
@@ -940,6 +1031,53 @@ function setup() {
       copyWebsiteLink.textContent = t("browserBanner.copied");
     };
   }
+
+  const productSearch = $("#productSearch");
+  const productSearchClear = $("#productSearchClear");
+  const productSearchResults = $("#productSearchResults");
+
+  if (productSearch) {
+    productSearch.oninput = event => {
+      productSearchQuery = event.target.value;
+      renderSearchResults();
+      renderProducts();
+    };
+    productSearch.onkeydown = event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const firstMatch = data.products.find(p => searchMatches(p));
+        if (firstMatch) {
+          if (productSearchResults) productSearchResults.hidden = true;
+          openProduct(firstMatch.id);
+        }
+      }
+      if (event.key === "Escape") {
+        productSearchQuery = "";
+        productSearch.value = "";
+        renderSearchResults();
+        renderProducts();
+        productSearch.blur();
+      }
+    };
+  }
+
+  if (productSearchClear) {
+    productSearchClear.onclick = () => {
+      productSearchQuery = "";
+      if (productSearch) {
+        productSearch.value = "";
+        productSearch.focus();
+      }
+      renderSearchResults();
+      renderProducts();
+    };
+  }
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".shop-search-section") && productSearchResults) {
+      productSearchResults.hidden = true;
+    }
+  });
 
   const langSelect = $("#languageSelect");
   if (langSelect) {
