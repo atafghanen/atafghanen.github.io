@@ -132,19 +132,19 @@ Object.assign(translations.ps, { "price.onRequest":"بیه د غوښتنې پر 
 Object.assign(translations.fa, { "price.onRequest":"قیمت پس از درخواست" });
 
 Object.assign(translations.de,{
-  "search.placeholder":"Nach Produktcode oder Name suchen",
+  "search.placeholder":"Produktcode eingeben, z. B. AT-L021",
   "search.noResults":"Kein Produkt gefunden"
 });
 Object.assign(translations.en,{
-  "search.placeholder":"Search by product code or name",
+  "search.placeholder":"Enter product code, e.g. AT-L021",
   "search.noResults":"No product found"
 });
 Object.assign(translations.ps,{
-  "search.placeholder":"د محصول د کوډ یا نوم له مخې ولټوئ",
+  "search.placeholder":"د محصول کوډ ولیکئ، لکه AT-L021",
   "search.noResults":"هیڅ محصول ونه موندل شو"
 });
 Object.assign(translations.fa,{
-  "search.placeholder":"جستجو با کد یا نام محصول",
+  "search.placeholder":"کد محصول را وارد کنید، مانند AT-L021",
   "search.noResults":"هیچ محصولی پیدا نشد"
 });
 
@@ -346,35 +346,38 @@ function newestLabel() {
   return ({ de:"Neuheiten", en:"New arrivals", ps:"نوي توکي", fa:"جدیدترین‌ها" })[lang] || "Neuheiten";
 }
 
-function normalizeSearchValue(value) {
+function normalizeProductCode(value) {
   return String(value ?? "")
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase()
-    .trim();
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .replace(/O(?=\d)/g, "0");
+}
+
+function productCodes(p) {
+  const explicitValues = [p.code, p.sku, p.product_code].filter(Boolean).map(String);
+  const names = typeof p.name === "object" && p.name !== null
+    ? Object.values(p.name).filter(Boolean).map(String)
+    : [String(p.name || "")];
+  const sources = [...explicitValues, ...names, String(p.id || "")];
+  const found = [];
+
+  sources.forEach(value => {
+    const matches = value.match(/AT[\s_-]*[A-Z]{1,3}[\s_-]*[O0-9]\d{1,3}/gi) || [];
+    matches.forEach(code => found.push(code));
+  });
+
+  explicitValues.forEach(code => found.push(code));
+  return [...new Set(found.map(code => String(code).trim()).filter(Boolean))];
 }
 
 function productCode(p) {
-  return String(p.code || p.sku || p.product_code || p.id || "").trim();
-}
-
-function productSearchText(p) {
-  const names = typeof p.name === "object" && p.name !== null
-    ? Object.values(p.name)
-    : [p.name];
-  return normalizeSearchValue([
-    productCode(p),
-    p.id,
-    p.code,
-    p.sku,
-    p.product_code,
-    ...names
-  ].filter(Boolean).join(" "));
+  return productCodes(p)[0] || "";
 }
 
 function searchMatches(p, query = productSearchQuery) {
-  const normalizedQuery = normalizeSearchValue(query);
-  return !normalizedQuery || productSearchText(p).includes(normalizedQuery);
+  const normalizedQuery = normalizeProductCode(query);
+  if (!normalizedQuery) return true;
+  return productCodes(p).some(code => normalizeProductCode(code).includes(normalizedQuery));
 }
 
 function renderSearchResults() {
@@ -406,9 +409,13 @@ function renderSearchResults() {
     `).join("")
     : `<div class="shop-search-empty">${esc(t("search.noResults"))}</div>`;
 
-  $("[data-search-product]").forEach(button => {
+  $$("[data-search-product]").forEach(button => {
     button.onclick = () => {
+      productSearchQuery = "";
+      const input = $("#productSearch");
+      if (input) input.value = "";
       resultsEl.hidden = true;
+      renderProducts();
       openProduct(button.dataset.searchProduct);
     };
   });
@@ -1032,9 +1039,29 @@ function setup() {
     };
   }
 
+  const productSearchSection = $(".shop-search-section");
+  const productSearchToggle = $("#productSearchToggle");
   const productSearch = $("#productSearch");
   const productSearchClear = $("#productSearchClear");
   const productSearchResults = $("#productSearchResults");
+
+  const setProductSearchOpen = open => {
+    productSearchSection?.classList.toggle("is-open", open);
+    productSearchToggle?.setAttribute("aria-expanded", String(open));
+    if (productSearch) productSearch.tabIndex = open ? 0 : -1;
+    if (open) {
+      requestAnimationFrame(() => productSearch?.focus());
+    } else if (productSearchResults) {
+      productSearchResults.hidden = true;
+    }
+  };
+
+  if (productSearchToggle) {
+    productSearchToggle.onclick = () => {
+      const isOpen = productSearchSection?.classList.contains("is-open");
+      setProductSearchOpen(!isOpen);
+    };
+  }
 
   if (productSearch) {
     productSearch.oninput = event => {
@@ -1046,8 +1073,11 @@ function setup() {
       if (event.key === "Enter") {
         event.preventDefault();
         const firstMatch = data.products.find(p => searchMatches(p));
-        if (firstMatch) {
+        if (firstMatch && productSearchQuery.trim()) {
+          productSearchQuery = "";
+          productSearch.value = "";
           if (productSearchResults) productSearchResults.hidden = true;
+          renderProducts();
           openProduct(firstMatch.id);
         }
       }
@@ -1056,7 +1086,7 @@ function setup() {
         productSearch.value = "";
         renderSearchResults();
         renderProducts();
-        productSearch.blur();
+        setProductSearchOpen(false);
       }
     };
   }
@@ -1074,8 +1104,9 @@ function setup() {
   }
 
   document.addEventListener("click", event => {
-    if (!event.target.closest(".shop-search-section") && productSearchResults) {
-      productSearchResults.hidden = true;
+    if (!event.target.closest(".shop-search-section")) {
+      if (productSearchResults) productSearchResults.hidden = true;
+      if (!productSearchQuery.trim()) setProductSearchOpen(false);
     }
   });
 
