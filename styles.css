@@ -1983,3 +1983,89 @@ html{
   .shop-search-result img{width:48px;height:58px}
   .shop-search-result-name{font-size:16px}
 }
+
+
+/* Compact code-only search launcher. */
+.shop-search-section{
+  height:0!important;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  pointer-events:none;
+}
+.shop-search-wrap{
+  position:absolute!important;
+  top:10px!important;
+  inset-inline-end:14px!important;
+  width:44px!important;
+  height:44px!important;
+  margin:0!important;
+  border-radius:999px;
+  background:rgba(12,9,7,.94);
+  box-shadow:0 8px 24px rgba(0,0,0,.45);
+  transition:width .24s ease,box-shadow .24s ease;
+  pointer-events:auto;
+  overflow:hidden;
+}
+.shop-search-toggle{
+  position:absolute;
+  top:0;
+  inset-inline-start:0;
+  z-index:3;
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid rgba(239,198,110,.62);
+  border-radius:50%;
+  background:rgba(20,14,10,.98);
+  color:#efc66e;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.shop-search-icon{
+  position:static!important;
+  width:20px!important;
+  height:20px!important;
+  transform:none!important;
+  stroke:currentColor!important;
+}
+.shop-search-input{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:44px!important;
+  padding:0!important;
+  border-color:transparent!important;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .16s ease;
+}
+.shop-search-clear{opacity:0;pointer-events:none}
+.shop-search-section.is-open{height:0!important}
+.shop-search-section.is-open .shop-search-wrap{
+  width:min(600px,calc(100vw - 28px))!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.58);
+}
+.shop-search-section.is-open .shop-search-input{
+  padding-inline:52px 46px!important;
+  border-color:rgba(224,177,82,.62)!important;
+  opacity:1;
+  pointer-events:auto;
+}
+.shop-search-section.is-open .shop-search-clear{
+  opacity:1;
+  pointer-events:auto;
+}
+.shop-search-results{
+  top:62px!important;
+  pointer-events:auto;
+}
+@media(max-width:720px){
+  .shop-search-wrap{top:8px!important;inset-inline-end:10px!important}
+  .shop-search-section.is-open .shop-search-wrap{width:calc(100vw - 20px)!important}
+  .shop-search-results{top:58px!important;width:calc(100% - 20px)!important}
+}
