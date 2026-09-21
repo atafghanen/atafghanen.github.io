@@ -2069,3 +2069,13 @@ html{
   .shop-search-section.is-open .shop-search-wrap{width:calc(100vw - 20px)!important}
   .shop-search-results{top:58px!important;width:calc(100% - 20px)!important}
 }
+
+
+/* Prevent iPhone Safari/PWA from zooming when the code field receives focus. */
+.shop-search-input{
+  font-size:16px!important;
+  touch-action:manipulation;
+}
+@media(max-width:720px){
+  .shop-search-input{font-size:16px!important}
+}
