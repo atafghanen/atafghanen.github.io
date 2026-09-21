@@ -394,28 +394,47 @@ function renderSearchResults() {
     return;
   }
 
-  const matches = data.products.filter(p => searchMatches(p, query)).slice(0, 8);
+  const normalizedQuery = normalizeProductCode(query);
+  if (normalizedQuery.length < 4) {
+    resultsEl.hidden = true;
+    resultsEl.innerHTML = "";
+    return;
+  }
+
+  const matches = data.products.filter(p => searchMatches(p, query));
+  const exactMatch = matches.find(p =>
+    productCodes(p).some(code => normalizeProductCode(code) === normalizedQuery)
+  );
+  const match = exactMatch || matches[0] || null;
+
   resultsEl.hidden = false;
-  resultsEl.innerHTML = matches.length
-    ? matches.map(p => `
-      <button class="shop-search-result" type="button" data-search-product="${esc(p.id)}">
-        <img src="${esc(p.image)}" alt="">
+  resultsEl.innerHTML = match
+    ? `
+      <button class="shop-search-result" type="button" data-search-product="${esc(match.id)}">
+        <img src="${esc(match.image)}" alt="">
         <span class="shop-search-result-text">
-          <span class="shop-search-result-name">${esc(name(p))}</span>
-          <span class="shop-search-result-category">${esc(categoryLabel(p.category))}</span>
+          <span class="shop-search-result-name">${esc(name(match))}</span>
+          <span class="shop-search-result-category">${esc(categoryLabel(match.category))}</span>
         </span>
-        <span class="shop-search-result-code">${esc(productCode(p))}</span>
+        <span class="shop-search-result-code">${esc(productCode(match))}</span>
       </button>
-    `).join("")
+    `
     : `<div class="shop-search-empty">${esc(t("search.noResults"))}</div>`;
 
-  $$("[data-search-product]").forEach(button => {
+  $("[data-search-product]").forEach(button => {
     button.onclick = () => {
       productSearchQuery = "";
       const input = $("#productSearch");
-      if (input) input.value = "";
+      const section = $(".shop-search-section");
+      const toggle = $("#productSearchToggle");
+      if (input) {
+        input.value = "";
+        input.blur();
+        input.tabIndex = -1;
+      }
+      section?.classList.remove("is-open");
+      toggle?.setAttribute("aria-expanded", "false");
       resultsEl.hidden = true;
-      renderProducts();
       openProduct(button.dataset.searchProduct);
     };
   });
@@ -430,10 +449,6 @@ function renderProducts() {
     : currentCategory === "newest"
       ? [...data.products].sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 12)
       : data.products.filter(p => p.category === currentCategory);
-
-  if (productSearchQuery.trim()) {
-    list = list.filter(p => searchMatches(p));
-  }
 
   gridEl.innerHTML = list.map(p => `
     <article class="product-card">
@@ -1051,8 +1066,9 @@ function setup() {
     if (productSearch) productSearch.tabIndex = open ? 0 : -1;
     if (open) {
       requestAnimationFrame(() => productSearch?.focus());
-    } else if (productSearchResults) {
-      productSearchResults.hidden = true;
+    } else {
+      productSearch?.blur();
+      if (productSearchResults) productSearchResults.hidden = true;
     }
   };
 
@@ -1067,7 +1083,6 @@ function setup() {
     productSearch.oninput = event => {
       productSearchQuery = event.target.value;
       renderSearchResults();
-      renderProducts();
     };
     productSearch.onkeydown = event => {
       if (event.key === "Enter") {
@@ -1076,8 +1091,8 @@ function setup() {
         if (firstMatch && productSearchQuery.trim()) {
           productSearchQuery = "";
           productSearch.value = "";
-          if (productSearchResults) productSearchResults.hidden = true;
-          renderProducts();
+          productSearch.blur();
+          setProductSearchOpen(false);
           openProduct(firstMatch.id);
         }
       }
@@ -1085,7 +1100,6 @@ function setup() {
         productSearchQuery = "";
         productSearch.value = "";
         renderSearchResults();
-        renderProducts();
         setProductSearchOpen(false);
       }
     };
@@ -1099,7 +1113,6 @@ function setup() {
         productSearch.focus();
       }
       renderSearchResults();
-      renderProducts();
     };
   }
 
