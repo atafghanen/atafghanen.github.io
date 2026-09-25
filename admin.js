@@ -37,6 +37,33 @@ async function requireAdmin() {
   return true;
 }
 
+function adminBerlinDate(daysAgo = 0) {
+  const date = new Date(Date.now() - daysAgo * 86400000);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+async function loadVisitorStats() {
+  const today = adminBerlinDate();
+  const weekStart = adminBerlinDate(6);
+  const [todayResult, weekResult, totalResult] = await Promise.all([
+    db.from("site_visits").select("id", { count: "exact", head: true }).eq("visit_date", today),
+    db.from("site_visits").select("id", { count: "exact", head: true }).gte("visit_date", weekStart),
+    db.from("site_visits").select("id", { count: "exact", head: true })
+  ]);
+  const failed = [todayResult, weekResult, totalResult].find(result => result.error);
+  if (failed) throw failed.error;
+  if ($("#visitorToday")) $("#visitorToday").textContent = String(todayResult.count || 0);
+  if ($("#visitorWeek")) $("#visitorWeek").textContent = String(weekResult.count || 0);
+  if ($("#visitorTotal")) $("#visitorTotal").textContent = String(totalResult.count || 0);
+}
+
 async function loadAdmin() {
   try {
     if (!await requireAdmin()) return;
@@ -53,6 +80,7 @@ async function loadAdmin() {
     if (failed) throw failed.error;
     state = { settings: settings.data || {}, categories: categories.data || [], products: products.data || [], gallery: gallery.data || [], media: media.data || [], orders: orders.data || [], tryonRequests: tryonRequests.data || [] };
     renderAll();
+    await loadVisitorStats();
     setupOrderNotifications();
   } catch (error) { notice(error.message, true); }
 }
