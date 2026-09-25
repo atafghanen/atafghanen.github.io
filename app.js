@@ -286,14 +286,19 @@ function applyBranding() {
   const logo = data.settings.logo_url || data.settings.logo || "assets/logo.gif";
   $$(".logo-spin, .footer-logo, .hero-logo").forEach(img => { img.src = logo; });
 
-  // Instagram remains visible, but its destination is disabled until a new link is added.
+  const instagramUrl = String(data.settings.instagram || "").trim();
   ["#instagramLink", "#headerInstagramLink"].forEach(selector => {
     const link = $(selector);
     if (!link) return;
-    link.removeAttribute("href");
-    link.removeAttribute("target");
-    link.removeAttribute("rel");
-    link.setAttribute("aria-disabled", "true");
+    if (instagramUrl) {
+      link.href = instagramUrl;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.removeAttribute("aria-disabled");
+    } else {
+      link.removeAttribute("href");
+      link.setAttribute("aria-disabled", "true");
+    }
   });
   if (data.settings.tiktok) { $("#tiktokLink").href = data.settings.tiktok; $("#headerTiktokLink").href = data.settings.tiktok; }
   if (data.settings.email) $("#contactEmail").textContent = data.settings.email;
@@ -1016,6 +1021,49 @@ function setupWishPhotoRequest() {
   }
 }
 
+function berlinDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function createVisitorId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  const hex = [...bytes].map(value => value.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+}
+
+async function trackSiteVisit() {
+  if (!supabaseClient) return;
+  try {
+    const today = berlinDateString();
+    if (localStorage.getItem("atAfghanenLastCountedVisit") === today) return;
+    let visitorId = localStorage.getItem("atAfghanenVisitorId");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(visitorId || "")) {
+      visitorId = createVisitorId();
+      localStorage.setItem("atAfghanenVisitorId", visitorId);
+    }
+    const { error } = await supabaseClient.from("site_visits").insert({
+      visitor_id: visitorId,
+      visit_date: today
+    });
+    if (!error || error.code === "23505") {
+      localStorage.setItem("atAfghanenLastCountedVisit", today);
+    }
+  } catch (error) {
+    console.warn("Besucherstatistik konnte nicht aktualisiert werden.", error);
+  }
+}
+
 function setup() {
   lang = "fa";
   localStorage.setItem("atEELang", lang);
@@ -1183,6 +1231,7 @@ function setup() {
   }
 
   updateCartCount();
+  trackSiteVisit();
   setupWishPhotoRequest();
   setupTryOn();
   loadDataFromSupabase();
