@@ -2079,3 +2079,10 @@ html{
 @media(max-width:720px){
   .shop-search-input{font-size:16px!important}
 }
+
+
+/* Product prices, shipping and made-to-order delivery */
+.product-price-block{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.product-shipping,.cart-shipping{display:block;color:#b88935;font-size:12px;font-weight:700;line-height:1.35}
+.delivery-note{margin:12px 0 18px!important;padding:11px 13px;border:1px solid rgba(212,166,79,.42);border-radius:10px;background:rgba(212,166,79,.1);color:inherit;font-size:13px;line-height:1.55}
+html[dir="rtl"] .product-price-block{align-items:flex-end}
