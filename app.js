@@ -131,6 +131,27 @@ Object.assign(translations.en, { "price.onRequest":"Price on request" });
 Object.assign(translations.ps, { "price.onRequest":"بیه د غوښتنې پر مهال" });
 Object.assign(translations.fa, { "price.onRequest":"قیمت پس از درخواست" });
 
+Object.assign(translations.de, {
+  "shipping.worldwide":"+ {amount} weltweiter Versand",
+  "shipping.standard":"+ {amount} Versand",
+  "delivery.customMade":"Lieferzeit ca. 2–3 Wochen, da dieses Kleid speziell für Sie angefertigt wird."
+});
+Object.assign(translations.en, {
+  "shipping.worldwide":"+ {amount} worldwide shipping",
+  "shipping.standard":"+ {amount} shipping",
+  "delivery.customMade":"Delivery takes approximately 2–3 weeks because this dress is made especially for you."
+});
+Object.assign(translations.ps, {
+  "shipping.worldwide":"+ {amount} نړیوال لېږد",
+  "shipping.standard":"+ {amount} لېږد",
+  "delivery.customMade":"د سپارلو موده شاوخوا ۲ تر ۳ اونیو ده، ځکه دا کالي په ځانګړي ډول ستاسو لپاره جوړېږي."
+});
+Object.assign(translations.fa, {
+  "shipping.worldwide":"+ {amount} ارسال به سراسر جهان",
+  "shipping.standard":"+ {amount} ارسال",
+  "delivery.customMade":"مدت تحویل تقریباً ۲ تا ۳ هفته است، زیرا این لباس به‌طور ویژه برای شما دوخته می‌شود."
+});
+
 Object.assign(translations.de,{
   "search.placeholder":"Produktcode eingeben, z. B. AT-L021",
   "search.noResults":"Kein Produkt gefunden"
@@ -463,8 +484,9 @@ function renderProducts() {
       <div class="product-info">
         <div class="product-cat">${esc(categoryLabel(p.category))}</div>
         <div class="product-name">${esc(name(p))}</div>
-        <div class="price">
-          <strong>${t("price.onRequest")}</strong>
+        <div class="price product-price-block">
+          <strong>${formatPrice(p.price)}</strong>
+          <small class="product-shipping">${shippingLabel(p)}</small>
         </div>
         <div class="product-actions">
           <button class="small-btn" data-details="${p.id}">${t("details")}</button>
@@ -483,6 +505,25 @@ function name(p) {
     return p.name[lang] || p.name.de || Object.values(p.name)[0] || "";
   }
   return p.name || "";
+}
+
+function formatPrice(value) {
+  const locale = { de:"de-DE", en:"en-GB", ps:"ps-AF", fa:"fa-AF" }[lang] || "de-DE";
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(Number(value) || 0);
+}
+
+function shippingCost(product) {
+  return product?.category === "punjabi-zuhause" ? 5 : 30;
+}
+
+function shippingLabel(product) {
+  const key = product?.category === "punjabi-zuhause" ? "shipping.standard" : "shipping.worldwide";
+  return t(key).replace("{amount}", formatPrice(shippingCost(product)));
 }
 
 function esc(s) {
@@ -551,9 +592,11 @@ function openProduct(id) {
       <div>
         <p class="eyebrow">${esc(categoryLabel(p.category))}</p>
         <h2>${esc(name(p))}</h2>
-        <div class="price">
-          <strong>${t("price.onRequest")}</strong>
+        <div class="price product-price-block">
+          <strong>${formatPrice(p.price)}</strong>
+          <small class="product-shipping">${shippingLabel(p)}</small>
         </div>
+        <p class="delivery-note">${t("delivery.customMade")}</p>
         <p>${esc(description)}</p>
         <div class="size-row">
           ${["XS", "S", "M", "L", "XL"].map(s => `<button class="size-btn" data-size="${s}">${s}</button>`).join("")}
@@ -855,16 +898,17 @@ function renderCart() {
         <img src="${esc(p.image)}">
         <div>
           <h4>${esc(name(p))}</h4>
-          <small>${t("checkout.size")}: ${esc(entry.size || "–")} · ${t("price.onRequest")}</small>
+          <small>${t("checkout.size")}: ${esc(entry.size || "–")} · ${formatPrice(p.price)}</small>
+          <small class="cart-shipping">${shippingLabel(p)}</small>
         </div>
         <button class="cart-remove" data-remove="${index}">×</button>
       </div>
     `).join("") : `<p class="modal-note">${uiText("empty")}</p>`;
   }
 
-  const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
+  const total = items.reduce((sum, item) => sum + Number(item.product.price) + shippingCost(item.product), 0);
   const cartTotalEl = $("#cartTotal");
-  if (cartTotalEl) cartTotalEl.textContent = t("price.onRequest");
+  if (cartTotalEl) cartTotalEl.textContent = formatPrice(total);
 
   $$("[data-remove]").forEach(button => button.onclick = () => {
     cart.splice(Number(button.dataset.remove), 1);
@@ -910,15 +954,15 @@ async function sendOrderToWhatsApp(form) {
     return map;
   }, new Map());
   const lines = [...grouped.values()].map(({ product: p, size, qty }) =>
-    `• ${name(p)} | ${t("checkout.size")}: ${size} | ${qty} × ${t("price.onRequest")}`
+    `• ${name(p)} | ${t("checkout.size")}: ${size} | ${qty} × ${formatPrice(p.price)} | ${shippingLabel(p)}`
   ).join("\n");
-  const total = items.reduce((sum, item) => sum + Number(item.product.price), 0);
+  const total = items.reduce((sum, item) => sum + Number(item.product.price) + shippingCost(item.product), 0);
   const fd = new FormData(form);
   const customer = {
     name: String(fd.get("name") || "").trim(),
     notes: String(fd.get("message") || "").trim()
   };
-  const msg = `AT Afghanen – Bestellung\n\n${t("order.customer")}: ${customer.name || "–"}\n\n${t("order.cart")}\n${lines}\n\n${t("order.total")}: ${t("price.onRequest")}\n\n${t("order.note")}: ${customer.notes || "–"}`;
+  const msg = `AT Afghanen – Bestellung\n\n${t("order.customer")}: ${customer.name || "–"}\n\n${t("order.cart")}\n${lines}\n\n${t("order.total")}: ${formatPrice(total)}\n\n${t("delivery.customMade")}\n\n${t("order.note")}: ${customer.notes || "–"}`;
 
   const number = (data.settings.whatsapp || "").replace(/[^0-9]/g, "").replace(/^00/, "");
   if (!number) {
@@ -927,7 +971,7 @@ async function sendOrderToWhatsApp(form) {
   }
 
   const orderItems = [...grouped.values()].map(({ product: p, size, qty }) => ({
-    product_id: p.id, name: name(p), size, quantity: qty, unit_price: Number(p.price)
+    product_id: p.id, name: name(p), size, quantity: qty, unit_price: Number(p.price), shipping_per_item: shippingCost(p)
   }));
   if (supabaseClient) {
     const { error } = await supabaseClient.from("orders").insert({
